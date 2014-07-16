@@ -16,15 +16,14 @@ end
 
 class EntityMember < Sequel::Model
   many_to_one :entity
-  many_to_one :member, :class => :Account
   one_to_many :segments, :class => :EntityMemberSegment
+  one_to_many :invitations, :class => :EntityMemberInvitation
 end
 
 class EntityMemberInvitation < Sequel::Model
-  many_to_one :entity
+  many_to_one :member
 end
 
 class EntityMemberSegment < Sequel::Model
-  many_to_one :entity
   many_to_one :member
 end

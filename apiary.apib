@@ -27,7 +27,7 @@ As a central piece of the Applyance platform, roles only have read-only access.
 + Response 200 (application/json)
 
         [{ "id": 1, "name": "applicant" }, { "id": 2, "name": "reviewer" }]
-        
+
 ## Role [/roles/{id}]
 + Parameters
     + id (required, number, `1`) ... Numeric `id` of the Role to perform action with. Has example value.
@@ -88,22 +88,22 @@ A single Account object with all its details.
 + Request (application/json)
 
         { "name": "John Smith" }
-        
+
 + Response 200 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
-    
+
             { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
 
 ### Remove [DELETE]
 + Response 204 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
 ## Password Reset [/accounts/{id}/reset-password]
@@ -123,7 +123,7 @@ Sets the account password by supplying the reset digest and new password.
 + Request (application/json)
 
         { "reset_token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "new_password": "secret" }
-        
+
 + Response 201 (application/json)
 
     + Body
@@ -137,13 +137,13 @@ Change the account password by supplying the reset digest, current password, and
 + Request (application/json)
 
         { "password": "secret", "new_password": "new_scret" }
-        
+
 + Response 201 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
 
             { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
@@ -155,13 +155,13 @@ Change the account email by supplying the new email and current password. Immedi
 + Request (application/json)
 
         { "email": "johnny.smith@gmail.com", "password": "secret" }
-        
+
 + Response 201 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
 
             { "id": 1, "name": "John Smith", "email": "johnny.smith@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
@@ -173,13 +173,13 @@ Verifies the account email by supplying the verify digest that was sent to the u
 + Request (application/json)
 
         { "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" }
-        
+
 + Response 201 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
 
             { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
@@ -208,51 +208,81 @@ A single Entity object with all its details. Note that entities are created thro
 + Request (application/json)
 
         { "name": "The Frothy Monkey" }
-        
+
 + Response 200 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
-    
+
             { "id": 1, "name": "The Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
 
 ### Remove [DELETE]
+Requires an entity to be an admin to delete their entity.
+
 + Response 204 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
-# Group Entity Members
-Members of entities. These map to Accounts within Applyance. Think team members.
+# Group Entity Member Invitations
+Member invitations for entities. After an administrator registers, this is the only way for new members to join the entity. They have to be invited by an admin.
 
-## Entity Member Collection [/entities/{id}/members]
-### Create [POST]
+Possible values for `role`:
+
+- admin
+- member
+
+## Entity Member Invitation Collection [/entities/{id}/members/invitations]
++ Parameters
+
+    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with. Has example value.
+
+### List [GET]
+Lists all member invitations for this entity.
+
 + Request (application/json)
 
-        { "member_id": 1, "role": "admin" }
-        
 + Response 201 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
 
-            { "entity_id": 1, "member_id": 2, "role": "admin", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }, { "id": 2, "email": "steve.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Steve Rocket", "email": "steve.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } } ]
 
+### Create [POST]
+Creates a new entity member invitation. On the server, this sends a notification to the member's email address with the invite code.
 
-## Entity [/entities/members/{id}]
-A single Entity object with all its details. Note that entities are created through a reviewer registration.
++ Request (application/json)
 
+    { "email": "johnny.rocket@gmail.com", "member": { "role": "member" } }
+
++ Response 201 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": null } }
+
+## Entity Member Invitation [/entities/members/invitations/{id}]
 + Parameters
-    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+
+    + id (required, number, `1`) ... Numeric `id` of the entity member invitation to perform action with. Has example value.
 
 ### Retrieve [GET]
+Retrieves the entity member invitation.
+
++ Request (application/json)
+
 + Response 200 (application/json)
 
     + Header
@@ -261,27 +291,89 @@ A single Entity object with all its details. Note that entities are created thro
 
     + Body
 
-            { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
+
+## Entity Member Invitation Claim [/entities/members/invitations/{id}/claim]
++ Parameters
+
+    + id (required, number, `1`) ... Numeric `id` of the entity member invitation to perform action with. Has example value.
+
+### Claim [POST]
+Claims the invitation on the server by passing its digest. Assume the user came from the invite email.
+
+This is the only way entity members are created and this creates an actual account on the server for the member.
+
++ Request (application/json)
+
+    { "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "account": { "name": "Johnny Rocket", "password": "secret" } }
+
++ Response 201 (application/json)
+
+    + Body
+
+            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "closed", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
+
+# Group Entity Members
+Members of entities. They have accounts within Applyance. Think team members for the entity.
+
+## Entity Member Collection [/entities/{id}/members]
++ Parameters
+
+    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with.
+
+### List [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            [ { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, { "id": 2, "role": "member", "account": { "id": 1, "name": "Steve Rocket", "email": "steve.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ]
+
+## Entity Member [/entities/members/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with.
+
+### Retrieve [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            { "id": 1, "role": "member", "invitations": [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ], "segments": [ { "id": 1, "name": "Fresh", "dsl": "stages=1,2,3", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ] "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
 
 ### Update [PUT]
 + Request (application/json)
 
-        { "name": "The Frothy Monkey" }
-        
+    { "role": "admin" }
+
 + Response 200 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
-    
-            { "id": 1, "name": "The Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+            { "id": 1, "role": "admin", "invitations": [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ], "segments": [ { "id": 1, "name": "Fresh", "dsl": "stages=1,2,3", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ] "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
 
 ### Remove [DELETE]
++ Request (application/json)
+
 + Response 204 (application/json)
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
+    + Body

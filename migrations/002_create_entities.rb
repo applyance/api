@@ -16,7 +16,7 @@ Sequel.migration do
       primary_key :id
 
       foreign_key :entity_id, :entities
-      foreign_key :member_id, :accounts
+      foreign_key :account_id, :accounts, :null => true
 
       String :role, :null => false
 
@@ -27,10 +27,11 @@ Sequel.migration do
     # Create member invitations for the entities
     create_table(:entity_member_invitations) do
       primary_key :id
-      foreign_key :entity_id, :entities
+
+      foreign_key :member_id, :entity_members
 
       String :email, :null => false
-      String :digest, :null => false, :unique => true
+      String :claim_digest, :null => false, :unique => true
       String :status, :default => "open"
 
       DateTime :created_at
@@ -41,7 +42,6 @@ Sequel.migration do
     create_table(:entity_member_segments) do
       primary_key :id
 
-      foreign_key :entity_id, :entities
       foreign_key :member_id, :entity_members
 
       String :name, :null => false
