@@ -1,0 +1,287 @@
+FORMAT: 1A
+HOST: https://applyance.com
+
+# Applyance API
+Applyance API exposes all functionality to the Applyance platform.
+
+Applyance is an application engine that brings delight to applications.
+
+"Never answer the same question twice."
+
+# Group Roles
+There are two roles within Applyance:
+
+- Applicant
+- Reviewer
+
+**Applicants** are those who submit applications.
+
+**Reviewers** are those who manage applications.
+
+Accounts can have one or both roles associated to them.
+
+As a central piece of the Applyance platform, roles only have read-only access.
+
+## Roles Collection [/roles]
+### Retrieve all Roles [GET]
++ Response 200 (application/json)
+
+        [{ "id": 1, "name": "applicant" }, { "id": 2, "name": "reviewer" }]
+        
+## Role [/roles/{id}]
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Role to perform action with. Has example value.
+
+### Retrieve a Role [GET]
++ Response 200 (application/json)
+
+        { "id": 2, "name": "applicant" }
+
+# Group Accounts
+Manage Accounts within the Applyance platform.
+
+## Authentication [/accounts/auth]
+Authentication for accounts in Applyance. Note that this returns the api_key parameter. Use the api_key parameter for all future API requests for this account.
+
+### Login [POST]
++ Request (application/json)
+
+        { "email": "johnny@gmail.com", "password": "secret" }
+
++ Response 201 (application/json)
+
+    + Body
+
+            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+
+## Reviewer Registration [/reviewers/register]
+Reviewers are those on the Applyance platform managing applications. Currently, only reviewers are able to register on Applyance.
+
+### Register [POST]
++ Request (application/json)
+
+        { "account": { "name": "Johnny Rocket", "email": "johnny@gmail.com", "password": "secret" }, "entity": { "name": "Frothy Monkey" } }
+
++ Response 201 (application/json)
+
+        { "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "entity": { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
+
+## Account [/accounts/{id}]
+A single Account object with all its details.
+
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+
+### Retrieve [GET]
++ Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            { "id": 1, "name": "Johnny Rocket", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Update [PUT]
++ Request (application/json)
+
+        { "name": "John Smith" }
+        
++ Response 200 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+    
+            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Remove [DELETE]
++ Response 204 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+## Password Reset [/accounts/{id}/reset-password]
+Reset the account password. This creates a reset digest and emails the account the digest for changing the password.
+
+### Reset [POST]
++ Request (application/json)
+
+        { "email": "johnny@gmail.com" }
+
++ Response 201 (application/json)
+
+## Password Set [/accounts/{id}/set-password]
+Sets the account password by supplying the reset digest and new password.
+
+### Set [POST]
++ Request (application/json)
+
+        { "reset_token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "new_password": "secret" }
+        
++ Response 201 (application/json)
+
+    + Body
+
+            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+## Password Change [/accounts/{id}/change-password]
+Change the account password by supplying the reset digest, current password, and new password.
+
+### Change [POST]
++ Request (application/json)
+
+        { "password": "secret", "new_password": "new_scret" }
+        
++ Response 201 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+
+            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+## Email Change [/accounts/{id}/change-email]
+Change the account email by supplying the new email and current password. Immediately sets the account to not be verified and sends a verification digest to the account's email.
+
+### Change [POST]
++ Request (application/json)
+
+        { "email": "johnny.smith@gmail.com", "password": "secret" }
+        
++ Response 201 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+
+            { "id": 1, "name": "John Smith", "email": "johnny.smith@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+## Email Verification [/accounts/{id}/verify-email]
+Verifies the account email by supplying the verify digest that was sent to the user.
+
+### Verify [POST]
++ Request (application/json)
+
+        { "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" }
+        
++ Response 201 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+
+            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+# Group Entities
+Entities within Applyance represent the institutions that are managing applications (schools, small businesses, etc).
+
+## Entity [/entities/{id}]
+A single Entity object with all its details. Note that entities are created through a reviewer registration.
+
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+
+### Retrieve [GET]
++ Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Update [PUT]
++ Request (application/json)
+
+        { "name": "The Frothy Monkey" }
+        
++ Response 200 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+    
+            { "id": 1, "name": "The Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Remove [DELETE]
++ Response 204 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+# Group Entity Members
+Members of entities. These map to Accounts within Applyance. Think team members.
+
+## Entity Member Collection [/entities/{id}/members]
+### Create [POST]
++ Request (application/json)
+
+        { "member_id": 1, "role": "admin" }
+        
++ Response 201 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+
+            { "entity_id": 1, "member_id": 2, "role": "admin", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+
+## Entity [/entities/members/{id}]
+A single Entity object with all its details. Note that entities are created through a reviewer registration.
+
++ Parameters
+    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+
+### Retrieve [GET]
++ Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Update [PUT]
++ Request (application/json)
+
+        { "name": "The Frothy Monkey" }
+        
++ Response 200 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+    
+            { "id": 1, "name": "The Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+
+### Remove [DELETE]
++ Response 204 (application/json)
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
