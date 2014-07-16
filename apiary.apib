@@ -248,13 +248,7 @@ Lists all member invitations for this entity.
 
 + Response 201 (application/json)
 
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }, { "id": 2, "email": "steve.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Steve Rocket", "email": "steve.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } } ]
+        [Entity Member Invitation][]
 
 ### Create [POST]
 Creates a new entity member invitation. On the server, this sends a notification to the member's email address with the invite code.
