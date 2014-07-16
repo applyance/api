@@ -34,6 +34,16 @@ module Applyance
           201
         end
 
+        # Reset password
+        app.post '/accounts/:id/set-password', :provides => [:json] do
+          @account = Account.first(:reset_digest => params[:reset_digest])
+          unless @account
+            raise BadRequestError({ detail: "Invalid reset token." })
+          end
+          @account.set_password(params)
+          201
+        end
+
         # Change password
         app.post '/accounts/:id/change-password', :provides => [:json] do
           @account = protected!(lambda { |account| account.pk == params[:id].to_i })

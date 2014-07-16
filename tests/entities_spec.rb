@@ -8,7 +8,7 @@ RSpec.describe 'Do entities work?' do
   include Rack::Test::Methods
 
   def app
-    @app ||= Applyance::App
+    @app ||= Applyance::Server
   end
 
   before(:all) do

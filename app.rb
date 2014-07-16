@@ -8,7 +8,7 @@ require_relative 'routes/init'
 require_relative 'lib/errors'
 
 module Applyance
-  class App < Sinatra::Base
+  class Server < Sinatra::Base
 
     # Load config file
     register Sinatra::ConfigFile

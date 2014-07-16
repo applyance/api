@@ -31,13 +31,19 @@ class Account < Sequel::Model
     # TODO: Send email with reset digest
   end
 
-  # Password change request from the user
-  def change_password(params)
-    # Make sure the reset digest is correct
-    unless params[:reset_digest] == self.reset_digest
-      raise BadRequestError.new({ :detail => "Invalid reset digest." })
+  # Set password for the user
+  # This is after a reset password request
+  def set_password
+    # Make sure the new password actually was entered
+    if params[:new_password].length == 0
+      raise BadRequestError.new({ :detail => "You must enter a new password." })
     end
 
+    self.update(:password_hash => BCrypt::Password.create(params[:new_password]))
+  end
+
+  # Password change request from the user
+  def change_password(params)
     # Make sure current password is correct
     unless BCrypt::Password.new(self.password_hash) == params[:password]
       raise BadRequestError.new({ :detail => "Incorrect password." })
@@ -49,7 +55,6 @@ class Account < Sequel::Model
     end
 
     self.update(:password_hash => BCrypt::Password.create(params[:new_password]))
-    new_password
   end
 
   # Used for a user changing their email

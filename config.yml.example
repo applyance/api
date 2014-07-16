@@ -1,0 +1,10 @@
+development:
+  database_name: applyance
+  database_host: localhost
+  database_user: applyance
+  database_password: <secret>
+test:
+  database_name: applyancetest
+  database_host: localhost
+  database_user: applyance
+  database_password: <secret>
