@@ -244,6 +244,15 @@ A single Account object with all its details.
                 "name": "Johnny Rocket",
                 "email": "johnny@gmail.com",
                 "is_verified": false,
+                "avatar_attachment": {
+                    "id": 1,
+                    "name": "test.gif",
+                    "content_type": "image/gif",
+                    "byte_size": 12345,
+                    "url": "http://applyance.com/avatars/image.gif",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00",
                 "roles": [
@@ -275,7 +284,11 @@ A single Account object with all its details.
     + Body
 
             {
-                "name": "John Smith"
+                "name": "John Smith",
+                "avatar_attachment": {
+                    "name": "john.gif",
+                    "token": "1029dlsakjf01923409dajksflasd"
+                }
             }
 
 + Response 200 (application/json)
@@ -621,7 +634,9 @@ Claims the invitation. This means that the admin received their email invitation
     + Body
 
             {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
             }
 
 + Response 200 (application/json)
@@ -782,7 +797,6 @@ Reviewers represent members of units.
 
 They can have one of three access levels:
 
-- `owner` - Can review applicants, invite other reviewers, and view insights. Owners cannot be removed from units.
 - `full` - Can review applicants, invite other reviewers, and view insights.
 - `limited` - Can review applicants.
 
@@ -798,6 +812,7 @@ They can have one of three access levels:
             {
                 "id": 1,
                 "access_level": "full",
+                "is_entity_admin": true,
                 "account": {
                     "id": 1,
                     "name": "Johnny Rocket",
@@ -851,6 +866,7 @@ Must be an entity admin, unit full-access reviewer, or the reviewer to perform t
                 {
                     "id": 1,
                     "access_level": "full",
+                    "is_entity_admin": false,
                     "account": {
                         "id": 1,
                         "name": "Johnny Rocket",
@@ -884,7 +900,7 @@ List all reviewers for a unit specified.
 ## Reviewers - Application [/applications/{id}/reviewers]
 Reviewers assigned to applications.
 
-Parameters
++ Parameters
 
     + id (required, number, `1`) ... Application ID
 
@@ -952,7 +968,9 @@ Claims the invitation. This means that the reviewer received their email invitat
     + Body
 
             {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
             }
 
 + Response 200 (application/json)
@@ -1035,7 +1053,7 @@ Spots can have the following `status`:
             {
                 "id": 1,
                 "name": "Cohort 4",
-                "description", "Lorem ipsum ...",
+                "detail", "Lorem ipsum ...",
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -1061,7 +1079,7 @@ Must be an admin or full-access reviewer.
             {
                 "id": 1,
                 "name": "Cohort 4",
-                "description" "Lorem ipsum...",
+                "detail" "Lorem ipsum...",
                 "status": "paused"
             }
 
@@ -1093,7 +1111,7 @@ Must be an admin or full-access reviewer.
                 {
                     "id": 1,
                     "name": "Cohort 4",
-                    "description", "Lorem ipsum ...",
+                    "detail", "Lorem ipsum ...",
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -1119,7 +1137,7 @@ Only an admin or full-access reviewer can create spots.
 
             {
                 "name": "Cohort 4",
-                "description": "Lorem ipsum...",
+                "detail": "Lorem ipsum...",
                 "status": "open"
             }
 
