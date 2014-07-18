@@ -621,7 +621,9 @@ Claims the invitation. This means that the admin received their email invitation
     + Body
 
             {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
             }
 
 + Response 200 (application/json)
@@ -782,7 +784,6 @@ Reviewers represent members of units.
 
 They can have one of three access levels:
 
-- `owner` - Can review applicants, invite other reviewers, and view insights. Owners cannot be removed from units.
 - `full` - Can review applicants, invite other reviewers, and view insights.
 - `limited` - Can review applicants.
 
@@ -798,6 +799,7 @@ They can have one of three access levels:
             {
                 "id": 1,
                 "access_level": "full",
+                "is_entity_admin": true,
                 "account": {
                     "id": 1,
                     "name": "Johnny Rocket",
@@ -851,6 +853,7 @@ Must be an entity admin, unit full-access reviewer, or the reviewer to perform t
                 {
                     "id": 1,
                     "access_level": "full",
+                    "is_entity_admin": false,
                     "account": {
                         "id": 1,
                         "name": "Johnny Rocket",
@@ -952,7 +955,9 @@ Claims the invitation. This means that the reviewer received their email invitat
     + Body
 
             {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
             }
 
 + Response 200 (application/json)
