@@ -19,8 +19,34 @@ module Applyance
 
         # Require models, can't go at the top because it requires a
         # Sequel connection
+        require_relative 'error'
+        require_relative 'coordinate'
+        require_relative 'attachment'
+        require_relative 'domain'
+        require_relative 'role'
         require_relative 'account'
         require_relative 'entity'
+        require_relative 'admin'
+        require_relative 'admin_invite'
+        require_relative 'unit'
+        require_relative 'reviewer'
+        require_relative 'reviewer_invite'
+        require_relative 'spot'
+        require_relative 'template'
+        require_relative 'pipeline'
+        require_relative 'stage'
+        require_relative 'label'
+        require_relative 'segment'
+        require_relative 'application'
+        require_relative 'application_activity'
+        require_relative 'thread'
+        require_relative 'message'
+        require_relative 'note'
+        require_relative 'rating'
+        require_relative 'definition'
+        require_relative 'spot_definition'
+        require_relative 'answer'
+        require_relative 'field'
 
       end
     end

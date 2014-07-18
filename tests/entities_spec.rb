@@ -49,7 +49,7 @@ RSpec.describe 'Do entities work?' do
   end
 
   after(:all) do
-    app.settings.db.run("delete from accounts_roles")
+    app.db.run("delete from accounts_roles")
     EntityMember.dataset.delete
     Account.dataset.delete
     Entity.dataset.delete

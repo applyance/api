@@ -1,29 +1,18 @@
-class Entity < Sequel::Model
-  one_to_many :members, :class => :EntityMember
-  one_to_many :invitations, :class => :EntityMemberInvitation
+module Applyance
+  class Entity < Sequel::Model
+    many_to_one :domain, :class => :'Applyance::Domain'
+    one_to_many :admins, :class => :'Applyance::Admin'
+    one_to_many :admin_invites, :class => :'Applyance::AdminInvite'
+    one_to_many :units, :class => :'Applyance::Unit'
 
-  # Register a new entity with the specified account
-  def self.register(account, params)
-    entity = self.create(:name => params[:entity][:name])
-    EntityMember.create(
-      :entity_id => entity.id,
-      :member_id => account.id,
-      :role => "admin"
-    )
-    entity
+    # Register a new entity with the specified account
+    def self.register(account, params)
+      entity = self.create(:name => params[:entity][:name])
+      Applyance::Admin.create(
+        :entity_id => entity.id,
+        :account_id => account.id,
+      )
+      entity
+    end
   end
-end
-
-class EntityMember < Sequel::Model
-  many_to_one :entity
-  one_to_many :segments, :class => :EntityMemberSegment
-  one_to_many :invitations, :class => :EntityMemberInvitation
-end
-
-class EntityMemberInvitation < Sequel::Model
-  many_to_one :member
-end
-
-class EntityMemberSegment < Sequel::Model
-  many_to_one :member
 end

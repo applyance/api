@@ -1,2 +1,2 @@
 object @role
-attributes :id, :name
+extends "entities/_single"

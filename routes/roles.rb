@@ -12,7 +12,7 @@ module Applyance
         # Show role by Id
         app.get '/roles/:id', :provides => [:json] do
           @role = Role.first(:id => params[:id])
-          rable :'roles/show'
+          rabl :'roles/show'
         end
 
       end

@@ -1,2 +1,2 @@
 collection @roles
-attributes :id, :name
+extends "entities/_single"
