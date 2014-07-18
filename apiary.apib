@@ -8,17 +8,115 @@ Applyance is an application engine that brings delight to applications.
 
 "Never answer the same question twice."
 
+# Group Domains
+Domains are how entities and field definitions are categorized within the Applyance system.
+
+## Domain [/domains/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Domain ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "Restaurant"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Domain][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "Restaurant"
+            }
+
++ Response 200 (application/json)
+
+    [Domain][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Domains [/domains]
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "name": "Restaurants"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Domains][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Restaurants"
+            }
+
++ Response 200 (application/json)
+
+    [Domain][]
+
 # Group Roles
-There are two roles within Applyance:
+There are three roles within Applyance:
 
 - Applicant
+- Admin
 - Reviewer
 
 **Applicants** are those who submit applications.
 
-**Reviewers** are those who manage applications.
+**Admins** are those who manage entities.
 
-Accounts can have one or both roles associated to them.
+**Reviewers** are those who review applications within entity units.
+
+Accounts can have one or all roles associated to them.
 
 As a central piece of the Applyance platform, roles only have read-only access.
 
@@ -26,16 +124,33 @@ As a central piece of the Applyance platform, roles only have read-only access.
 ### Retrieve all Roles [GET]
 + Response 200 (application/json)
 
-        [{ "id": 1, "name": "applicant" }, { "id": 2, "name": "reviewer" }]
+        [
+            {
+                "id": 1,
+                "name": "applicant"
+            },
+            {
+                "id": 2,
+                "name": "admin"
+            },
+            {
+                "id": 3,
+                "name": "reviewer"
+            }
+        ]
 
 ## Role [/roles/{id}]
 + Parameters
+
     + id (required, number, `1`) ... Numeric `id` of the Role to perform action with. Has example value.
 
 ### Retrieve a Role [GET]
 + Response 200 (application/json)
 
-        { "id": 2, "name": "applicant" }
+        {
+            "id": 2,
+            "name": "applicant"
+        }
 
 # Group Accounts
 Manage Accounts within the Applyance platform.
@@ -46,14 +161,30 @@ Authentication for accounts in Applyance. Note that this returns the api_key par
 ### Login [POST]
 + Request (application/json)
 
-        { "email": "johnny@gmail.com", "password": "secret" }
+        {
+            "email": "johnny@gmail.com",
+            "password": "secret"
+        }
 
 + Response 201 (application/json)
 
     + Body
 
-            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
-
+            {
+                "id": 1,
+                "name": "John Smith",
+                "email": "johnny@gmail.com",
+                "is_verified": false,
+                "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "admin"
+                    }
+                ]
+            }
 
 ## Reviewer Registration [/reviewers/register]
 Reviewers are those on the Applyance platform managing applications. Currently, only reviewers are able to register on Applyance.
@@ -61,50 +192,98 @@ Reviewers are those on the Applyance platform managing applications. Currently, 
 ### Register [POST]
 + Request (application/json)
 
-        { "account": { "name": "Johnny Rocket", "email": "johnny@gmail.com", "password": "secret" }, "entity": { "name": "Frothy Monkey" } }
+        {
+            "account": {
+                "name": "Johnny Rocket",
+                "email": "johnny@gmail.com",
+                "password": "secret"
+            },
+            "entity": {
+                "name": "Frothy Monkey"
+            }
+        }
 
 + Response 201 (application/json)
 
-        { "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "entity": { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
+        {
+            "account": {
+                "id": 1,
+                "name": "Johnny Rocket",
+                "email": "johnny@gmail.com",
+                "is_verified": false,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "admin"
+                    }
+                ]
+            },
+            "entity": {
+                "id": 1,
+                "name": "Frothy Monkey",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+        }
 
 ## Account [/accounts/{id}]
 A single Account object with all its details.
 
 + Parameters
+
     + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
 
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "Johnny Rocket",
+                "email": "johnny@gmail.com",
+                "is_verified": false,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "admin"
+                    }
+                ]
+            }
+
 ### Retrieve [GET]
-+ Response 200 (application/json)
++ Request (application/json)
 
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
-    + Body
++ Response 200 (application/json)
 
-            { "id": 1, "name": "Johnny Rocket", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+    [Account][]
 
 ### Update [PUT]
 + Request (application/json)
 
-        { "name": "John Smith" }
-
-+ Response 200 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            {
+                "name": "John Smith"
+            }
+
++ Response 200 (application/json)
+
+    [Account][]
 
 ### Remove [DELETE]
 + Response 204 (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
 ## Password Reset [/accounts/{id}/reset-password]
 Reset the account password. This creates a reset digest and emails the account the digest for changing the password.
@@ -112,7 +291,9 @@ Reset the account password. This creates a reset digest and emails the account t
 ### Reset [POST]
 + Request (application/json)
 
-        { "email": "johnny@gmail.com" }
+        {
+            "email": "johnny@gmail.com"
+        }
 
 + Response 201 (application/json)
 
@@ -122,13 +303,14 @@ Sets the account password by supplying the reset digest and new password.
 ### Set [POST]
 + Request (application/json)
 
-        { "reset_token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "new_password": "secret" }
+        {
+            "reset_token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+            "new_password": "secret"
+        }
 
 + Response 201 (application/json)
 
-    + Body
-
-            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+    [Account][]
 
 ## Password Change [/accounts/{id}/change-password]
 Change the account password by supplying the reset digest, current password, and new password.
@@ -136,17 +318,20 @@ Change the account password by supplying the reset digest, current password, and
 ### Change [POST]
 + Request (application/json)
 
-        { "password": "secret", "new_password": "new_scret" }
-
-+ Response 201 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            {
+                "password": "secret",
+                "new_password": "new_scret"
+            }
+
++ Response 200 (application/json)
+
+    [Account][]
 
 ## Email Change [/accounts/{id}/change-email]
 Change the account email by supplying the new email and current password. Immediately sets the account to not be verified and sends a verification digest to the account's email.
@@ -154,17 +339,20 @@ Change the account email by supplying the new email and current password. Immedi
 ### Change [POST]
 + Request (application/json)
 
-        { "email": "johnny.smith@gmail.com", "password": "secret" }
-
-+ Response 201 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "name": "John Smith", "email": "johnny.smith@gmail.com", "is_verified": false, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            {
+                "email": "johnny.smith@gmail.com",
+                "password": "secret"
+            }
+
++ Response 201 (application/json)
+
+    [Account][]
 
 ## Email Verification [/accounts/{id}/verify-email]
 Verifies the account email by supplying the verify digest that was sent to the user.
@@ -172,44 +360,51 @@ Verifies the account email by supplying the verify digest that was sent to the u
 ### Verify [POST]
 + Request (application/json)
 
-        { "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" }
-
-+ Response 201 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "name": "John Smith", "email": "johnny@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            { "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" }
+
++ Response 200 (application/json)
+
+    [Account][]
 
 # Group Entities
 Entities within Applyance represent the institutions that are managing applications (schools, small businesses, etc).
 
 ## Entity [/entities/{id}]
-A single Entity object with all its details. Note that entities are created through a reviewer registration.
+A single Entity object with all its details. Note that entities are created when a reviewer registers.
 
 + Parameters
-    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+
+    + id (required, number, `1`) ... Entity ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "domain_id": 1,
+                "name": "Frothy Monkey",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
 
 ### Retrieve [GET]
++ Request (application/json)
+
 + Response 200 (application/json)
 
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            { "id": 1, "name": "Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+    [Entity][]
 
 ### Update [PUT]
+Must be an entity admin to update an entity.
+
 + Request (application/json)
-
-        { "name": "The Frothy Monkey" }
-
-+ Response 200 (application/json)
 
     + Header
 
@@ -217,47 +412,356 @@ A single Entity object with all its details. Note that entities are created thro
 
     + Body
 
-            { "id": 1, "name": "The Frothy Monkey", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            {
+                "name": "The Frothy Monkey",
+                "domain_id": 1 // Requires Super Admin role
+            }
+
++ Response 200 (application/json)
+
+    [Entity][]
 
 ### Remove [DELETE]
-Requires an entity to be an admin to delete their entity.
+Requires an entity admin to delete their entity.
 
-+ Response 204 (application/json)
++ Request (application/json)
 
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
-# Group Entity Member Invitations
-Member invitations for entities. After an administrator registers, this is the only way for new members to join the entity. They have to be invited by an admin.
++ Response 204
 
-Possible values for `role`:
+## Entities [/entities]
+List of entities in Applyance.
 
-- admin
-- member
+Requires Super Admin role to access.
 
-## Entity Member Invitation Collection [/entities/{id}/members/invitations]
-+ Parameters
++ Model
 
-    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with. Has example value.
+    + Body
+
+            {
+                "id": 1,
+                "domain_id": 1,
+                "name": "Frothy Monkey",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
 
 ### List [GET]
-Lists all member invitations for this entity.
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200
+
+    [Entities][]
+
+## Entities - Domain [/domains/{id}/entities]
+List of entities by domain.
+
+Requires Super Admin role to access.
+
++ Parameters
+
+    + id (required, number, `1`) ... Domain ID
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200
+
+    [Entities][]
+
+# Group Admins
+Admins represent administrators within entities.
+
+The first entity admin is created when a reviewer registers. After that, they must be invited by another entity admin.
+
+*No update method because there is nothing to update. This may change in the future.*
+
+## Admin [/admins/{id}]
++ Parameters
+
+    + id (required, number, `1`)
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "account": {
+                    "id": 1,
+                    "name": "Johnny Rocket",
+                    "email": "johnny@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "admin"
+                        }
+                    ]
+                }
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200
+
+    [Admin][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Admins [/entities/{id}/admins]
++ Parameters
+
+    + id (required, number, `1`) ... Entity ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "account": {
+                        "id": 1,
+                        "name": "Johnny Rocket",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    }
+                }
+            ]
+
+### List [GET]
+List all admins for an entity specified.
 
 + Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Admins][]
+
+## Admin Invite [/admins/invites/{id}]
+Invite an admin to an entity. This can be done by other entity admins.
+
+Possible status values:
+
+- `open` - Has not yet been claimed.
+- `claimed` - Has been claimed.
+
++ Parameters
+
+    + id (required, number, `1`)
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "email": "johnny@gmail.com",
+                "status": "open",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Get Invite [GET]
+Must be an entity admin to retrieve another invitation.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Admin Invite][]
+
+### Claim Invite [PUT]
+Claims the invitation. This means that the admin received their email invitation and clicked the link with the claim digest to claim it.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+            }
+
++ Response 200 (application/json)
+
+    [Admin Invite][]
+
+## Admin Invites [/admins/{id}/invites]
++ Parameters
+
+    + id (required, number, `1`) ... Entity ID
+
++ Model (application/json)
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "email": "johnny@gmail.com",
+                    "status": "claimed",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### Create Invite [POST]
+Must be an entity admin to create this invite.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "email": "johnny@gmail.com"
+            }
 
 + Response 201 (application/json)
 
-        [Entity Member Invitation][]
+    [Admin Invite][]
+
+### List Invites [GET]
+Must be an entity admin to list invites for an entity.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Admin Invites][]
+
+# Group Units
+Units are a subsystem of entities. Usually they would represent locations or campuses of entities.
+
+## Unit [/units/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "Atlanta, GA",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Unit][]
+
+### Update [PUT]
+Must be an entity admin or unit admin to update a unit.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Charleston, SC"
+            }
+
++ Response 200 (application/json)
+
+    [Unit][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204 (application/json)
+
+## Units [/entities/{id}/units]
++ Parameters
+
+    + id (required, number, `1`) ... Entity ID
+
++ Model (application/json)
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "name": "Atlanta, GA",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Units][]
 
 ### Create [POST]
-Creates a new entity member invitation. On the server, this sends a notification to the member's email address with the invite code.
+Must be an entity admin to create units.
 
 + Request (application/json)
-
-    { "email": "johnny.rocket@gmail.com", "member": { "role": "member" } }
-
-+ Response 201 (application/json)
 
     + Header
 
@@ -265,109 +769,2326 @@ Creates a new entity member invitation. On the server, this sends a notification
 
     + Body
 
-            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": null } }
+            {
+                "name": "Atlanta, GA"
+            }
 
-## Entity Member Invitation [/entities/members/invitations/{id}]
++ Response 201 (application/json)
+
+    [Unit][]
+
+# Group Reviewers
+Reviewers represent members of units.
+
+They can have one of three access levels:
+
+- `owner` - Can review applicants, invite other reviewers, and view insights. Owners cannot be removed from units.
+- `full` - Can review applicants, invite other reviewers, and view insights.
+- `limited` - Can review applicants.
+
+## Reviewer [/reviewers/{id}]
 + Parameters
 
-    + id (required, number, `1`) ... Numeric `id` of the entity member invitation to perform action with. Has example value.
+    + id (required, number, `1`)
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "access_level": "full",
+                "account": {
+                    "id": 1,
+                    "name": "Johnny Rocket",
+                    "email": "johnny@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "admin"
+                        }
+                    ]
+                }
+            }
 
 ### Retrieve [GET]
-Retrieves the entity member invitation.
+Must be an entity admin, unit admin, or the reviewer to view this resource.
 
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200
+
+    [Reviewer][]
+
+### Remove [DELETE]
+Must be an entity admin, unit full-access reviewer, or the reviewer to perform this action.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Reviewers - Unit [/units/{id}/reviewers]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "access_level": "full",
+                    "account": {
+                        "id": 1,
+                        "name": "Johnny Rocket",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    }
+                }
+            ]
+
+### List [GET]
+List all reviewers for a unit specified.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Reviewers - Unit][]
+
+## Reviewers - Application [/applications/{id}/reviewers]
+Reviewers assigned to applications.
+
+Parameters
+
+    + id (required, number, `1`) ... Application ID
+
+### List [GET]
+List all reviewers for an application specified.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Reviewers - Unit][]
+
+## Reviewer Invite [/reviewers/invites/{id}]
+Invite a reviewer to a unit. This can be done by admins or reviewers with full access.
+
+Possible `status` values:
+
+- `open` - Has not yet been claimed.
+- `claimed` - Has been claimed.
+
+Possible `access_level` values:
+
+- `full` - Has not yet been claimed.
+- `limited` - Has been claimed.
+
++ Parameters
+
+    + id (required, number, `1`)
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "email": "johnny@gmail.com",
+                "access_level": "full",
+                "status": "open",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Get Invite [GET]
+Must be an admin or full-access reviewer to retrieve an invitation.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Reviewer Invite][]
+
+### Claim Invite [PUT]
+Claims the invitation. This means that the reviewer received their email invitation and clicked the link with the claim digest to claim it.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+            }
+
++ Response 200 (application/json)
+
+    [Reviewer Invite][]
+
+## Reviewer Invites [/units/{id}/invites]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model (application/json)
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "email": "johnny@gmail.com",
+                    "access_level": "full",
+                    "status": "claimed",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### Create Invite [POST]
+Must be an admin or full-access reviewer to create this invite.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "email": "johnny@gmail.com",
+                "access_level": "full"
+            }
+
++ Response 201 (application/json)
+
+    [Reviewer Invite][]
+
+### List Invites [GET]
+Must be an admin or reviewer to list invites for a unit.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Reviewer Invites][]
+
+# Group Spots
+Represents an opening in the unit.
+
+(e.g. job for companies, cohort for schools)
+
+Spots can have the following `status`:
+
+- `open` - Spot is actively accepting applications
+- `paused` - Spot is not currently accepting applications
+- `closed` - Spot is done accepting applications
+
+## Spot [/spots/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Spot ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "Cohort 4",
+                "description", "Lorem ipsum ...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
 + Request (application/json)
 
 + Response 200 (application/json)
 
+    [Spot][]
+
+### Update [PUT]
+Must be an admin or full-access reviewer.
+
++ Request (application/json)
+
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
+            {
+                "id": 1,
+                "name": "Cohort 4",
+                "description" "Lorem ipsum...",
+                "status": "paused"
+            }
 
-## Entity Member Invitation Claim [/entities/members/invitations/{id}/claim]
-+ Parameters
++ Response 200 (application/json)
 
-    + id (required, number, `1`) ... Numeric `id` of the entity member invitation to perform action with. Has example value.
+    [Spot][]
 
-### Claim [POST]
-Claims the invitation on the server by passing its digest. Assume the user came from the invite email.
-
-This is the only way entity members are created and this creates an actual account on the server for the member.
+### Remove [DELETE]
+Must be an admin or full-access reviewer.
 
 + Request (application/json)
 
-    { "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=", "account": { "name": "Johnny Rocket", "password": "secret" } }
+    + Header
 
-+ Response 201 (application/json)
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Spots - Unit [/units/{id}/spots]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
 
     + Body
 
-            { "id": 1, "email": "johnny.rocket@gmail.com", "status": "closed", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00", "member": { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } }
-
-# Group Entity Members
-Members of entities. They have accounts within Applyance. Think team members for the entity.
-
-## Entity Member Collection [/entities/{id}/members]
-+ Parameters
-
-    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with.
+            [
+                {
+                    "id": 1,
+                    "name": "Cohort 4",
+                    "description", "Lorem ipsum ...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
 
 ### List [GET]
 + Request (application/json)
 
 + Response 200 (application/json)
 
+    [Spots - Unit][]
+
+### Create [POST]
+Only an admin or full-access reviewer can create spots.
+
++ Request (application/json)
+
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            [ { "id": 1, "role": "member", "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, { "id": 2, "role": "member", "account": { "id": 1, "name": "Steve Rocket", "email": "steve.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ]
+            {
+                "name": "Cohort 4",
+                "description": "Lorem ipsum...",
+                "status": "open"
+            }
 
-## Entity Member [/entities/members/{id}]
++ Response 201 (application/json)
+
+    [Spot][]
+
+## Spots - Application [/applications/{id}/spots]
 + Parameters
 
-    + id (required, number, `1`) ... Numeric `id` of the entity to perform action with.
+    + id (required, number, `1`) ... Application ID
+
+### List [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Spots - Unit][]
+
+# Group Threads
+Threads are conversations that happen between a reviewer and an applicant.
+
+## Thread [/threads/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Thread ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "unit_id": 1,
+                "application_id": 1,
+                "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "subject": "New Thread",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer or application owner to retrieve thread.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Thread][]
+
+### Update [PUT]
+Must be a reviewer to update a thread.
+
+Can only change the `subject`.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "subject": "Test"
+            }
+
++ Response 200 (application/json)
+
+    [Thread][]
+
+### Remove [DELETE]
+Must be a thread owner to delete a thread.
+
+*Note that this cannot remove emails that have been sent.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Threads - Reviewer [/reviewers/{id}/threads]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "unit_id": 1,
+                    "application_id": 1,
+                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "subject": "New Thread",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer or application owner to list threads.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Threads - Reviewer][]
+
+### Create [POST]
+Must be a reviewer to create a thread.
+
+Applicants cannot create new threads.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "subject": "New Thread",
+                "application_id": 1,
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Thread][]
+
+## Threads - Unit [/units/{id}/threads]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
+### List [GET]
+Must be a reviewer or application owner to list threads.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Threads - Reviewer][]
+
+## Threads - Application [/applications/{id}/threads]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
+### List [GET]
+Must be a reviewer or application owner to list threads.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Threads - Reviewer][]
+
+# Group Templates
+Templates are saved threads that can be reused for quick messaging. They are attached to a unit.
+
+Inside the subject and message lines are `{{ supplants }}` for merge tags.
+
+## Template [/templates/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Template ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "unit_id": 1,
+                "subject": "Subject",
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ],
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Template][]
+
+### Update [PUT]
+Must be a reviewer to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "subject": "Subject",
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Template][]
+
+### Remove [DELETE]
+Must be a reviewer to delete.
+
++ Response 204
+
+## Templates [/units/{id}/templates]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "unit_id": 1,
+                    "subject": "Subject",
+                    "message": "Lorem ipsum...",
+                    "attachments": [
+                        {
+                            "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                            "name": "mockup.png"
+                        }
+                    ],
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Templates][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "subject": "Subject",
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Template][]
+
+# Group Messages
+Messages are subunits within threads. They are the meat of a conversation.
+
+## Message [/messages/{id}]
+Must be a reviewer to update.
+
++ Model (application/json)
+
+    + Body
+
+            {
+                "id": 1,
+                "thread_id": 1,
+                "sender": {
+                    "id": 1,
+                    "name": "Johnny Rocket",
+                    "email": "johnny@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "admin"
+                        }
+                    ]
+                },
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
+### Retrieve [GET]
+Only a reviewer and relevant applicant can view message.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Message][]
+
+### Update [PUT]
+Must be the sender of the message to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Message][]
+
+### Remove [DELETE]
++ Response 204
+
+## Messages [/threads/{id}/messages]
+Must be an admin or reviewer to update.
+
++ Model (application/json)
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "thread_id": 1,
+                    "sender": {
+                        "id": 1,
+                        "name": "Johnny Rocket",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    },
+                    "message": "Lorem ipsum...",
+                    "attachments": [
+                        {
+                            "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                            "name": "mockup.png"
+                        }
+                    ]
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Messages][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "sender_id": 1,
+                "message": "Lorem ipsum...",
+                "attachments": [
+                    {
+                        "digest": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c",
+                        "name": "mockup.png"
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Message][]
+
+# Group Notes
+Reviewers can leave notes on an application.
+
+Markdown supported.
+
+## Note [/notes/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Note ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "reviewer_id": 1,
+                "application_id": 1,
+                "note": "Lorem ipsum...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Note][]
+
+### Update [PUT]
+Must be the note owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "note": "Lorem ipsum..."
+            }
+
++ Response 200 (application/json)
+
+    [Note][]
+
+### Remove [DELETE]
+Must be the note owner to delete.
+
++ Response 204
+
+## Notes - Reviewer [/reviewers/{id}/notes]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "reviewer_id": 1,
+                    "application_id": 1,
+                    "note": "Lorem ipsum...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Notes - Reviewer][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "application_id": 1,
+                "note": "Lorem ipsum...",
+            }
+
++ Response 200 (application/json)
+
+    [Note][]
+
+## Notes - Application [/applications/{id}/notes]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Notes - Reviewer][]
+
+# Group Pipelines
+Pipelines are a method of organization for units.
+
+## Pipeline [/pipelines/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "unit_id": 1,
+                "name": "Subject",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Pipeline][]
+
+### Update [PUT]
+Must be at least a full-access reviewer to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject"
+            }
+
++ Response 200 (application/json)
+
+    [Pipeline][]
+
+### Remove [DELETE]
+Must be at least a full-access reviewer to delete.
+
++ Response 204
+
+## Pipelines [/units/{id}/pipelines]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "unit_id": 1,
+                    "name": "Subject",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Pipelines][]
+
+### Create [POST]
+Must be at least a full-access reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject"
+            }
+
++ Response 200 (application/json)
+
+    [Pipeline][]
+
+# Group Stages
+Stages are a method of organization within pipelines. They are sequential.
+
+(e.g. New > Reviewed > Interviewed > Done)
+
+## Stage [/stages/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "pipeline_id": 1,
+                "name": "New",
+                "position": 1,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Stage][]
+
+### Update [PUT]
+Must be at least a full-access reviewer to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Interviewed",
+                "position": 1
+            }
+
++ Response 200 (application/json)
+
+    [Stage][]
+
+### Remove [DELETE]
+Must be at least a full-access reviewer to delete.
+
++ Response 204
+
+## Stages [/pipelines/{id}/stages]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "pipeline_id": 1,
+                    "name": "Subject",
+                    "position": 1,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Stages][]
+
+### Create [POST]
+Must be at least a full-access reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "position": 1
+            }
+
++ Response 200 (application/json)
+
+    [Stage][]
+
+# Group Labels
+Labels are a method of organization for a unit. They are like tags and are assigned to applications.
+
+## Label [/labels/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Label ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "New",
+                "color": "990000",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Label][]
+
+### Update [PUT]
+Must be at least a full-access reviewer to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Test",
+                "color": "990000"
+            }
+
++ Response 200 (application/json)
+
+    [Label][]
+
+### Remove [DELETE]
+Must be at least a full-access reviewer to delete.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Labels [/units/{id}/labels]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "name": "New",
+                    "color": "990000",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Labels][]
+
+### Create [POST]
+Must be at least a full-access reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "color": "990000"
+            }
+
++ Response 200 (application/json)
+
+    [Label][]
+
+# Group Segments
+Segments are saved application segments for reviewers based on filters selected.
+
+## Segment [/segments/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Segment ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "reviewer_id": 1,
+                "name": "Fresh",
+                "dsl": "Stage=1,2,3&Label=1,2",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be the owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Segment][]
+
+### Update [PUT]
+Must be the owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Test",
+                "dsl": "Stage=1,2,3"
+            }
+
++ Response 200 (application/json)
+
+    [Segment][]
+
+### Remove [DELETE]
+Must be the owner to delete.
+
++ Response 204
+
+## Segments [/reviewers/{id}/segments]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "reviewer_id": 1,
+                    "name": "Fresh",
+                    "dsl": "Stage=1,2,3&Label=1,2",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be the owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Segments][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "dsl": "Stage=1,2,3"
+            }
+
++ Response 200 (application/json)
+
+    [Segment][]
+
+# Group Applications
+Applications are what this tool is all about. Applications are what are submitted by applicants.
+
+Their data is made up of a list of `Field` objects.
+
+Activity time is determined by the following:
+
+- Submission
+- New Thread
+- New Message
+- Pipeline Change
+- Stage Change
+
+## Application [/applications/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "submitter": {
+                    "id": 1,
+                    "name": "John Smith",
+                    "email": "johnny@gmail.com",
+                    "is_verified": false,
+                    "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "admin"
+                        }
+                    ]
+                },
+                "spots": [
+                    {
+                        "id": 1,
+                        "name": "Cohort 4",
+                        "description", "Lorem ipsum ..."
+                    }
+                ],
+                "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "fields": [
+                    {
+                        "id": 1,
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    },
+                    {
+                        "id": 1,
+                        "definition": {
+                            "id": 1,
+                            "label": "Question Title",
+                            "type": "text"
+                        },
+                        "answer": "Answer..."
+                    }
+                ],
+                "submitted_from": {
+                    "lat": 30.456,
+                    "lng": -45.00
+                },
+                "submitted_at": "2012-03-22T16:56:48-05:00",
+                "last_activity_at": "2012-03-22T16:56:48-05:00",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer or the owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Application][]
+
+### Update [PUT]
+Must be the owner to update.
+
+Fields can be updated, added to, or removed. Must pass entire fields object.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "fields": [
+                    {
+                        "id": 1,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "id": 2,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    },
+                    {
+                        "definition_id": 1,
+                        "answer": "Answer..."
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Application][]
+
+### Remove [DELETE]
+Must be a full-access reviewer to delete an application.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+
++ Response 204
+
+## Applications - Unit [/units/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
+List of applications.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
+    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
+    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
+    + stage (optional, number, `1`) ... Filter by stage ID.
+    + label (optional, number, `1`) ... Filter by label ID.
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "submitter": {
+                        "id": 1,
+                        "name": "John Smith",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    },
+                    "spots": [
+                        {
+                            "id": 1,
+                            "name": "Cohort 4",
+                            "description", "Lorem ipsum ..."
+                        }
+                    ],
+                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "submitted_from": {
+                        "lat": 30.456,
+                        "lng": -45.00
+                    },
+                    "submitted_at": "2012-03-22T16:56:48-05:00",
+                    "last_activity_at": "2012-03-22T16:56:48-05:00",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications - Unit][]
+
+### Create [POST]
+Anyone can create an application.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "submitter": {
+                    "name": "John Smith",
+                    "email": "johnny@gmail.com"
+                },
+                "spots": [1],
+                "fields": [
+                    {
+                        "definition_id": 1,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    }
+                ],
+                "submitted_from": {
+                    "lat": 30.456,
+                    "lng": -45.00
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Application][]
+
+## Applications - Export [/units/{id}/applications/export{?offset}{&limit}{&pipeline}{&stage}{&label}]
+List of applications.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
+    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
+    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
+    + stage (optional, number, `1`) ... Filter by stage ID.
+    + label (optional, number, `1`) ... Filter by label ID.
+
+### Export [GET]
+Must be a reviewer to access.
+
+Returns a CSV containing the applications. Columns are the fields.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (text/csv)
+
+## Applications - Reviewers [/reviewers/{id}/applications]
+Applications assigned to the specify reviewer.
+
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
+### List [GET]
+Must be a reviewer of the unit to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications - Unit][]
+
+# Group Ratings
+Numeric rating for an application at a certain spot.
+
+Value can be between 1 and 5.
+
+Only 1 rating allowed per application per spot per reviewer.
+
+## Rating [/ratings/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Rating ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "application_id": 1,
+                "spot_id": 1,
+                "reviewer_id": 1,
+                "rating": 4,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Rating][]
+
+### Update [PUT]
+Must be the rating owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "rating": 4
+            }
+
++ Response 200 (application/json)
+
+    [Rating][]
+
+### Remove [DELETE]
+Must be the rating owner to delete.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Ratings [/applications/{id}/ratings]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "application_id": 1,
+                    "spot_id": 1,
+                    "reviewer_id": 1,
+                    "rating": 4,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Ratings][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "spot_id": 1,
+                "reviewer_id": 2,
+                "rating": 3
+            }
+
++ Response 200 (application/json)
+
+    [Rating][]
+
+# Group Fields
+Fields are the building blocks of applications.
+
+Fields may or may not be based on previous definitions. Previous definitions allow for a common app scenario.
+
+## Field [/fields/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Field ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "application_id": 1,
+                "label": "Question Title",
+                "answer": "Answer...",
+                "type": "text",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer or application owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Field][]
+
+### Update [PUT]
+Must be a reviewer or application owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "answer": "Answer..."
+            }
+
++ Response 200 (application/json)
+
+    [Field][]
+
+### Remove [DELETE]
+Must be a reviewer or application owner to update.
+
++ Response 204
+
+## Fields [/applications/{id}/fields]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "application_id": 1,
+                    "label": "Question Title",
+                    "answer": "Answer...",
+                    "type": "text",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer or application owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Fields][]
+
+### Create [POST]
+Must be a reviewer or application owner to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "answer": "Answer...",
+                "type": "text"
+            }
+
+            {
+                "definition_id": 1,
+                "answer": "Answer..."
+            }
+
++ Response 200 (application/json)
+
+    [Field][]
+
+# Group Definitions
+While `Field` objects are the backbone of applications, `Definition` objects are the backbone of `Field` objects.
+
+Through `Definition` objects, we can server standardized questions.
+
+Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). This stuff is stored as a helper object.
+
+*Write access is given only to Super Admins for now.*
+
+## Definition [/definitions/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Definition ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "text",
+                "helper": null,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
 
 ### Retrieve [GET]
 + Request (application/json)
 
-+ Response 200 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
-    + Body
++ Response 200 (application/json)
 
-            { "id": 1, "role": "member", "invitations": [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ], "segments": [ { "id": 1, "name": "Fresh", "dsl": "stages=1,2,3", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ] "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+    [Definition][]
 
 ### Update [PUT]
 + Request (application/json)
 
-    { "role": "admin" }
-
-+ Response 200 (application/json)
-
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
 
-            { "id": 1, "role": "admin", "invitations": [ { "id": 1, "email": "johnny.rocket@gmail.com", "status": "open", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ], "segments": [ { "id": 1, "name": "Fresh", "dsl": "stages=1,2,3", "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" } ] "account": { "id": 1, "name": "Johnny Rocket", "email": "johnny.rocket@gmail.com", "is_verified": true, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }, "created_at": "2012-03-22T16:56:48-05:00", "updated_at": "2012-03-22T16:56:48-05:00" }
+            {
+                "id": 1,
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "text",
+                "helper": null
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
 
 ### Remove [DELETE]
 + Request (application/json)
 
-+ Response 204 (application/json)
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Definitions [/definitions]
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "domain_id": 1, // Can be null if it belongs to no domain
+                    "label": "Question Title",
+                    "type": "text",
+                    "helper": null
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definitions][]
+
+### Create [POST]
++ Request (application/json)
 
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
+
+            {
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "select",
+                "helper": {
+                    "choices": ["Option 1", "Option 2"]
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+## Definitions [/domains/{id}/definitions]
+Lists definitions by domain.
+
++ Paramters
+
+    + id (required, number, `1`) ... Domain ID
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definitions][]
+
+# Group Spot Definitions
+`Definition` field objects that an applicant needs to answer for a spot.
+
+## Spot Definition [/spots/definitions/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Spot definition ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "definition_id": 1,
+                "spot_id": 1,
+                "position": 1,
+                "is_required": true,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "position": 2,
+                "is_required": true
+            }
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Spot Definitions [/spots/{id}/definitions]
++ Parameter
+
+    + id (required, number, `1`) ... Spot ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "definition_id": 1,
+                    "spot_id": 1,
+                    "position": 1,
+                    "is_required": true,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Spot Definitions][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+# Group Answers
+`Answer` objects are saved answers from an applicant.
+
+They are used for applicants to populate answers to questions already asked on Applyance.
+
+## Answer [/answers/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Answer ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "account_id": 1,
+                "definition_id": 1,
+                "answer": "Answer here...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "answer": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Answers [/accounts/{id}/answers]
++ Parameter
+
+    + id (required, number, `1`) ... Account ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "account_id": 1,
+                    "definition_id": 1,
+                    "answer": "Answer here...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Answers][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "answer": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+# Group Attachments
+Attachments are files uploaded to Applyance. These are used in `Message` resources.
+
+## Attachments [/attachments]
+Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` and `Content-Length` headers.
+
+Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Message`).
+
+### Create [POST]
++ Request
+
+    + Header
+
+            Content-Type: image/png
+            Content-Length: 32874
+
+    + Body
+
+            ...
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "token": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c"
+            }
