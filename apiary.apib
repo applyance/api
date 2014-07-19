@@ -298,7 +298,7 @@ A single Account object with all its details.
 ### Remove [DELETE]
 + Response 204 (application/json)
 
-## Password Reset [/accounts/{id}/reset-password]
+## Password Reset [/accounts/reset-password]
 Reset the account password. This creates a reset digest and emails the account the digest for changing the password.
 
 ### Reset [POST]
@@ -310,7 +310,7 @@ Reset the account password. This creates a reset digest and emails the account t
 
 + Response 201 (application/json)
 
-## Password Set [/accounts/{id}/set-password]
+## Password Set [/accounts/set-password]
 Sets the account password by supplying the reset digest and new password.
 
 ### Set [POST]
@@ -367,7 +367,7 @@ Change the account email by supplying the new email and current password. Immedi
 
     [Account][]
 
-## Email Verification [/accounts/{id}/verify-email]
+## Email Verification [/accounts/verify-email]
 Verifies the account email by supplying the verify digest that was sent to the user.
 
 ### Verify [POST]
