@@ -244,7 +244,7 @@ A single Account object with all its details.
                 "name": "Johnny Rocket",
                 "email": "johnny@gmail.com",
                 "is_verified": false,
-                "avatar_attachment": {
+                "avatar": {
                     "id": 1,
                     "name": "test.gif",
                     "content_type": "image/gif",
@@ -285,7 +285,7 @@ A single Account object with all its details.
 
             {
                 "name": "John Smith",
-                "avatar_attachment": {
+                "avatar": {
                     "name": "john.gif",
                     "token": "1029dlsakjf01923409dajksflasd"
                 }
@@ -643,7 +643,7 @@ Claims the invitation. This means that the admin received their email invitation
 
     [Admin Invite][]
 
-## Admin Invites [/admins/{id}/invites]
+## Admin Invites [/entities/{id}/admins/invites]
 + Parameters
 
     + id (required, number, `1`) ... Entity ID
