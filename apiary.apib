@@ -3087,9 +3087,9 @@ They are used for applicants to populate answers to questions already asked on A
 Attachments are files uploaded to Applyance. These are used in `Message` resources.
 
 ## Attachments [/attachments]
-Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` and `Content-Length` headers.
+Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` header.
 
-Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Message`).
+Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Template`, `Message`).
 
 ### Create [POST]
 + Request
@@ -3097,7 +3097,6 @@ Once the upload is successful, you'll get a 201 OK response, and we'll give you 
     + Header
 
             Content-Type: image/png
-            Content-Length: 32874
 
     + Body
 
