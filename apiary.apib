@@ -263,6 +263,9 @@ A single Account object with all its details.
 
             {
                 "name": "John Smith",
+                "password": "secret",
+                "email": "stjowa@gmail.com", // Password required if updating email
+                "new_password": "secret", // Password required if changing password
                 "avatar": {
                     "name": "john.gif",
                     "token": "1029dlsakjf01923409dajksflasd"
@@ -278,7 +281,7 @@ A single Account object with all its details.
 
 + Response 204 (application/json)
 
-## Password Reset [/accounts/reset-password]
+## Password Reset [/accounts/passwords/reset]
 Reset the account password. This creates a reset digest and emails the account the digest for changing the password.
 
 ### Reset [POST]
@@ -290,7 +293,7 @@ Reset the account password. This creates a reset digest and emails the account t
 
 + Response 201 (application/json)
 
-## Password Set [/accounts/set-password]
+## Password Set [/accounts/passwords/set]
 Sets the account password by supplying the reset digest and new password.
 
 ### Set [POST]
@@ -305,61 +308,17 @@ Sets the account password by supplying the reset digest and new password.
 
     [Account][]
 
-## Password Change [/accounts/{id}/change-password]
-Change the account password by supplying the reset digest, current password, and new password.
-
-### Change [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "password": "secret",
-                "new_password": "new_scret"
-            }
-
-+ Response 200 (application/json)
-
-    [Account][]
-
-## Email Change [/accounts/{id}/change-email]
-Change the account email by supplying the new email and current password. Immediately sets the account to not be verified and sends a verification digest to the account's email.
-
-### Change [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "email": "johnny.smith@gmail.com",
-                "password": "secret"
-            }
-
-+ Response 201 (application/json)
-
-    [Account][]
-
-## Email Verification [/accounts/verify-email]
-Verifies the account email by supplying the verify digest that was sent to the user.
+## Verification [/accounts/verify]
+Verifies the account by supplying the verify digest that was sent to the user by email.
 
 ### Verify [POST]
 + Request (application/json)
 
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
     + Body
 
-            { "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" }
+            {
+                "verify_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4="
+            }
 
 + Response 200 (application/json)
 
