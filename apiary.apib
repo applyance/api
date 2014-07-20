@@ -2,7 +2,7 @@ FORMAT: 1A
 HOST: https://applyance.com
 
 # Applyance
-Applyance is an application engine that brings delight to applications.
+Applyance is a platform bringing delight to applications.
 
 # Group Roles
 There are four roles within Applyance. Accounts must have one role and can have multiple roles.
@@ -163,9 +163,34 @@ For example, restaurants could be in a domain of *Retail*.
 Manage Accounts within the Applyance platform.
 
 ## Authentication [/accounts/auth]
-Authentication for accounts in Applyance. Note that this returns the api_key parameter. Use the api_key parameter for all future API requests for this account.
+Authentication endpoint for accounts in Applyance.
 
-### Login [POST]
+The `Authorization` header in the response will return the `api_key` for future API requests.
+
++ Model
+
+    + Header
+    
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+    
+            {
+                "id": 1,
+                "name": "John Smith",
+                "email": "johnny@gmail.com",
+                "is_verified": false,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "admin"
+                    }
+                ]
+            }
+
+### Authenticate [POST]
 + Request (application/json)
 
         {
@@ -173,74 +198,16 @@ Authentication for accounts in Applyance. Note that this returns the api_key par
             "password": "secret"
         }
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
-    + Body
-
-            {
-                "id": 1,
-                "name": "John Smith",
-                "email": "johnny@gmail.com",
-                "is_verified": false,
-                "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00",
-                "roles": [
-                    {
-                        "id": 1,
-                        "name": "admin"
-                    }
-                ]
-            }
-
-## Reviewer Registration [/reviewers/register]
-Reviewers are those on the Applyance platform managing applications. Currently, only reviewers are able to register on Applyance.
-
-### Register [POST]
-+ Request (application/json)
-
-        {
-            "account": {
-                "name": "Johnny Rocket",
-                "email": "johnny@gmail.com",
-                "password": "secret"
-            },
-            "entity": {
-                "name": "Frothy Monkey"
-            }
-        }
-
-+ Response 201 (application/json)
-
-        {
-            "account": {
-                "id": 1,
-                "name": "Johnny Rocket",
-                "email": "johnny@gmail.com",
-                "is_verified": false,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00",
-                "roles": [
-                    {
-                        "id": 1,
-                        "name": "admin"
-                    }
-                ]
-            },
-            "entity": {
-                "id": 1,
-                "name": "Frothy Monkey",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-        }
+    [Authentication][]
 
 ## Account [/accounts/{id}]
 A single Account object with all its details.
 
 + Parameters
 
-    + id (required, number, `1`) ... Numeric `id` of the Account to perform action with. Has example value.
+    + id (required, number, `1`) ... Account ID
 
 + Model
 
@@ -260,17 +227,19 @@ A single Account object with all its details.
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 },
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00",
                 "roles": [
                     {
                         "id": 1,
                         "name": "admin"
                     }
-                ]
+                ],
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
             }
 
 ### Retrieve [GET]
+*Must be account owner.*
+
 + Request (application/json)
 
     + Header
@@ -282,6 +251,8 @@ A single Account object with all its details.
     [Account][]
 
 ### Update [PUT]
+*Must be account owner.*
+
 + Request (application/json)
 
     + Header
@@ -303,6 +274,8 @@ A single Account object with all its details.
     [Account][]
 
 ### Remove [DELETE]
+*Must be account owner.*
+
 + Response 204 (application/json)
 
 ## Password Reset [/accounts/reset-password]
