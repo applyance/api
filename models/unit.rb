@@ -8,5 +8,21 @@ module Applyance
     one_to_many :pipelines, :class => :'Applyance::Pipeline'
     one_to_many :labels, :class => :'Applyance::Label'
     one_to_many :definitions, :class => :'Applyance::Definition'
+
+    def validate
+      super
+      validates_presence [:name]
+    end
+
+    def after_create
+      super
+
+      # Make sure entity admins are full-access reviewers for
+      # this new unit
+      self.entity.admins.each do |admin|
+        Reviewer.make_from_admin(self, admin)
+      end
+    end
+
   end
 end

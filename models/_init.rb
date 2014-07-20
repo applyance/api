@@ -16,6 +16,7 @@ module Applyance
 
         # Load plugins
         Sequel::Model.plugin(:timestamps)
+        Sequel::Model.plugin(:validation_helpers)
 
         # Require models, can't go at the top because it requires a
         # Sequel connection

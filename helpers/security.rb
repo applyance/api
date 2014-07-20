@@ -2,6 +2,14 @@ module Applyance
   module Helpers
     module Security
 
+      def current_account
+        return Applyance::Server._account if defined?(Applyance::Server._account)
+        nil unless request.env['HTTP_AUTHORIZATION']
+        api_key = request.env['HTTP_AUTHORIZATION'].split('auth=')[1]
+        Applyance::Server._account = Account.first(:api_key => api_key)
+        Applyance::Server._account
+      end
+      
       def ensure_xhr!
         error 401 unless request.xhr?
       end
@@ -18,11 +26,9 @@ module Applyance
       # e.g.
       # protected!(lambda { |account| account.pk == params[:id].to_i })
       #
-      def protected!(fn)
-        error 401 unless request.env['HTTP_AUTHORIZATION']
-        api_key = request.env['HTTP_AUTHORIZATION'].split('auth=')[1]
-        account = Account.first(:api_key => api_key)
-        error 401 unless fn.call(account)
+      def protected!(fn = nil)
+        account = current_account
+        error 401 unless account && (account.has_role?("chief") || (!fn.nil? && fn.call(account)))
         account
       end
 

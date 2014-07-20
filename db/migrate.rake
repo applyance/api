@@ -39,6 +39,15 @@ namespace :db do
     end
   end
 
+  desc "Empty the database (truncate all tables)"
+  task :empty, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+    Applyance::Server.db.tables.each do |table|
+      Applyance::Server.db.run("TRUNCATE TABLE #{table} CASCADE")
+    end
+  end
+
   desc "Reset the database"
   task :reset, [:env] => [:nuke, :migrate]
 end

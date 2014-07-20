@@ -16,10 +16,23 @@ namespace :db do
     env = args[:env] || "development"
     Rake::Task['environment'].invoke(env)
 
+    Applyance::Server.db[:roles].insert(:name => "chief")
     Applyance::Server.db[:roles].insert(:name => "applicant")
     Applyance::Server.db[:roles].insert(:name => "admin")
     Applyance::Server.db[:roles].insert(:name => "reviewer")
 
     Applyance::Server.db[:domains].insert(:name => "retail")
   end
+
+  desc "Empty the database (truncate all tables)"
+  task :empty, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+    Applyance::Server.db.tables.each do |table|
+      Applyance::Server.db.run("TRUNCATE TABLE #{table} CASCADE")
+    end
+  end
+
+  desc "Reseed the database"
+  task :reseed, [:env] => [:empty, :seed]
 end

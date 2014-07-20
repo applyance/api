@@ -3,30 +3,57 @@ module Applyance
     module Entities
       def self.registered(app)
 
-        # Show an entity specified by Id
+        # General protection function for entity admins
+        to_admins = lambda do |entity|
+          lambda { |account| entity.admins.collect(&:account_id).include?(account.id) }
+        end
+
+        # List entities
+        # Only Chiefs can do this B)
+        app.get '/entities', :provides => [:json] do
+          protected!
+          @entities = Entity.all
+          rabl :'entities/index'
+        end
+
+        # Create a new entity
+        # Only Chiefs can do this B)
+        app.post '/entities', :provides => [:json] do
+          protected!
+          @entity = Entity.new
+          @entity.set_fields(params, [:name, :domain_id], :missing => :skip)
+          @entity.save
+          status 201
+          rabl :'entities/show'
+        end
+
+        # Get entity by Id
         app.get '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          @account = protected!(lambda { |account| @entity.members.collect(&:member_id).include?(account.id) })
           rabl :'entities/show'
         end
 
-        # Update an entity specified by Id
+        # Update a entity by Id
+        # Must be an admin
         app.put '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          @account = protected!(lambda { |account| @entity.members.collect(&:member_id).include?(account.id) })
-          @entity.update(params.slice(:name))
+          @account = protected! to_admins(@entity)
+
+          allowed_fields = @account.has_role?("chief") ? [:name, :domain_id] : [:name]
+
+          @entity.update_fields(params, allowed_fields, :missing => :skip)
           rabl :'entities/show'
         end
 
-        # Delete the entity if an admin of the entity
+        # Delete a entity by Id
+        # Must be an admin
         app.delete '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          @account = protected!(lambda do |account|
-            member = @entity.members_dataset.first(:member_id => account.id)
-            !member.nil? and member.role == "admin"
-          end)
+          protected! to_admins(@entity)
 
-          @entity.members_dataset.destroy
+          @entity.admins_dataset.destroy
+          @entity.admin_invites_dataset.destroy
+          @entity.units_dataset.destroy
           @entity.destroy
 
           204

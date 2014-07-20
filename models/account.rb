@@ -1,23 +1,42 @@
 module Applyance
   class Account < Sequel::Model
+
+    include Applyance::Lib::Attachments
+    include Applyance::Lib::Tokens
+
     many_to_many :roles, :class => :'Applyance::Role'
     many_to_one :avatar, :class => :'Applyance::Attachment'
     one_to_many :answers, :class => :'Applyance::Answer'
 
+    def validate
+      super
+      validates_presence [:name, :email]
+      validates_unique :email
+    end
+
+    # Check if this account has the named role
+    def has_role?(name)
+      self.roles_dataset.where(:name => name).count > 0
+    end
+
     # Register the account with the specified role
-    def self.register(role, params)
-      account = self.create(
-        :name  => params[:account][:name],
-        :email => params[:account][:email],
-        :password_hash => BCrypt::Password.create(params[:account][:password]),
-        :api_key => self.generate_token(:api_key),
-        :verify_digest => self.generate_token(:verify_digest)
-      )
+    def self.make(role, params)
+      account = self.new
+      account.set_fields(params, [:name, :email], :missing => :skip)
+      account.set_token(:api_key)
+      account.set_token(:verify_digest)
+      account.set(:password_hash => BCrypt::Password.create(params[:password]))
+      account.save
+
       account.add_role(Role.first(:name => role))
+      account
+    end
+
+    # Handle registration
+    def self.register(role, params)
+      self.make(role, params[:account])
 
       # TODO: Send registration email
-
-      account
     end
 
     # Reset password request from the user
@@ -29,7 +48,7 @@ module Applyance
 
     # Set password for the user
     # This is after a reset password request
-    def set_password
+    def set_password(params)
       # Make sure the new password actually was entered
       if params[:new_password].length == 0
         raise BadRequestError.new({ :detail => "You must enter a new password." })
@@ -83,7 +102,7 @@ module Applyance
     end
 
     # Authorize via email and password
-    def self.authorize(params)
+    def self.authenticate(params)
       account = self.first(
         :email => params[:email],
         :password_hash => BCrypt::Password.new(params[:password]))
@@ -96,14 +115,5 @@ module Applyance
       account
     end
 
-    # Generate a token and make sure it is unique based on the key specified
-    def self.generate_token(key)
-      token = ""
-      loop do
-        token = SecureRandom.urlsafe_base64(nil, false)
-        break token unless self.where(key => token).count > 0
-      end
-      token
-    end
   end
 end

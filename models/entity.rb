@@ -7,11 +7,16 @@ module Applyance
 
     # Register a new entity with the specified account
     def self.register(account, params)
-      entity = self.create(:name => params[:entity][:name])
-      Applyance::Admin.create(
+      entity = self.new
+      entity.update_fields(params[:entity], [:name], :missing => :skip)
+      entity.save
+
+      # Create admin
+      Admin.create(
         :entity_id => entity.id,
         :account_id => account.id,
       )
+
       entity
     end
   end

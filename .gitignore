@@ -25,6 +25,7 @@ build/
 /lib/bundler/man/
 
 .rvmrc
+.DS_Store
 
 ## Config files for server
 config.yml

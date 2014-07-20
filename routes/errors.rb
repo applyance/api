@@ -11,6 +11,14 @@ module Applyance
           rabl :'error', :content_type => :json
         end
 
+        app.error Sequel::ValidationFailed do
+          @status = 400
+          @title = "Bad Request"
+          @detail = env['sinatra.error'].message
+
+          rabl :'error', :content_type => :json
+        end
+
         app.error BadRequestError do
           @status = 400
           @title = "Bad Request"

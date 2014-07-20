@@ -3,8 +3,5 @@ development:
   database_host: localhost
   database_user: applyance
   database_password: <secret>
-test:
-  database_name: applyancetest
-  database_host: localhost
-  database_user: applyance
-  database_password: <secret>
+  aws_s3_access_key_id: <secret>
+  aws_s3_secret_access_key: <secret>

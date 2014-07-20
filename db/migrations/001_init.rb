@@ -29,7 +29,7 @@ Sequel.migration do
     create_table(:attachments) do
       primary_key :id
 
-      String :attachment_token, :null => false
+      String :token, :null => false
       String :name, :null => false
       String :url, :null => false
       String :content_type, :null => false
@@ -43,7 +43,7 @@ Sequel.migration do
     create_table(:domains) do
       primary_key :id
 
-      String :name, :null => false
+      String :name, :null => false, :unique => true
 
       DateTime :created_at
       DateTime :updated_at
@@ -62,7 +62,7 @@ Sequel.migration do
       String :name, :null => false
       String :email, :null => false, :index => { :unique => true }
       String :password_hash, :null => false
-      String :api_key, :null => false, :unique => true
+      String :api_key, :null => false, :index => { :unique => true }
       TrueClass :is_verified, :default => false
 
       String :verify_digest, :unique => true
@@ -100,6 +100,8 @@ Sequel.migration do
 
       DateTime :created_at
       DateTime :updated_at
+
+      index [:entity_id, :account_id], :unique => true
     end
 
     # Create admin invites
@@ -108,7 +110,7 @@ Sequel.migration do
 
       foreign_key :entity_id, :entities, :on_delete => :cascade
 
-      String :email, :null => false
+      String :email, :null => false, :index => { :unique => true }
       String :claim_digest, :null => false, :index => { :unique => true }
       String :status, :null => false, :default => "open"
 
@@ -139,6 +141,8 @@ Sequel.migration do
 
       DateTime :created_at
       DateTime :updated_at
+
+      index [:unit_id, :account_id], :unique => true
     end
 
     # Create reviewer invites

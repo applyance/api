@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'sinatra/config_file'
 require 'sequel'
 
+require 'active_support/inflector'
 require 'bcrypt'
 require 'rabl'
 require 'sidekiq'
@@ -9,11 +10,10 @@ require 'sidekiq'
 require 'mandrill'
 require 'aws-sdk'
 
-require_relative 'helpers/init'
-require_relative 'models/init'
-require_relative 'routes/init'
-
-require_relative 'lib/errors'
+require_relative 'lib/_init'
+require_relative 'helpers/_init'
+require_relative 'models/_init'
+require_relative 'routes/_init'
 
 module Applyance
   class Server < Sinatra::Base
@@ -29,6 +29,12 @@ module Applyance
     configure :development do
       set :show_exceptions, :after_handler
     end
+
+    # S3
+    S3 = AWS::S3.new(
+      :access_key_id => Applyance::Server.settings.aws_s3_access_key_id,
+      :secret_access_key => Applyance::Server.settings.aws_s3_secret_access_key
+    )
 
     # Register RABL for easy APIs
     Rabl.register!
