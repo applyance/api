@@ -9,7 +9,9 @@ Applyance is an application engine that brings delight to applications.
 "Never answer the same question twice."
 
 # Group Domains
-Domains are how entities and field definitions are categorized within the Applyance system.
+Domains are how entities and definitions are categorized within the Applyance system.
+
+For example, restaurants could be in a domain of "Retail".
 
 ## Domain [/domains/{id}]
 + Parameters
@@ -22,21 +24,19 @@ Domains are how entities and field definitions are categorized within the Applya
 
             {
                 "id": 1,
-                "name": "Restaurant"
+                "name": "Restaurant",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
             }
 
 ### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
 + Response 200 (application/json)
 
     [Domain][]
 
 ### Update [PUT]
+*Only chiefs can update a domain.*
+
 + Request (application/json)
 
     + Header
@@ -46,7 +46,6 @@ Domains are how entities and field definitions are categorized within the Applya
     + Body
 
             {
-                "id": 1,
                 "name": "Restaurant"
             }
 
@@ -55,6 +54,8 @@ Domains are how entities and field definitions are categorized within the Applya
     [Domain][]
 
 ### Remove [DELETE]
+*Only chiefs can remove domains.*
+
 + Request (application/json)
 
     + Header
@@ -71,22 +72,20 @@ Domains are how entities and field definitions are categorized within the Applya
             [
                 {
                     "id": 1,
-                    "name": "Restaurants"
+                    "name": "Restaurants",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
 ### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
 + Response 200 (application/json)
 
     [Domains][]
 
 ### Create [POST]
+*Only chiefs can create domains.*
+
 + Request (application/json)
 
     + Header
@@ -99,7 +98,7 @@ Domains are how entities and field definitions are categorized within the Applya
                 "name": "Restaurants"
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
     [Domain][]
 
