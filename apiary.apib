@@ -1,12 +1,8 @@
 FORMAT: 1A
 HOST: https://applyance.com
 
-# Applyance API
-Applyance API exposes all functionality to the Applyance platform.
-
+# Applyance
 Applyance is an application engine that brings delight to applications.
-
-"Never answer the same question twice."
 
 # Group Roles
 There are four roles within Applyance. Accounts must have one role and can have multiple roles.
@@ -395,6 +391,33 @@ Verifies the account email by supplying the verify digest that was sent to the u
 + Response 200 (application/json)
 
     [Account][]
+
+# Group Attachments
+`Attachment` objects are files uploaded to Applyance. `Attachment` objects are used in several resources, such as `Message`, `Template`, and `Answer`.
+
+## Attachments [/attachments]
+Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` header.
+
+Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach later to the specified resource.
+
+### Create [POST]
++ Request
+
+    + Header
+
+            Content-Type: image/png
+
+    + Body
+
+            ...
+
++ Response 201 (application/json)
+
+    + Body
+
+            {
+                "token": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c"
+            }
 
 # Group Entities
 Entities within Applyance represent the institutions that are managing applications (schools, small businesses, etc).
@@ -3095,30 +3118,3 @@ They are used for applicants to populate answers to questions already asked on A
 + Response 200 (application/json)
 
     [Answer][]
-
-# Group Attachments
-Attachments are files uploaded to Applyance. These are used in `Message` resources.
-
-## Attachments [/attachments]
-Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` header.
-
-Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Template`, `Message`).
-
-### Create [POST]
-+ Request
-
-    + Header
-
-            Content-Type: image/png
-
-    + Body
-
-            ...
-
-+ Response 201 (application/json)
-
-    + Body
-
-            {
-                "token": "4f71ea23-134660425d1818169ecfdbaa43cfc07f4e33ef4c"
-            }
