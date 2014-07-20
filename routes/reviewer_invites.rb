@@ -4,7 +4,7 @@ module Applyance
       def self.registered(app)
 
         # Protection to admins or reviewers
-        to_full_reviewers = lambda do |unit|
+        to_full_access_reviewers = lambda do |unit|
           lambda do |account|
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
@@ -13,7 +13,7 @@ module Applyance
         # List reviewer invites
         app.get '/units/:id/reviewers/invites', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_reviewers(@unit)
+          protected! to_full_access_reviewers(@unit)
 
           @reviewer_invites = @unit.reviewer_invites
           rabl :'reviewer_invites/index'
@@ -22,7 +22,7 @@ module Applyance
         # Create a new reviewer invite
         app.post '/units/:id/reviewers/invites', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_reviewers(@unit)
+          protected! to_full_access_reviewers(@unit)
 
           @reviewer_invite = ReviewerInvite.make(@unit, params)
 
@@ -33,7 +33,7 @@ module Applyance
         # Get reviewer invite by Id
         app.get '/reviewers/invites/:id', :provides => [:json] do
           @reviewer_invite = ReviewerInvite.first(:id => params[:id])
-          protected! to_full_reviewers(@reviewer_invite.unit)
+          protected! to_full_access_reviewers(@reviewer_invite.unit)
           rabl :'reviewer_invites/show'
         end
 

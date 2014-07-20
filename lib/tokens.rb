@@ -23,6 +23,10 @@ module Applyance
         self.save
       end
 
+      def friendly_token(length = 8)
+        Array.new(length){[*'0'..'9', *'a'..'z', *'A'..'Z'].sample}.join
+      end
+
     end
   end
 end

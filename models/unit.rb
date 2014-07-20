@@ -7,7 +7,8 @@ module Applyance
     one_to_many :templates, :class => :'Applyance::Template'
     one_to_many :pipelines, :class => :'Applyance::Pipeline'
     one_to_many :labels, :class => :'Applyance::Label'
-    one_to_many :definitions, :class => :'Applyance::Definition'
+    many_to_many :definitions, :class => :'Applyance::Definition'
+    many_to_many :blueprints, :class => :'Applyance::Blueprint'
 
     def validate
       super

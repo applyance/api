@@ -32,8 +32,21 @@ module Applyance
       account
     end
 
+    # Convenience method for making if does not exist
+    def self.first_or_make(role, params)
+      account = self.first(:email => params[:email])
+      if account
+        account.add_role(Role.first(:name => role)) unless account.has_role?(role)
+        return account
+      end
+      self.make(role, params)
+    end
+
     # Handle registration
     def self.register(role, params)
+      if params[:password].empty?
+        raise BadRequestError({ :detail => "Password is required." })
+      end
       self.make(role, params[:account])
 
       # TODO: Send registration email

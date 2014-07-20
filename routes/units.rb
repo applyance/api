@@ -9,9 +9,8 @@ module Applyance
         end
 
         # Protection to admins or reviewers
-        to_admins_or_reviewers = lambda do |unit|
+        to_full_access_reviewers = lambda do |unit|
           lambda do |account|
-            return true if unit.entity.admins.collect(&:account_id).include?(account.id)
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
@@ -51,7 +50,7 @@ module Applyance
         # Must be an admin
         app.put '/units/:id', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          @account = protected! to_admins_or_reviewers(@unit)
+          @account = protected! to_full_access_reviewers(@unit)
 
           @unit.update_fields(params, [:name], :missing => :skip)
           rabl :'units/show'
@@ -61,7 +60,7 @@ module Applyance
         # Must be an admin
         app.delete '/units/:id', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_admins_or_reviewers(@unit)
+          protected! to_full_access_reviewers(@unit)
 
           @unit.reviewers_dataset.destroy
           @unit.reviewer_invites_dataset.destroy
@@ -69,7 +68,8 @@ module Applyance
           @unit.templates_dataset.destroy
           @unit.pipelines_dataset.destroy
           @unit.labels_dataset.destroy
-          @unit.definitions_dataset.destroy
+          @unit.remove_all_definitions
+          @unit.remove_all_blueprints
           @unit.destroy
 
           204

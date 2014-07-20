@@ -9,6 +9,11 @@ require_relative 'admin_invites'
 require_relative 'units'
 require_relative 'reviewers'
 require_relative 'reviewer_invites'
+require_relative 'spots'
+require_relative 'definitions'
+require_relative 'blueprints'
+require_relative 'answers'
+require_relative 'fields'
 
 module Applyance
   module Routing
@@ -25,6 +30,11 @@ module Applyance
         app.register Applyance::Routing::Units
         app.register Applyance::Routing::Reviewers
         app.register Applyance::Routing::ReviewerInvites
+        app.register Applyance::Routing::Spots
+        app.register Applyance::Routing::Definitions
+        app.register Applyance::Routing::Blueprints
+        app.register Applyance::Routing::Answers
+        app.register Applyance::Routing::Fields
       end
     end
   end

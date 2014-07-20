@@ -36,7 +36,10 @@ module Applyance
         # Delete a domain by Id
         app.delete '/domains/:id', :provides => [:json] do
           protected!
-          Domain.first(:id => params[:id]).destroy
+          @domain = Domain.first(:id => params[:id])
+
+          @domain.remove_all_definitions
+          @domain.destroy
           204
         end
 
