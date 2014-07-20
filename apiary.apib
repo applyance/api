@@ -244,7 +244,7 @@ A single Account object with all its details.
                 "name": "Johnny Rocket",
                 "email": "johnny@gmail.com",
                 "is_verified": false,
-                "avatar_attachment": {
+                "avatar": {
                     "id": 1,
                     "name": "test.gif",
                     "content_type": "image/gif",
@@ -285,7 +285,7 @@ A single Account object with all its details.
 
             {
                 "name": "John Smith",
-                "avatar_attachment": {
+                "avatar": {
                     "name": "john.gif",
                     "token": "1029dlsakjf01923409dajksflasd"
                 }
@@ -298,7 +298,7 @@ A single Account object with all its details.
 ### Remove [DELETE]
 + Response 204 (application/json)
 
-## Password Reset [/accounts/{id}/reset-password]
+## Password Reset [/accounts/reset-password]
 Reset the account password. This creates a reset digest and emails the account the digest for changing the password.
 
 ### Reset [POST]
@@ -310,7 +310,7 @@ Reset the account password. This creates a reset digest and emails the account t
 
 + Response 201 (application/json)
 
-## Password Set [/accounts/{id}/set-password]
+## Password Set [/accounts/set-password]
 Sets the account password by supplying the reset digest and new password.
 
 ### Set [POST]
@@ -367,7 +367,7 @@ Change the account email by supplying the new email and current password. Immedi
 
     [Account][]
 
-## Email Verification [/accounts/{id}/verify-email]
+## Email Verification [/accounts/verify-email]
 Verifies the account email by supplying the verify digest that was sent to the user.
 
 ### Verify [POST]
@@ -643,7 +643,7 @@ Claims the invitation. This means that the admin received their email invitation
 
     [Admin Invite][]
 
-## Admin Invites [/admins/{id}/invites]
+## Admin Invites [/entities/{id}/admins/invites]
 + Parameters
 
     + id (required, number, `1`) ... Entity ID
@@ -3087,9 +3087,9 @@ They are used for applicants to populate answers to questions already asked on A
 Attachments are files uploaded to Applyance. These are used in `Message` resources.
 
 ## Attachments [/attachments]
-Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` and `Content-Length` headers.
+Uploads a file. The request body should be the binary data of the attachment. Make sure to set the `Content-Type` header.
 
-Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Message`).
+Once the upload is successful, you'll get a 201 OK response, and we'll give you a token back that you'll need to save locally to attach the file later (e.g. `Template`, `Message`).
 
 ### Create [POST]
 + Request
@@ -3097,7 +3097,6 @@ Once the upload is successful, you'll get a 201 OK response, and we'll give you 
     + Header
 
             Content-Type: image/png
-            Content-Length: 32874
 
     + Body
 
