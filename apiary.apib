@@ -8,6 +8,69 @@ Applyance is an application engine that brings delight to applications.
 
 "Never answer the same question twice."
 
+# Group Roles
+There are four roles within Applyance. Accounts must have one role and can have multiple roles.
+
+- Chief
+
+Super administrators within Applyance.
+
+Can manage *roles*, *domains* and *definitions*.
+
+Can oversee *entities*.
+
+- Applicant
+
+Accounts who submit an *application*.
+
+- Admin
+
+Accounts who manage *entities*.
+
+- Reviewer
+
+Accounts who manage *units* and review *applications*.
+
+*All administrators will automaticaly be reviewers of their subunits.*
+
+`Role` objects are read-only access.
+
+## Role [/roles/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Role ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "applicant"
+            }
+
+### Retrieve a Role [GET]
++ Response 200 (application/json)
+
+    [Role][]
+
+## Roles [/roles]
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "name": "applicant"
+                }
+            ]
+
+### List [GET]
++ Response 200 (application/json)
+
+    [Roles][]
+
 # Group Domains
 Domains are how entities and definitions are categorized within the Applyance system.
 
@@ -101,55 +164,6 @@ For example, restaurants could be in a domain of "Retail".
 + Response 201 (application/json)
 
     [Domain][]
-
-# Group Roles
-There are three roles within Applyance:
-
-- Applicant
-- Admin
-- Reviewer
-
-**Applicants** are those who submit applications.
-
-**Admins** are those who manage entities.
-
-**Reviewers** are those who review applications within entity units.
-
-Accounts can have one or all roles associated to them.
-
-As a central piece of the Applyance platform, roles only have read-only access.
-
-## Roles Collection [/roles]
-### Retrieve all Roles [GET]
-+ Response 200 (application/json)
-
-        [
-            {
-                "id": 1,
-                "name": "applicant"
-            },
-            {
-                "id": 2,
-                "name": "admin"
-            },
-            {
-                "id": 3,
-                "name": "reviewer"
-            }
-        ]
-
-## Role [/roles/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Numeric `id` of the Role to perform action with. Has example value.
-
-### Retrieve a Role [GET]
-+ Response 200 (application/json)
-
-        {
-            "id": 2,
-            "name": "applicant"
-        }
 
 # Group Accounts
 Manage Accounts within the Applyance platform.
