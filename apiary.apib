@@ -11,7 +11,9 @@ Applyance is an application engine that brings delight to applications.
 # Group Roles
 There are four roles within Applyance. Accounts must have one role and can have multiple roles.
 
-- Chief
+`Role` objects are read-only access.
+
+**Chief**
 
 Super administrators within Applyance.
 
@@ -19,21 +21,19 @@ Can manage *roles*, *domains* and *definitions*.
 
 Can oversee *entities*.
 
-- Applicant
+**Applicant**
 
 Accounts who submit an *application*.
 
-- Admin
+**Admin**
 
 Accounts who manage *entities*.
 
-- Reviewer
+**Reviewer**
 
 Accounts who manage *units* and review *applications*.
 
-*All administrators will automaticaly be reviewers of their subunits.*
-
-`Role` objects are read-only access.
+All *admins* will automaticaly be *reviewers* of their sub*units*.
 
 ## Role [/roles/{id}]
 + Parameters
