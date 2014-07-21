@@ -931,8 +931,8 @@ They can have one of three access levels:
 
     [Reviewers - Unit][]
 
-## Reviewer Invite [/reviewers/invites/{id}]
-Invite a reviewer to a unit. This can be done by admins or reviewers with full access.
+# Group Reviewer Invites
+Invite a reviewer to a unit. Reviewer invites can be sent by other `full` reviewers in the unit.
 
 Possible `status` values:
 
@@ -944,9 +944,10 @@ Possible `access_level` values:
 - `full` - Has not yet been claimed.
 - `limited` - Has been claimed.
 
+## Reviewer Invite [/reviewers/invites/{id}]
 + Parameters
 
-    + id (required, number, `1`)
+    + id (required, number, `1`) ... Reviewer Invite ID
 
 + Model (application/json)
 
@@ -957,12 +958,18 @@ Possible `access_level` values:
                 "email": "johnny@gmail.com",
                 "access_level": "full",
                 "status": "open",
+                "unit": {
+                    "id": 1,
+                    "name": "Unit name",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
 
 ### Get Invite [GET]
-Must be an admin or full-access reviewer to retrieve an invitation.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -975,7 +982,7 @@ Must be an admin or full-access reviewer to retrieve an invitation.
     [Reviewer Invite][]
 
 ### Claim Invite [PUT]
-Claims the invitation. This means that the reviewer received their email invitation and clicked the link with the claim digest to claim it.
+Claims the invitation by sending the `claim_digest` that was received in the invite email.
 
 + Request (application/json)
 
@@ -991,7 +998,7 @@ Claims the invitation. This means that the reviewer received their email invitat
 
     [Reviewer Invite][]
 
-## Reviewer Invites [/units/{id}/invites]
+## Reviewer Invites [/units/{id}/reviewers/invites]
 + Parameters
 
     + id (required, number, `1`) ... Unit ID
@@ -1012,7 +1019,7 @@ Claims the invitation. This means that the reviewer received their email invitat
             ]
 
 ### Create Invite [POST]
-Must be an admin or full-access reviewer to create this invite.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -1032,7 +1039,7 @@ Must be an admin or full-access reviewer to create this invite.
     [Reviewer Invite][]
 
 ### List Invites [GET]
-Must be an admin or reviewer to list invites for a unit.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
