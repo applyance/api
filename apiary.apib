@@ -367,7 +367,7 @@ A single Entity object with all its details. Note that entities are created when
 
             {
                 "id": 1,
-                "domain_id": 1,
+                "domain_id": 1, // Optional
                 "name": "Frothy Monkey",
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
@@ -381,7 +381,7 @@ A single Entity object with all its details. Note that entities are created when
     [Entity][]
 
 ### Update [PUT]
-Must be an entity admin to update an entity.
+*Must be an admin.*
 
 + Request (application/json)
 
@@ -393,7 +393,7 @@ Must be an entity admin to update an entity.
 
             {
                 "name": "The Frothy Monkey",
-                "domain_id": 1 // Requires Super Admin role
+                "domain_id": 1
             }
 
 + Response 200 (application/json)
@@ -401,7 +401,7 @@ Must be an entity admin to update an entity.
     [Entity][]
 
 ### Remove [DELETE]
-Requires an entity admin to delete their entity.
+*Must be an admin.*
 
 + Request (application/json)
 
@@ -431,6 +431,8 @@ Requires Super Admin role to access.
             ]
 
 ### List [GET]
+*Must be a chief.*
+
 + Request (application/json)
 
     + Header
@@ -441,10 +443,26 @@ Requires Super Admin role to access.
 
     [Entities][]
 
-## Entities - Domain [/domains/{id}/entities]
-List of entities by domain.
+### Create [POST]
++ Request (application/json)
 
-Requires Super Admin role to access.
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+    
+    + Body
+            
+            {
+                "name": "Frothy Monkey",
+                "domain_id": 1 // Optional
+            }
+
++ Response 200
+
+    [Entity][]
+
+## Entities - Domain [/domains/{id}/entities]
+*Must be a chief.*
 
 + Parameters
 
