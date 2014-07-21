@@ -1169,6 +1169,898 @@ Spots can have the following `status`:
 
     [Spot][]
 
+
+# Group Applications
+Applications are what this tool is all about. Applications are what are submitted by applicants.
+
+Their data is made up of a list of `Field` objects.
+
+Activity time is determined by the following:
+
+- Submission
+- New Thread
+- New Message
+- Pipeline Change
+- Stage Change
+
+## Application [/applications/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "submitter": {
+                    "id": 1,
+                    "name": "John Smith",
+                    "email": "johnny@gmail.com",
+                    "is_verified": false,
+                    "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "admin"
+                        }
+                    ]
+                },
+                "spots": [
+                    {
+                        "id": 1,
+                        "name": "Cohort 4",
+                        "description", "Lorem ipsum ..."
+                    }
+                ],
+                "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "fields": [
+                    {
+                        "id": 1,
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    },
+                    {
+                        "id": 1,
+                        "definition": {
+                            "id": 1,
+                            "label": "Question Title",
+                            "type": "text"
+                        },
+                        "answer": "Answer..."
+                    }
+                ],
+                "submitted_from": {
+                    "lat": 30.456,
+                    "lng": -45.00
+                },
+                "submitted_at": "2012-03-22T16:56:48-05:00",
+                "last_activity_at": "2012-03-22T16:56:48-05:00",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer or the owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Application][]
+
+### Update [PUT]
+Must be the owner to update.
+
+Fields can be updated, added to, or removed. Must pass entire fields object.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "fields": [
+                    {
+                        "id": 1,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "id": 2,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    },
+                    {
+                        "definition_id": 1,
+                        "answer": "Answer..."
+                    }
+                ]
+            }
+
++ Response 200 (application/json)
+
+    [Application][]
+
+### Remove [DELETE]
+Must be a full-access reviewer to delete an application.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+
++ Response 204
+
+## Applications - Unit [/units/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
+List of applications.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
+    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
+    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
+    + stage (optional, number, `1`) ... Filter by stage ID.
+    + label (optional, number, `1`) ... Filter by label ID.
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "submitter": {
+                        "id": 1,
+                        "name": "John Smith",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    },
+                    "spots": [
+                        {
+                            "id": 1,
+                            "name": "Cohort 4",
+                            "description", "Lorem ipsum ..."
+                        }
+                    ],
+                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "submitted_from": {
+                        "lat": 30.456,
+                        "lng": -45.00
+                    },
+                    "submitted_at": "2012-03-22T16:56:48-05:00",
+                    "last_activity_at": "2012-03-22T16:56:48-05:00",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications - Unit][]
+
+### Create [POST]
+Anyone can create an application.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "submitter": {
+                    "name": "John Smith",
+                    "email": "johnny@gmail.com"
+                },
+                "spots": [1],
+                "fields": [
+                    {
+                        "definition_id": 1,
+                        "answer": "Answer..."
+                    },
+                    {
+                        "label": "Question Title",
+                        "answer": "Answer...",
+                        "type": "text"
+                    }
+                ],
+                "submitted_from": {
+                    "lat": 30.456,
+                    "lng": -45.00
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Application][]
+
+## Applications - Export [/units/{id}/applications/export{?offset}{&limit}{&pipeline}{&stage}{&label}]
+List of applications.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
+    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
+    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
+    + stage (optional, number, `1`) ... Filter by stage ID.
+    + label (optional, number, `1`) ... Filter by label ID.
+
+### Export [GET]
+Must be a reviewer to access.
+
+Returns a CSV containing the applications. Columns are the fields.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (text/csv)
+
+## Applications - Reviewers [/reviewers/{id}/applications]
+Applications assigned to the specify reviewer.
+
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
+### List [GET]
+Must be a reviewer of the unit to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications - Unit][]
+
+# Group Fields
+Fields are the building blocks of applications.
+
+Fields may or may not be based on previous definitions. Previous definitions allow for a common app scenario.
+
+## Field [/fields/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Field ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "application_id": 1,
+                "label": "Question Title",
+                "answer": "Answer...",
+                "type": "text",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer or application owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Field][]
+
+### Update [PUT]
+Must be a reviewer or application owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "answer": "Answer..."
+            }
+
++ Response 200 (application/json)
+
+    [Field][]
+
+### Remove [DELETE]
+Must be a reviewer or application owner to update.
+
++ Response 204
+
+## Fields [/applications/{id}/fields]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "application_id": 1,
+                    "label": "Question Title",
+                    "answer": "Answer...",
+                    "type": "text",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer or application owner to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Fields][]
+
+### Create [POST]
+Must be a reviewer or application owner to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "answer": "Answer...",
+                "type": "text"
+            }
+
+            {
+                "definition_id": 1,
+                "answer": "Answer..."
+            }
+
++ Response 200 (application/json)
+
+    [Field][]
+
+# Group Definitions
+While `Field` objects are the backbone of applications, `Definition` objects are the backbone of `Field` objects.
+
+Through `Definition` objects, we can server standardized questions.
+
+Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). This stuff is stored as a helper object.
+
+*Write access is given only to Super Admins for now.*
+
+## Definition [/definitions/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Definition ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "text",
+                "helper": null,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "text",
+                "helper": null
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Definitions [/definitions]
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "domain_id": 1, // Can be null if it belongs to no domain
+                    "label": "Question Title",
+                    "type": "text",
+                    "helper": null
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definitions][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "domain_id": 1, // Can be null if it belongs to no domain
+                "label": "Question Title",
+                "type": "select",
+                "helper": {
+                    "choices": ["Option 1", "Option 2"]
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+## Definitions [/domains/{id}/definitions]
+Lists definitions by domain.
+
++ Paramters
+
+    + id (required, number, `1`) ... Domain ID
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definitions][]
+
+# Group Spot Definitions
+`Definition` field objects that an applicant needs to answer for a spot.
+
+## Spot Definition [/spots/definitions/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Spot definition ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "definition_id": 1,
+                "spot_id": 1,
+                "position": 1,
+                "is_required": true,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "position": 2,
+                "is_required": true
+            }
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Spot Definitions [/spots/{id}/definitions]
++ Parameter
+
+    + id (required, number, `1`) ... Spot ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "definition_id": 1,
+                    "spot_id": 1,
+                    "position": 1,
+                    "is_required": true,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Spot Definitions][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Spot Definition][]
+
+# Group Answers
+`Answer` objects are saved answers from an applicant.
+
+They are used for applicants to populate answers to questions already asked on Applyance.
+
+## Answer [/answers/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Answer ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "account_id": 1,
+                "definition_id": 1,
+                "answer": "Answer here...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+### Update [PUT]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "id": 1,
+                "answer": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+### Remove [DELETE]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Answers [/accounts/{id}/answers]
++ Parameter
+
+    + id (required, number, `1`) ... Account ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "account_id": 1,
+                    "definition_id": 1,
+                    "answer": "Answer here...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Answers][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "answer": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Answer][]
+
+
+# Group Ratings
+Numeric rating for an application at a certain spot.
+
+Value can be between 1 and 5.
+
+Only 1 rating allowed per application per spot per reviewer.
+
+## Rating [/ratings/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Rating ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "application_id": 1,
+                "spot_id": 1,
+                "reviewer_id": 1,
+                "rating": 4,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Rating][]
+
+### Update [PUT]
+Must be the rating owner to update.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "rating": 4
+            }
+
++ Response 200 (application/json)
+
+    [Rating][]
+
+### Remove [DELETE]
+Must be the rating owner to delete.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Ratings [/applications/{id}/ratings]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "application_id": 1,
+                    "spot_id": 1,
+                    "reviewer_id": 1,
+                    "rating": 4,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+Must be a reviewer to access.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Ratings][]
+
+### Create [POST]
+Must be a reviewer to create.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "spot_id": 1,
+                "reviewer_id": 2,
+                "rating": 3
+            }
+
++ Response 200 (application/json)
+
+    [Rating][]
+
 # Group Threads
 Threads are conversations that happen between a reviewer and an applicant.
 
@@ -2204,893 +3096,3 @@ Must be a reviewer to create.
 + Response 200 (application/json)
 
     [Segment][]
-
-# Group Applications
-Applications are what this tool is all about. Applications are what are submitted by applicants.
-
-Their data is made up of a list of `Field` objects.
-
-Activity time is determined by the following:
-
-- Submission
-- New Thread
-- New Message
-- Pipeline Change
-- Stage Change
-
-## Application [/applications/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Application ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "submitter": {
-                    "id": 1,
-                    "name": "John Smith",
-                    "email": "johnny@gmail.com",
-                    "is_verified": false,
-                    "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00",
-                    "roles": [
-                        {
-                            "id": 1,
-                            "name": "admin"
-                        }
-                    ]
-                },
-                "spots": [
-                    {
-                        "id": 1,
-                        "name": "Cohort 4",
-                        "description", "Lorem ipsum ..."
-                    }
-                ],
-                "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                "fields": [
-                    {
-                        "id": 1,
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "id": 1,
-                        "definition": {
-                            "id": 1,
-                            "label": "Question Title",
-                            "type": "text"
-                        },
-                        "answer": "Answer..."
-                    }
-                ],
-                "submitted_from": {
-                    "lat": 30.456,
-                    "lng": -45.00
-                },
-                "submitted_at": "2012-03-22T16:56:48-05:00",
-                "last_activity_at": "2012-03-22T16:56:48-05:00",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer or the owner to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Application][]
-
-### Update [PUT]
-Must be the owner to update.
-
-Fields can be updated, added to, or removed. Must pass entire fields object.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "fields": [
-                    {
-                        "id": 1,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "id": 2,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "definition_id": 1,
-                        "answer": "Answer..."
-                    }
-                ]
-            }
-
-+ Response 200 (application/json)
-
-    [Application][]
-
-### Remove [DELETE]
-Must be a full-access reviewer to delete an application.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-
-+ Response 204
-
-## Applications - Unit [/units/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "submitter": {
-                        "id": 1,
-                        "name": "John Smith",
-                        "email": "johnny@gmail.com",
-                        "is_verified": false,
-                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00",
-                        "roles": [
-                            {
-                                "id": 1,
-                                "name": "admin"
-                            }
-                        ]
-                    },
-                    "spots": [
-                        {
-                            "id": 1,
-                            "name": "Cohort 4",
-                            "description", "Lorem ipsum ..."
-                        }
-                    ],
-                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                    "submitted_from": {
-                        "lat": 30.456,
-                        "lng": -45.00
-                    },
-                    "submitted_at": "2012-03-22T16:56:48-05:00",
-                    "last_activity_at": "2012-03-22T16:56:48-05:00",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Applications - Unit][]
-
-### Create [POST]
-Anyone can create an application.
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "submitter": {
-                    "name": "John Smith",
-                    "email": "johnny@gmail.com"
-                },
-                "spots": [1],
-                "fields": [
-                    {
-                        "definition_id": 1,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    }
-                ],
-                "submitted_from": {
-                    "lat": 30.456,
-                    "lng": -45.00
-                }
-            }
-
-+ Response 200 (application/json)
-
-    [Application][]
-
-## Applications - Export [/units/{id}/applications/export{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
-### Export [GET]
-Must be a reviewer to access.
-
-Returns a CSV containing the applications. Columns are the fields.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (text/csv)
-
-## Applications - Reviewers [/reviewers/{id}/applications]
-Applications assigned to the specify reviewer.
-
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer ID
-
-### List [GET]
-Must be a reviewer of the unit to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Applications - Unit][]
-
-# Group Ratings
-Numeric rating for an application at a certain spot.
-
-Value can be between 1 and 5.
-
-Only 1 rating allowed per application per spot per reviewer.
-
-## Rating [/ratings/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Rating ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "application_id": 1,
-                "spot_id": 1,
-                "reviewer_id": 1,
-                "rating": 4,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Rating][]
-
-### Update [PUT]
-Must be the rating owner to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "rating": 4
-            }
-
-+ Response 200 (application/json)
-
-    [Rating][]
-
-### Remove [DELETE]
-Must be the rating owner to delete.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Ratings [/applications/{id}/ratings]
-+ Parameters
-
-    + id (required, number, `1`) ... Application ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "application_id": 1,
-                    "spot_id": 1,
-                    "reviewer_id": 1,
-                    "rating": 4,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Ratings][]
-
-### Create [POST]
-Must be a reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "spot_id": 1,
-                "reviewer_id": 2,
-                "rating": 3
-            }
-
-+ Response 200 (application/json)
-
-    [Rating][]
-
-# Group Fields
-Fields are the building blocks of applications.
-
-Fields may or may not be based on previous definitions. Previous definitions allow for a common app scenario.
-
-## Field [/fields/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Field ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "application_id": 1,
-                "label": "Question Title",
-                "answer": "Answer...",
-                "type": "text",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer or application owner to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Field][]
-
-### Update [PUT]
-Must be a reviewer or application owner to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "answer": "Answer..."
-            }
-
-+ Response 200 (application/json)
-
-    [Field][]
-
-### Remove [DELETE]
-Must be a reviewer or application owner to update.
-
-+ Response 204
-
-## Fields [/applications/{id}/fields]
-+ Parameters
-
-    + id (required, number, `1`) ... Application ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "application_id": 1,
-                    "label": "Question Title",
-                    "answer": "Answer...",
-                    "type": "text",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer or application owner to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Fields][]
-
-### Create [POST]
-Must be a reviewer or application owner to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "label": "Question Title",
-                "answer": "Answer...",
-                "type": "text"
-            }
-
-            {
-                "definition_id": 1,
-                "answer": "Answer..."
-            }
-
-+ Response 200 (application/json)
-
-    [Field][]
-
-# Group Definitions
-While `Field` objects are the backbone of applications, `Definition` objects are the backbone of `Field` objects.
-
-Through `Definition` objects, we can server standardized questions.
-
-Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). This stuff is stored as a helper object.
-
-*Write access is given only to Super Admins for now.*
-
-## Definition [/definitions/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Definition ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "text",
-                "helper": null,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "text",
-                "helper": null
-            }
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Definitions [/definitions]
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "domain_id": 1, // Can be null if it belongs to no domain
-                    "label": "Question Title",
-                    "type": "text",
-                    "helper": null
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definitions][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "select",
-                "helper": {
-                    "choices": ["Option 1", "Option 2"]
-                }
-            }
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-## Definitions [/domains/{id}/definitions]
-Lists definitions by domain.
-
-+ Paramters
-
-    + id (required, number, `1`) ... Domain ID
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definitions][]
-
-# Group Spot Definitions
-`Definition` field objects that an applicant needs to answer for a spot.
-
-## Spot Definition [/spots/definitions/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Spot definition ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "definition_id": 1,
-                "spot_id": 1,
-                "position": 1,
-                "is_required": true,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "position": 2,
-                "is_required": true
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Spot Definitions [/spots/{id}/definitions]
-+ Parameter
-
-    + id (required, number, `1`) ... Spot ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "definition_id": 1,
-                    "spot_id": 1,
-                    "position": 1,
-                    "is_required": true,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definitions][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "position": 1,
-                "is_required": false
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-# Group Answers
-`Answer` objects are saved answers from an applicant.
-
-They are used for applicants to populate answers to questions already asked on Applyance.
-
-## Answer [/answers/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Answer ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "account_id": 1,
-                "definition_id": 1,
-                "answer": "Answer here...",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Answers [/accounts/{id}/answers]
-+ Parameter
-
-    + id (required, number, `1`) ... Account ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "account_id": 1,
-                    "definition_id": 1,
-                    "answer": "Answer here...",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answers][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
