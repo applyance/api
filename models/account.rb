@@ -7,11 +7,14 @@ module Applyance
     many_to_many :roles, :class => :'Applyance::Role'
     many_to_one :avatar, :class => :'Applyance::Attachment'
     one_to_many :answers, :class => :'Applyance::Answer'
+    one_to_many :admins, :class => :'Applyance::Admin'
+    one_to_many :reviewers, :class => :'Applyance::Reviewer'
 
     def validate
       super
       validates_presence [:name, :email]
       validates_unique :email
+      validates_min_length 2, :name
     end
 
     # Check if this account has the named role
@@ -19,8 +22,14 @@ module Applyance
       self.roles_dataset.where(:name => name).count > 0
     end
 
-    # Register the account with the specified role
+    # Make the account with the specified role
     def self.make(role, params)
+      account = self.first(:email => params[:email])
+      if account
+        account.add_role(Role.first(:name => role)) unless account.has_role?(role)
+        return account
+      end
+
       account = self.new
       account.set_fields(params, [:name, :email], :missing => :skip)
       account.set_token(:api_key)
@@ -32,24 +41,21 @@ module Applyance
       account
     end
 
-    # Convenience method for making if does not exist
-    def self.first_or_make(role, params)
+    # Authorize via email and password
+    def self.authenticate(params)
       account = self.first(:email => params[:email])
-      if account
-        account.add_role(Role.first(:name => role)) unless account.has_role?(role)
-        return account
-      end
-      self.make(role, params)
-    end
 
-    # Handle registration
-    def self.register(role, params)
-      if params[:password].empty?
-        raise BadRequestError({ :detail => "Password is required." })
+      # Check for an existing account
+      if account.nil?
+        raise BadRequestError.new({ :detail => "Account not found with the email specified." })
       end
-      self.make(role, params[:account])
 
-      # TODO: Send registration email
+      # Check password
+      unless BCrypt::Password.new(account.password_hash) == params[:password]
+        raise BadRequestError.new({ :detail => "Incorrect password." })
+      end
+
+      account
     end
 
     # Reset password request from the user
@@ -68,6 +74,14 @@ module Applyance
       end
 
       self.update(:password_hash => BCrypt::Password.create(params[:new_password]))
+    end
+
+    # Update account stuff
+    def handle_update(params)
+      self.update_fields(params, [:name], :missing => :skip)
+      self.attach(params[:avatar], :avatar)
+      self.change_password(params) unless params[:new_password].nil?
+      self.change_email(params) unless params[:email].nil?
     end
 
     # Password change request from the user
@@ -106,26 +120,8 @@ module Applyance
 
     # Used for a user verifying their email
     def verify_email(params)
-      # Make sure the verify digest is correct
-      unless params[:verify_digest] == self.verify_digest
-        raise BadRequestError({ :detail => "Invalid verify digest." })
-      end
       self.update(:is_verified => true)
       true
-    end
-
-    # Authorize via email and password
-    def self.authenticate(params)
-      account = self.first(
-        :email => params[:email],
-        :password_hash => BCrypt::Password.new(params[:password]))
-
-      # Check for an existing account
-      if account.nil?
-        raise BadRequestError.new({ :detail => "Invalid authentication credentials." })
-      end
-
-      account
     end
 
   end

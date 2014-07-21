@@ -1,12 +1,17 @@
 module Applyance
   module Routing
     module Entities
-      def self.registered(app)
 
+      module Protection
         # General protection function for entity admins
-        to_admins = lambda do |entity|
+        def to_admins(entity)
           lambda { |account| entity.admins.collect(&:account_id).include?(account.id) }
         end
+      end
+
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Entities::Protection)
 
         # List entities
         # Only Chiefs can do this B)
@@ -16,10 +21,17 @@ module Applyance
           rabl :'entities/index'
         end
 
-        # Create a new entity
+        # List entities by domain
         # Only Chiefs can do this B)
-        app.post '/entities', :provides => [:json] do
+        app.get '/domains/:id/entities', :provides => [:json] do
           protected!
+          @domain = Domain.first(:id => params[:id])
+          @entities = @domain.entities
+          rabl :'entities/index'
+        end
+
+        # Create a new entity
+        app.post '/entities', :provides => [:json] do
           @entity = Entity.new
           @entity.set_fields(params, [:name, :domain_id], :missing => :skip)
           @entity.save
@@ -37,11 +49,8 @@ module Applyance
         # Must be an admin
         app.put '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          @account = protected! to_admins(@entity)
-
-          allowed_fields = @account.has_role?("chief") ? [:name, :domain_id] : [:name]
-
-          @entity.update_fields(params, allowed_fields, :missing => :skip)
+          @account = protected! app.to_admins(@entity)
+          @entity.update_fields(params, [:name, :domain_id], :missing => :skip)
           rabl :'entities/show'
         end
 
@@ -49,7 +58,7 @@ module Applyance
         # Must be an admin
         app.delete '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          protected! to_admins(@entity)
+          protected! app.to_admins(@entity)
 
           @entity.admins_dataset.destroy
           @entity.admin_invites_dataset.destroy

@@ -26,20 +26,15 @@ module Applyance
     set :root, File.dirname(__FILE__)
     enable :logging
 
-    configure :development do
+    configure :development, :test do
       set :show_exceptions, :after_handler
     end
-
-    # S3
-    S3 = AWS::S3.new(
-      :access_key_id => Applyance::Server.settings.aws_s3_access_key_id,
-      :secret_access_key => Applyance::Server.settings.aws_s3_secret_access_key
-    )
 
     # Register RABL for easy APIs
     Rabl.register!
     Rabl.configure do |config|
       config.include_json_root = false
+      config.include_child_root = false
     end
 
     # Helpers

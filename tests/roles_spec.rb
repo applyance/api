@@ -3,36 +3,48 @@ ENV['RACK_ENV'] = 'test'
 require_relative '../app.rb'
 require 'rspec'
 require 'rack/test'
+require 'factory_girl'
 
-RSpec.describe 'Do roles work?' do
+require_relative '_config'
+require_relative '_helpers'
+require_relative '_factories'
+
+describe Applyance::Role do
+
   include Rack::Test::Methods
-
-  def app
-    @app ||= Applyance::Server
-  end
+  include Applyance::Test::Helpers
 
   before(:all) do
-    Applyance::Server.db[:roles].insert(:name => "applicant")
-    Applyance::Server.db[:roles].insert(:name => "admin")
-    Applyance::Server.db[:roles].insert(:name => "reviewer")
   end
-
-  it "Retrieves roles" do
-    get "/roles"
-    expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq(Oj.dump(Applyance::Role.all))
-  end
-
-  it "Retrieves role" do
-    test_role = Applyance::Role.first(:name => "admin")
-
-    get "/roles/#{test_role.id}"
-    expect(last_response.status).to eq(200)
-    expect(last_response.body).to eq(Oj.dump(test_role))
-  end
-
   after(:all) do
-    Applyance::Server.db[:roles].delete
+  end
+
+  shared_examples_for "a single role" do
+    it "returns the information for role show" do
+      expect(json.keys).to contain_exactly('id', 'name')
+    end
+  end
+
+  shared_examples_for "multiple roles" do
+    it "returns the information for role index" do
+      expect(json.first.keys).to contain_exactly('id', 'name')
+    end
+  end
+
+  # Retrieve roles
+  describe "GET #roles" do
+    before(:each) { get "/roles" }
+
+    it_behaves_like "a retrieved object"
+    it_behaves_like "multiple roles"
+  end
+
+  # Retrieve one role
+  describe "GET #role" do
+    before(:each) { get "/roles/#{Applyance::Role.first.id}" }
+
+    it_behaves_like "a retrieved object"
+    it_behaves_like "a single role"
   end
 
 end

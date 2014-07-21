@@ -1,2 +1,2 @@
 object @entity
-extends "entities/_single"
+extends "entities/_deep"

@@ -1,9 +1,9 @@
 attributes :id, :access_level, :is_entity_admin, :created_at, :updated_at
 
-child :account do
-  extends 'accounts/_single'
+child :account => :account do
+  extends 'accounts/_shallow'
 end
 
-child :unit do
+child :unit => :unit do
   extends 'units/_shallow'
 end

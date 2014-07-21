@@ -1,2 +1,2 @@
 collection @roles
-extends "entities/_single"
+extends "roles/_shallow"

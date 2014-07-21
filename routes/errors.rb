@@ -16,6 +16,7 @@ module Applyance
           @title = "Bad Request"
           @detail = env['sinatra.error'].message
 
+          status @status
           rabl :'error', :content_type => :json
         end
 
@@ -24,6 +25,16 @@ module Applyance
           @title = "Bad Request"
           @detail = env['sinatra.error'].object[:detail]
 
+          status @status
+          rabl :'error', :content_type => :json
+        end
+
+        app.error ForbiddenError do
+          @status = 403
+          @title = "Forbidden"
+          @detail = "Not authorized to make this request."
+
+          status @status
           rabl :'error', :content_type => :json
         end
 
@@ -32,6 +43,7 @@ module Applyance
           @title = "Internal Server Error"
           @detail = env['sinatra.error'].object[:detail]
 
+          status @status
           rabl :'error', :content_type => :json
         end
 
@@ -39,7 +51,7 @@ module Applyance
           @status = 400
           @title = "Bad Request"
           @detail = "The request could not be understood by the server due to malformed syntax. The client should not repeat the request without modifications."
-
+          
           rabl :'error', :content_type => :json
         end
 
@@ -47,6 +59,14 @@ module Applyance
           @status = 401
           @title = "Unauthorized"
           @detail = "The client should retry the request with a suitable Authorization header."
+
+          rabl :'error', :content_type => :json
+        end
+
+        app.error 403 do
+          @status = 403
+          @title = "Forbidden"
+          @detail = "Not authorized to make this request."
 
           rabl :'error', :content_type => :json
         end

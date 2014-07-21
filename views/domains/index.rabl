@@ -1,2 +1,2 @@
 collection @domains
-extends 'domains/_single'
+extends 'domains/_shallow'

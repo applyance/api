@@ -5,10 +5,10 @@ module Applyance
 
     plugin :serialization, :json, :helper
 
+    many_to_one :domain, :class => :'Applyance::Domain'
+    many_to_one :unit, :class => :'Applyance::Unit'
     one_to_many :answers, :class => :'Applyance::Answer'
     one_to_many :blueprints, :class => :'Applyance::Blueprint'
-    one_through_one :domain, :class => :'Applyance::Domain'
-    one_through_one :unit, :class => :'Applyance::Unit'
 
     def before_validation
       super

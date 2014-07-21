@@ -14,7 +14,7 @@ module Applyance
 
       # Generate and then set a token
       def set_token(key)
-        self.set(key => token)
+        self.set(key => self.generate_token(key))
       end
 
       # Generate, set, and then save a token

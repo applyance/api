@@ -24,6 +24,7 @@ module Applyance
           file.close
           file.unlink
 
+          status 201
           rabl :'attachments/create'
         end
 

@@ -84,7 +84,7 @@ Sequel.migration do
     create_table(:entities) do
       primary_key :id
 
-      foreign_key :domain_id, :domains, :on_delete => :set_null
+      foreign_key :domain_id, :domains, :null => true, :on_delete => :set_null
       String :name, :null => false
 
       DateTime :created_at
@@ -345,6 +345,9 @@ Sequel.migration do
     create_table(:definitions) do
       primary_key :id
 
+      foreign_key :domain_id, :domains, :null => true, :on_delete => :cascade
+      foreign_key :unit_id, :units, :null => true, :on_delete => :cascade
+
       String :name, :null => false, :index => { :unique => true }
       String :label, :null => false
       String :description, :text => true
@@ -353,18 +356,6 @@ Sequel.migration do
 
       DateTime :created_at
       DateTime :updated_at
-    end
-
-    # Domain definitions
-    create_table(:definitions_domains) do
-      foreign_key :definition_id, :definitions, :on_delete => :cascade, :unique => true
-      foreign_key :domain_id, :domains, :on_delete => :cascade
-    end
-
-    # Unit definitions
-    create_table(:definitions_units) do
-      foreign_key :definition_id, :definitions, :on_delete => :cascade, :unique => true
-      foreign_key :unit_id, :units, :on_delete => :cascade
     end
 
     # Create blueprints

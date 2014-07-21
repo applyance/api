@@ -1,27 +1,34 @@
 module Applyance
   module Routing
     module Reviewers
-      def self.registered(app)
+
+      module Protection
 
         # Protection to admins or reviewers
-        to_full_access_reviewers = lambda do |unit|
+        def to_full_access_reviewers(unit)
           lambda do |account|
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
 
         # Protection to admins or reviewers
-        to_full_access_reviewers_or_self = lambda do |reviewer|
+        def to_full_access_reviewers_or_self(reviewer)
           lambda do |account|
             return true if account.id == reviewer.account_id
             reviewer.unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
 
+      end
+
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Reviewers::Protection)
+
         # List reviewers for a unit
         app.get '/units/:id/reviewers', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_access_reviewers(@unit)
+          protected! app.to_full_access_reviewers(@unit)
           @reviewers = @unit.reviewers
           rabl :'reviewers/index'
         end
@@ -29,13 +36,14 @@ module Applyance
         # Get reviewer by Id
         app.get '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params[:id])
+          protected! app.to_full_access_reviewers_or_self(@reviewer)
           rabl :'reviewers/show'
         end
 
         # Update reviewer by Id
         app.put '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params[:id])
-          protected! to_full_access_reviewers(@reviewer)
+          protected! app.to_full_access_reviewers(@reviewer)
           @reviewer.update_fields(params, [:access_level], :missing => :skip)
           rabl :'reviewers/show'
         end
@@ -43,7 +51,7 @@ module Applyance
         # Delete a reviewer by Id
         app.delete '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params[:id])
-          protected! to_full_access_reviewers_or_self(@reviewer)
+          protected! app.to_full_access_reviewers_or_self(@reviewer)
 
           @reviewer.segments_dataset.destroy
           @reviewer.ratings_dataset.destroy

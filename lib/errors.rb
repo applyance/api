@@ -10,3 +10,6 @@ end
 
 class BadRequestError < ApplyanceError
 end
+
+class ForbiddenError < ApplyanceError
+end

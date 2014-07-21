@@ -1,7 +1,7 @@
 attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 
-child :submitter do
-  extends 'accounts/_single'
+child :submitter => :submitter do
+  extends 'accounts/_shallow'
 end
 
 child :submitted_from do

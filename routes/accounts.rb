@@ -1,38 +1,53 @@
 module Applyance
   module Routing
     module Accounts
-      def self.registered(app)
 
+      module Protection
         # Protection for current account only
-        to_account_id = lambda do |id|
+        def to_account_id(id)
           lambda { |account| account.id == id.to_i }
         end
+      end
 
-        # Register an account as a reviewer
-        app.post '/reviewers/register', :provides => [:json] do
-          @account = Account.register("admin", params)
-          @entity = Entity.register(@account, params)
-          status 201
-          rabl :'accounts/reviewers/create'
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Accounts::Protection)
+
+        # Authenticate by email and password
+        app.post '/accounts/auth', :provides => [:json] do
+          @account = Account.authenticate(params)
+          response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
+          rabl :'accounts/show'
         end
 
         # Show an account specified by Id
         app.get '/accounts/:id', :provides => [:json] do
-          @account = protected! to_account_id(params[:id])
+          @account = protected! app.to_account_id(params[:id])
           rabl :'accounts/show'
         end
 
         # Update an account specified by Id
         app.put '/accounts/:id', :provides => [:json] do
-          @account = protected! to_account_id(params[:id])
+          @account = protected! app.to_account_id(params[:id])
+          @account.handle_update(params)
+          rabl :'accounts/show'
+        end
 
-          @account.update_fields(params, [:name], :missing => :skip)
-          @account.attach(params[:avatar], :avatar)
-          rable :'accounts/show'
+        # Destroy account
+        app.delete '/accounts/:id', :provides => [:json] do
+          @account = protected! app.to_account_id(params[:id])
+
+          @account.remove_all_roles
+          @account.answers_dataset.destroy
+          @account.reviewers_dataset.destroy
+          @account.admins_dataset.destroy
+          @account.destroy
+
+          204
         end
 
         # Reset password
-        app.post '/accounts/reset-password', :provides => [:json] do
+        app.post '/accounts/passwords/reset', :provides => [:json] do
           @account = Account.first(:email => params[:email])
           unless @account
             raise BadRequestError({ detail: "An account with that email does not exist." })
@@ -42,7 +57,7 @@ module Applyance
         end
 
         # Set password
-        app.post '/accounts/set-password', :provides => [:json] do
+        app.post '/accounts/passwords/set', :provides => [:json] do
           @account = Account.first(:reset_digest => params[:reset_digest])
           unless @account
             raise BadRequestError({ detail: "Invalid reset token." })
@@ -51,40 +66,14 @@ module Applyance
           201
         end
 
-        # Change password
-        app.post '/accounts/:id/change-password', :provides => [:json] do
-          @account = protected! to_account_id(params[:id])
-          @account.change_password(params)
-          rabl :'accounts/show'
-        end
-
-        # Change email address
-        app.post '/accounts/:id/change-email', :provides => [:json] do
-          @account = protected! to_account_id(params[:id])
-          @account.change_email(params)
-          rabl :'accounts/show'
-        end
-
         # Verify email address
-        app.post '/accounts/verify-email', :provides => [:json] do
+        app.post '/accounts/verify', :provides => [:json] do
+          @account = Account.first(:verify_digest => params[:verify_digest])
+          unless @account
+            raise BadRequestError({ :detail => "Invalid verify digest." })
+          end
           @account.verify_email(params)
           rabl :'accounts/show'
-        end
-
-        # Destroy account
-        app.delete '/accounts/:id', :provides => [:json] do
-          @account = protected! to_account_id(params[:id])
-
-          @account.remove_all_roles
-          @account.destroy
-
-          204
-        end
-
-        # Authorize by email and password
-        app.post '/accounts/auth', :provides => [:json] do
-          @account = Account.authenticate(params)
-          rabl :'accounts/auth'
         end
 
       end

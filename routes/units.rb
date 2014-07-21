@@ -1,25 +1,30 @@
 module Applyance
   module Routing
     module Units
-      def self.registered(app)
 
-        # General protection function for entity admins
-        to_admins = lambda do |entity|
+      module Protection
+
+        def to_admins(entity)
           lambda { |account| entity.admins.collect(&:account_id).include?(account.id) }
         end
 
-        # Protection to admins or reviewers
-        to_full_access_reviewers = lambda do |unit|
+        def to_full_access_reviewers(unit)
           lambda do |account|
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
 
+      end
+
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Units::Protection)
+
         # List units
         # Only entity admins can do this
         app.get '/entities/:id/units', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          protected! to_admins(@entity)
+          protected! app.to_admins(@entity)
 
           @units = @entity.units
           rabl :'units/index'
@@ -29,7 +34,7 @@ module Applyance
         # Only entity admins can do this
         app.post '/entities/:id/units', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          protected! to_admins(@entity)
+          protected! app.to_admins(@entity)
 
           @unit = Unit.new
           @unit.set_fields(params, [:name], :missing => :skip)
@@ -50,7 +55,7 @@ module Applyance
         # Must be an admin
         app.put '/units/:id', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          @account = protected! to_full_access_reviewers(@unit)
+          @account = protected! app.to_admins(@unit.entity)
 
           @unit.update_fields(params, [:name], :missing => :skip)
           rabl :'units/show'
@@ -60,7 +65,7 @@ module Applyance
         # Must be an admin
         app.delete '/units/:id', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_access_reviewers(@unit)
+          protected! app.to_full_access_reviewers(@unit)
 
           @unit.reviewers_dataset.destroy
           @unit.reviewer_invites_dataset.destroy

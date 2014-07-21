@@ -1,2 +1,2 @@
 collection @entities
-extends "entities/_single"
+extends "entities/_shallow"

@@ -1,5 +1,5 @@
 attributes :id, :name, :created_at, :updated_at
 
-child :entity do
-  extends 'entities/_single'
+child :entity => :entity do
+  extends 'entities/_shallow'
 end

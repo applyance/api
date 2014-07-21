@@ -1,14 +1,21 @@
 module Applyance
   module Routing
     module Spots
-      def self.registered(app)
+
+      module Protection
 
         # Protection to full access reviewers
-        to_full_access_reviewers = lambda do |unit|
+        def to_full_access_reviewers(unit)
           lambda do |account|
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
+
+      end
+
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Spots::Protection)
 
         # List spots
         app.get '/units/:id/spots', :provides => [:json] do
@@ -21,7 +28,7 @@ module Applyance
         # Must be a full access reviewer
         app.post '/units/:id/spots', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_access_reviewers(@unit)
+          protected! app.to_full_access_reviewers(@unit)
 
           @spot = Spot.new
           @spot.set(:unit_id => @unit.id)
@@ -42,7 +49,7 @@ module Applyance
         # Must be a full access reviewer
         app.put '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params[:id])
-          protected! to_full_access_reviewers(@spot.unit)
+          protected! app.to_full_access_reviewers(@spot.unit)
 
           @spot.update_fields(params, [:name, :detail, :status], :missing => :skip)
           rabl :'spots/show'
@@ -52,7 +59,7 @@ module Applyance
         # Must be a full access reviewer
         app.delete '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params[:id])
-          protected! to_full_access_reviewers(@spot.unit)
+          protected! app.to_full_access_reviewers(@spot.unit)
 
           @spot.ratings_dataset.destroy
           @spot.remove_all_blueprints

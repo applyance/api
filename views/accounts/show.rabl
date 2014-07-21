@@ -1,2 +1,2 @@
 object @account
-extends "accounts/_single"
+extends "accounts/_deep"

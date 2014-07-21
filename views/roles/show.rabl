@@ -1,2 +1,2 @@
 object @role
-extends "entities/_single"
+extends "roles/_shallow"

@@ -1,2 +1,2 @@
 object @domain
-extends 'domains/_single'
+extends 'domains/_deep'

@@ -29,12 +29,7 @@ module Applyance
       self.update(:status => "claimed")
 
       # Create account and verify it
-      account = Account.first(:email => self.email)
-      if account.nil?
-        account = Account.make("admin", params)
-      elsif !account.has_role?("admin")
-        account.add_role(Role.first(:name => "admin"))
-      end
+      account = Account.make("admin", params.merge({ :email => self.email }))
       account.update(:is_verified => true)
 
       # Create admin
@@ -46,6 +41,8 @@ module Applyance
       self.entity.units.each do |unit|
         Reviewer.make_from_admin(unit, admin)
       end
+
+      admin
     end
 
   end

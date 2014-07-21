@@ -20,7 +20,7 @@ describe Applyance::Domain do
   end
   let(:chief) { @chief_account.reload }
   let(:admin) { @admin_account.reload }
-  after(:each) { Applyance::Server.db[:domains].delete }
+  after(:each) { app.db[:domains].delete }
   after(:all) do
     @chief_account.remove_all_roles
     @chief_account.destroy
@@ -37,8 +37,14 @@ describe Applyance::Domain do
   end
 
   shared_examples_for "a single domain" do
-    it "returns the information for one domain" do
+    it "returns the information for domain show" do
       expect(json.keys).to contain_exactly('id', 'name', 'created_at', 'updated_at')
+    end
+  end
+
+  shared_examples_for "multiple domains" do
+    it "returns the information for domain index" do
+      expect(json.first.keys).to contain_exactly('id', 'name', 'created_at', 'updated_at')
     end
   end
 
@@ -50,8 +56,8 @@ describe Applyance::Domain do
         post "/domains", { name: "Retail" }
       end
 
-      it_behaves_like "a single domain"
       it_behaves_like "a created object"
+      it_behaves_like "a single domain"
     end
     context "logged in as admin" do
       before(:each) do
@@ -77,6 +83,7 @@ describe Applyance::Domain do
     it "returns the number of domains" do
       expect(json.count).to eq(3)
     end
+    it_behaves_like "multiple domains"
   end
 
   # Retrieve one domain
@@ -84,8 +91,8 @@ describe Applyance::Domain do
     let(:domain) { create(:domain) }
     before(:each) { get "/domains/#{domain.id}" }
 
-    it_behaves_like "a single domain"
     it_behaves_like "a retrieved object"
+    it_behaves_like "a single domain"
   end
 
   # Update domain
@@ -97,8 +104,8 @@ describe Applyance::Domain do
         put "/domains/#{domain.id}", { name: "Retail 2" }
       end
 
-      it_behaves_like "a single domain"
       it_behaves_like "a retrieved object"
+      it_behaves_like "a single domain"
       it "returns the updated name" do
         expect(json['name']).to eq('Retail 2')
       end
@@ -130,6 +137,7 @@ describe Applyance::Domain do
       end
 
       it_behaves_like "a deleted object"
+      it_behaves_like "an empty response"
     end
     context "logged in as admin" do
       let(:domain) { create(:domain) }

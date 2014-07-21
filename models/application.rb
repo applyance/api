@@ -46,7 +46,7 @@ module Applyance
       end
 
       # Create submitter (account)
-      account = Account.first_or_make("applicant", {
+      account = Account.make("applicant", {
         :name => params[:submitter][:name],
         :email => params[:submitter][:email],
         :password => friendly_token

@@ -1,9 +1,9 @@
 attributes :id, :created_at, :updated_at
 
-child :account do
-  extends 'accounts/_single'
+child :account => :account do
+  extends 'accounts/_shallow'
 end
 
-child :entity do
-  extends 'entities/_single'
+child :entity => :entity do
+  extends 'entities/_shallow'
 end

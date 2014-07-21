@@ -3,7 +3,7 @@ module Applyance
     module Attachments
 
       def attach(params, property = :attachment)
-        return if params.empty?
+        return if params.nil?
 
         if params.is_a?(Array)
           # Clear old attachments
@@ -23,11 +23,14 @@ module Applyance
 
         def attach_single(params, property)
 
-          if params[:token].empty? || params[:name].empty?
+          if params[:token].nil? || params[:name].nil?
             raise BadRequestError({ :detail => "Attachments must contain a token and a name." })
           end
 
-          s3 = Applyance::Server::S3
+          s3 = AWS::S3.new(
+            :access_key_id => settings.aws_s3_access_key_id,
+            :secret_access_key => settings.aws_s3_secret_access_key
+          )
 
           token = params[:token]
           name = params[:name]

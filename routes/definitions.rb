@@ -1,20 +1,27 @@
 module Applyance
   module Routing
     module Definitions
-      def self.registered(app)
+
+      module Protection
 
         # Protection to full access reviewers
-        to_full_access_reviewers = lambda do |unit|
+        def to_full_access_reviewers(unit)
           lambda do |account|
             unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
           end
         end
 
+      end
+
+      def self.registered(app)
+
+        app.extend(Applyance::Routing::Definitions::Protection)
+
         # List definitions for unit
         # Must be a full-access reviewer
         app.get '/units/:id/definitions', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_access_reviewers(@unit)
+          protected! app.to_full_access_reviewers(@unit)
           @definitions = @unit.definitions
           rabl :'definitions/index'
         end
@@ -30,11 +37,11 @@ module Applyance
         # Must be a full access reviewer
         app.post '/units/:id/definitions', :provides => [:json] do
           @unit = Unit.first(:id => params[:id])
-          protected! to_full_access_reviewers(@unit)
+          protected! app.to_full_access_reviewers(@unit)
 
           @definition = Definition.new
           @definition.set_fields(params, [:label, :description, :type, :helper], :missing => :skip)
-          @definition.add_unit(@unit)
+          @definition.unit = @unit
           @definition.save
 
           status 201
@@ -50,7 +57,7 @@ module Applyance
 
           @definition = Definition.new
           @definition.set_fields(params, [:label, :description, :type, :helper], :missing => :skip)
-          @definition.add_domain(@domain)
+          @definition.domain = @domain
           @definition.save
 
           status 201
@@ -68,7 +75,7 @@ module Applyance
           @definition = Definition.first(:id => params[:id])
 
           protected! if @definition.domain
-          protected! to_full_access_reviewers(@definition.unit) if @definition.unit
+          protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
 
           @definition.update_fields(params, [:label, :description, :type, :helper], :missing => :skip)
           rabl :'definitions/show'
@@ -79,10 +86,10 @@ module Applyance
           @definition = Definition.first(:id => params[:id])
 
           protected! if @definition.domain
-          protected! to_full_access_reviewers(@definition.unit) if @definition.unit
+          protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
 
-          @definition.remove_all_domains
-          @definition.remove_all_units
+          @definition.answers_dataset.destroy
+          @definition.blueprints_dataset.destroy
           @definition.destroy
 
           204
