@@ -367,7 +367,10 @@ A single Entity object with all its details. Note that entities are created when
 
             {
                 "id": 1,
-                "domain_id": 1, // Optional
+                "domain": {
+                    "id": 1,
+                    "name": "Retail"
+                },
                 "name": "Frothy Monkey",
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
@@ -393,7 +396,7 @@ A single Entity object with all its details. Note that entities are created when
 
             {
                 "name": "The Frothy Monkey",
-                "domain_id": 1
+                "domain_id": 1 // Optional
             }
 
 + Response 200 (application/json)
@@ -412,10 +415,6 @@ A single Entity object with all its details. Note that entities are created when
 + Response 204
 
 ## Entities [/entities]
-List of entities in Applyance.
-
-Requires Super Admin role to access.
-
 + Model
 
     + Body
