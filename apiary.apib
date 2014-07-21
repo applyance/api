@@ -1256,12 +1256,12 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
             [
                 {
                     "id": 1,
-                    "domain_id": 1, // Can be null if it belongs to no domain
-                    "unit_id": 1, // Can be null if it belongs to no unit
                     "label": "Question Title",
                     "description": "Detail...",
                     "type": "text",
-                    "helper": null
+                    "helper": null,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
@@ -1337,6 +1337,206 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
 + Response 200 (application/json)
 
     [Definition][]
+
+
+# Group Blueprints
+Blueprints lay out the `Definition` objects that applicants need to answer.
+
+## Blueprint [/blueprints/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Blueprint ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "definition": {
+                    "id": 1,
+                    "label": "Question Title",
+                    "description": "Detail...",
+                    "type": "text",
+                    "helper": null,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                "position": 1,
+                "is_required": true,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Blueprint][]
+
+### Update [PUT]
+*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "position": 2,
+                "is_required": true
+            }
+
++ Response 200 (application/json)
+
+    [Blueprint][]
+
+### Remove [DELETE]
+*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Blueprints - Spot [/spots/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Spot ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "definition_id": 1,
+                    "position": 1,
+                    "is_required": true,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+## Blueprints - Unit [/units/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Unit ID
+
+### List [GET]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+## Blueprints - Entity [/entities/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Entity ID
+
+### List [GET]
+*Must be an admin.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be an admin.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
 
 # Group Applications
 Applications are what this tool is all about. Applications are what are submitted by applicants.
@@ -1746,118 +1946,6 @@ Must be a reviewer or application owner to create.
 + Response 200 (application/json)
 
     [Field][]
-
-# Group Spot Definitions
-`Definition` field objects that an applicant needs to answer for a spot.
-
-## Spot Definition [/spots/definitions/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Spot definition ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "definition_id": 1,
-                "spot_id": 1,
-                "position": 1,
-                "is_required": true,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "position": 2,
-                "is_required": true
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Spot Definitions [/spots/{id}/definitions]
-+ Parameter
-
-    + id (required, number, `1`) ... Spot ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "definition_id": 1,
-                    "spot_id": 1,
-                    "position": 1,
-                    "is_required": true,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definitions][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "position": 1,
-                "is_required": false
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
 
 # Group Answers
 `Answer` objects are saved answers from an applicant.
