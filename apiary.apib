@@ -1256,12 +1256,12 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
             [
                 {
                     "id": 1,
-                    "domain_id": 1, // Can be null if it belongs to no domain
-                    "unit_id": 1, // Can be null if it belongs to no unit
                     "label": "Question Title",
                     "description": "Detail...",
                     "type": "text",
-                    "helper": null
+                    "helper": null,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
@@ -1338,6 +1338,333 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
 
     [Definition][]
 
+
+# Group Blueprints
+Blueprints lay out the `Definition` objects that applicants need to answer.
+
+## Blueprint [/blueprints/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Blueprint ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "definition": {
+                    "id": 1,
+                    "label": "Question Title",
+                    "description": "Detail...",
+                    "type": "text",
+                    "helper": null,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                "position": 1,
+                "is_required": true,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Blueprint][]
+
+### Update [PUT]
+*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "position": 2,
+                "is_required": true
+            }
+
++ Response 200 (application/json)
+
+    [Blueprint][]
+
+### Remove [DELETE]
+*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Blueprints - Spot [/spots/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Spot ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "definition_id": 1,
+                    "position": 1,
+                    "is_required": true,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+## Blueprints - Unit [/units/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Unit ID
+
+### List [GET]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+## Blueprints - Entity [/entities/{id}/blueprints]
++ Parameter
+
+    + id (required, number, `1`) ... Entity ID
+
+### List [GET]
+*Must be an admin.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+### Create [POST]
+*Must be an admin.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "position": 1,
+                "is_required": false
+            }
+
++ Response 200 (application/json)
+
+    [Blueprints - Spot][]
+
+# Group Datums
+`Datum` objects are saved field values from an applicant.
+
+They are used to populate fields already asked and answered on Applyance.
+
+## Datum [/datums/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Datum ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "account": {
+                    "id": 1
+                    ...
+                },
+                "definition": {
+                    "id": 1,
+                    ...
+                },
+                "attachments": [{
+                    "id": 1,
+                    ...
+                }],
+                "detail": "Answer here...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Datum][]
+
+### Update [PUT]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "detail": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Datum][]
+
+### Remove [DELETE]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Datums [/accounts/{id}/datums]
++ Parameter
+
+    + id (required, number, `1`) ... Account ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "account_id": 1,
+                    "definition_id": 1,
+                    "detail": "Answer here...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Datums][]
+
+### Create [POST]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "detail": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Datum][]
+
 # Group Applications
 Applications are what this tool is all about. Applications are what are submitted by applicants.
 
@@ -1381,7 +1708,7 @@ Activity time is determined by the following:
                     {
                         "id": 1,
                         "name": "Cohort 4",
-                        "description", "Lorem ipsum ..."
+                        "description": "Lorem ipsum ..."
                     }
                 ],
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
@@ -1516,7 +1843,75 @@ List of applications.
                         {
                             "id": 1,
                             "name": "Cohort 4",
-                            "description", "Lorem ipsum ..."
+                            "description": "Lorem ipsum ..."
+                        }
+                    ],
+                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "submitted_from": {
+                        "lat": 30.456,
+                        "lng": -45.00
+                    },
+                    "submitted_at": "2012-03-22T16:56:48-05:00",
+                    "last_activity_at": "2012-03-22T16:56:48-05:00",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                {
+                    "id": 2,
+                    "submitter": {
+                        "id": 2,
+                        "name": "Jimmy Dean",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    },
+                    "spots": [
+                        {
+                            "id": 1,
+                            "name": "King of Sonic",
+                            "description": "Lorem ipsum ..."
+                        }
+                    ],
+                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                    "submitted_from": {
+                        "lat": 30.456,
+                        "lng": -45.00
+                    },
+                    "submitted_at": "2012-03-22T16:56:48-05:00",
+                    "last_activity_at": "2012-03-22T16:56:48-05:00",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                {
+                    "id": 3,
+                    "submitter": {
+                        "id": 3,
+                        "name": "Jane Smith",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    },
+                    "spots": [
+                        {
+                            "id": 1,
+                            "name": "Burger King Manager",
+                            "description": "Lorem ipsum ..."
                         }
                     ],
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
@@ -1746,229 +2141,6 @@ Must be a reviewer or application owner to create.
 + Response 200 (application/json)
 
     [Field][]
-
-# Group Spot Definitions
-`Definition` field objects that an applicant needs to answer for a spot.
-
-## Spot Definition [/spots/definitions/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Spot definition ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "definition_id": 1,
-                "spot_id": 1,
-                "position": 1,
-                "is_required": true,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "position": 2,
-                "is_required": true
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Spot Definitions [/spots/{id}/definitions]
-+ Parameter
-
-    + id (required, number, `1`) ... Spot ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "definition_id": 1,
-                    "spot_id": 1,
-                    "position": 1,
-                    "is_required": true,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Spot Definitions][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "position": 1,
-                "is_required": false
-            }
-
-+ Response 200 (application/json)
-
-    [Spot Definition][]
-
-# Group Answers
-`Answer` objects are saved answers from an applicant.
-
-They are used for applicants to populate answers to questions already asked on Applyance.
-
-## Answer [/answers/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Answer ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "account_id": 1,
-                "definition_id": 1,
-                "answer": "Answer here...",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Answers [/accounts/{id}/answers]
-+ Parameter
-
-    + id (required, number, `1`) ... Account ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "account_id": 1,
-                    "definition_id": 1,
-                    "answer": "Answer here...",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answers][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
 
 # Group Ratings
 Numeric rating for an application at a certain spot.
