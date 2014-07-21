@@ -1538,6 +1538,133 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
 
     [Blueprints - Spot][]
 
+# Group Datums
+`Datum` objects are saved field values from an applicant.
+
+They are used to populate fields already asked and answered on Applyance.
+
+## Datum [/datums/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Datum ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "account": {
+                    "id": 1
+                    ...
+                },
+                "definition": {
+                    "id": 1,
+                    ...
+                },
+                "attachments": [{
+                    "id": 1,
+                    ...
+                }],
+                "detail": "Answer here...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Datum][]
+
+### Update [PUT]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "detail": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Datum][]
+
+### Remove [DELETE]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Datums [/accounts/{id}/datums]
++ Parameter
+
+    + id (required, number, `1`) ... Account ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "account_id": 1,
+                    "definition_id": 1,
+                    "detail": "Answer here...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Datums][]
+
+### Create [POST]
+*Must be account owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "definition_id": 1,
+                "detail": "Answer here..."
+            }
+
++ Response 200 (application/json)
+
+    [Datum][]
+
 # Group Applications
 Applications are what this tool is all about. Applications are what are submitted by applicants.
 
@@ -1946,117 +2073,6 @@ Must be a reviewer or application owner to create.
 + Response 200 (application/json)
 
     [Field][]
-
-# Group Answers
-`Answer` objects are saved answers from an applicant.
-
-They are used for applicants to populate answers to questions already asked on Applyance.
-
-## Answer [/answers/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Answer ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "account_id": 1,
-                "definition_id": 1,
-                "answer": "Answer here...",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Answers [/accounts/{id}/answers]
-+ Parameter
-
-    + id (required, number, `1`) ... Account ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "account_id": 1,
-                    "definition_id": 1,
-                    "answer": "Answer here...",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Answers][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "answer": "Answer here..."
-            }
-
-+ Response 200 (application/json)
-
-    [Answer][]
-
 
 # Group Ratings
 Numeric rating for an application at a certain spot.
