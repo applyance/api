@@ -1074,7 +1074,9 @@ Spots can have the following `status`:
             {
                 "id": 1,
                 "name": "Cohort 4",
-                "detail", "Lorem ipsum ...",
+                "detail": "Lorem ipsum ...",
+                "status": "open",
+                "unit_id": 1,
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -1098,9 +1100,8 @@ Must be an admin or full-access reviewer.
     + Body
 
             {
-                "id": 1,
                 "name": "Cohort 4",
-                "detail" "Lorem ipsum...",
+                "detail": "Lorem ipsum...",
                 "status": "paused"
             }
 
@@ -1109,7 +1110,7 @@ Must be an admin or full-access reviewer.
     [Spot][]
 
 ### Remove [DELETE]
-Must be an admin or full-access reviewer.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -1132,7 +1133,9 @@ Must be an admin or full-access reviewer.
                 {
                     "id": 1,
                     "name": "Cohort 4",
-                    "detail", "Lorem ipsum ...",
+                    "detail": "Lorem ipsum ...",
+                    "status": "open",
+                    "unit_id": 1,
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -1146,7 +1149,7 @@ Must be an admin or full-access reviewer.
     [Spots - Unit][]
 
 ### Create [POST]
-Only an admin or full-access reviewer can create spots.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -1165,18 +1168,6 @@ Only an admin or full-access reviewer can create spots.
 + Response 201 (application/json)
 
     [Spot][]
-
-## Spots - Application [/applications/{id}/spots]
-+ Parameters
-
-    + id (required, number, `1`) ... Application ID
-
-### List [GET]
-+ Request (application/json)
-
-+ Response 200 (application/json)
-
-    [Spots - Unit][]
 
 # Group Threads
 Threads are conversations that happen between a reviewer and an applicant.
