@@ -931,26 +931,6 @@ They can have one of three access levels:
 
     [Reviewers - Unit][]
 
-## Reviewers - Application [/applications/{id}/reviewers]
-Reviewers assigned to applications.
-
-+ Parameters
-
-    + id (required, number, `1`) ... Application ID
-
-### List [GET]
-List all reviewers for an application specified.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Reviewers - Unit][]
-
 ## Reviewer Invite [/reviewers/invites/{id}]
 Invite a reviewer to a unit. This can be done by admins or reviewers with full access.
 
