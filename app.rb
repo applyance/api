@@ -1,5 +1,7 @@
+require 'rack/parser'
 require 'sinatra/base'
 require 'sinatra/config_file'
+require 'sinatra/cross_origin'
 require 'sequel'
 
 require 'active_support/inflector'
@@ -18,13 +20,18 @@ require_relative 'routes/_init'
 module Applyance
   class Server < Sinatra::Base
 
+    # Convert requests to JSON
+    use Rack::Parser, :content_types => {
+      'application/json' => Proc.new { |body| Oj.load(body) }
+    }
+
     # Load config file
     register Sinatra::ConfigFile
     config_file 'config.yml'
 
     # Config
     set :root, File.dirname(__FILE__)
-    enable :logging
+    enable :logging, :cross_origin
 
     configure :development, :test do
       set :show_exceptions, :after_handler

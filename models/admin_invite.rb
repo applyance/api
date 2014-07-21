@@ -18,7 +18,7 @@ module Applyance
 
     def self.make(entity, params)
       admin_invite = self.new
-      admin_invite.set_fields(params, [:email], :missing => :skip)
+      admin_invite.set_fields(params, ['email'], :missing => :skip)
       admin_invite.set(:entity_id => entity.id)
       admin_invite.set_token(:claim_digest)
       admin_invite.save
@@ -29,7 +29,7 @@ module Applyance
       self.update(:status => "claimed")
 
       # Create account and verify it
-      account = Account.make("admin", params.merge({ :email => self.email }))
+      account = Account.make("admin", params.merge({ 'email' => self.email }))
       account.update(:is_verified => true)
 
       # Create admin

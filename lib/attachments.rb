@@ -23,24 +23,24 @@ module Applyance
 
         def attach_single(params, property)
 
-          if params[:token].nil? || params[:name].nil?
+          if params['token'].nil? || params['name'].nil?
             raise BadRequestError({ :detail => "Attachments must contain a token and a name." })
           end
 
           s3 = AWS::S3.new(
-            :access_key_id => settings.aws_s3_access_key_id,
-            :secret_access_key => settings.aws_s3_secret_access_key
+            :access_key_id => Applyance::Server.settings.aws_s3_access_key_id,
+            :secret_access_key => Applyance::Server.settings.aws_s3_secret_access_key
           )
 
-          token = params[:token]
-          name = params[:name]
+          token = params['token']
+          name = params['name']
           source = s3.buckets['applyance.attachments'].objects[token]
 
           # Create attachment
           attachment = Attachment.create(
             :token => token,
-            :name => params[:name],
-            :url => source.public_url(true),
+            :name => params['name'],
+            :url => source.public_url({ :secure => true }),
             :content_type => source.content_type,
             :byte_size => source.content_length
           )

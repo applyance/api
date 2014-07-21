@@ -32,11 +32,11 @@ module Applyance
 
         app.extend(Applyance::Routing::Applications::Protection)
 
-        # List applications
-        app.get '/units/:id/applications', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
-          protected! app.to_reviewers(@unit)
-          @applications = Unit.applications
+        # List applications for spot
+        app.get '/spots/:id/applications', :provides => [:json] do
+          @spot = Spot.first(:id => params['id'])
+          protected! app.to_reviewers(@spot.unit)
+          @applications = @spot.applications
           rabl :'applications/index'
         end
 
@@ -51,7 +51,7 @@ module Applyance
         # Get application by Id
         # Must be a reviewer or application owner
         app.get '/applications/:id', :provides => [:json] do
-          @application = Application.first(:id => params[:id])
+          @application = Application.first(:id => params['id'])
           protected! app.to_reviewers_or_self(@application)
           rabl :'applications/show'
         end
@@ -59,7 +59,7 @@ module Applyance
         # Delete a entity by Id
         # Must be a full access reviewer
         app.delete '/applications/:id', :provides => [:json] do
-          @application = Application.first(:id => params[:id])
+          @application = Application.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@application)
 
           @application.remove_all_spots

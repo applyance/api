@@ -50,7 +50,7 @@ describe Applyance::AdminInvite do
     context "not logged in" do
       let(:entity) { create(:entity_with_admin) }
       before(:each) do
-        post "/entities/#{entity.id}/admins/invites", { email: "stjowa@gmail.com" }
+        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -59,7 +59,7 @@ describe Applyance::AdminInvite do
       let(:entity) { create(:entity_with_admin) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{entity.admins.first.account.api_key}"
-        post "/entities/#{entity.id}/admins/invites", { email: "stjowa@gmail.com" }
+        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -120,7 +120,7 @@ describe Applyance::AdminInvite do
       let(:entity) { create(:entity_with_admin_invite) }
       before(:each) do
         invite = entity.admin_invites.first
-        put "/admins/invites/#{invite.id}", { claim_digest: invite.claim_digest, name: "Steve", password: "secret" }
+        put "/admins/invites/#{invite.id}", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"

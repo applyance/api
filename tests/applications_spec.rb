@@ -21,6 +21,10 @@ describe Applyance::Application do
     app.db[:accounts].delete
     app.db[:admins].delete
     app.db[:entities].delete
+    app.db[:blueprints].delete
+    app.db[:definitions].delete
+    app.db[:datums].delete
+    app.db[:fields].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
     app.db[:units].delete
@@ -34,102 +38,133 @@ describe Applyance::Application do
     header "Authorization", "ApplyanceLogin auth=#{account.api_key}"
   end
 
-  shared_examples_for "a single spot" do
-    it "returns the information for spot show" do
-      expect(json.keys).to contain_exactly('id', 'unit', 'name', 'detail', 'status', 'created_at', 'updated_at')
+  shared_examples_for "a single application" do
+    it "returns the information for application show" do
+      expect(json.keys).to contain_exactly('id', 'spots', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
-  shared_examples_for "multiple spots" do
-    it "returns the information for spot index" do
-      expect(json.first.keys).to contain_exactly('id', 'unit_id', 'name', 'detail', 'status', 'created_at', 'updated_at')
+  shared_examples_for "multiple applications" do
+    it "returns the information for application index" do
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'submitter', 'digest', 'submitted_from_id', 'stage', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
-  # Create units
-  describe "POST #units" do
-    context "logged in as admin" do
-      let(:unit) { create(:unit) }
+  # Create application
+  describe "POST #applications" do
+    context "not logged in" do
+      let(:definition_obj) { create(:definition, :label => "Question 1")}
+      let(:datum_obj) { create(:datum) }
+      let(:blueprint) { create(:blueprint_with_spot) }
+
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" }
+
+        application_request = {
+          submitter: {
+            name: "Stephen Watkins",
+            email: "stjowa@gmail.com"
+          },
+          submitted_from: {
+            lat: 30.5,
+            lng: -40.2
+          },
+          spot_ids: [blueprint.spot.id],
+          fields: [
+            {
+              datum: {
+                detail: "Answer...",
+                definition: {
+                  label: "Question 1",
+                  description: "Description...",
+                  type: "text"
+                }
+              }
+            },
+            {
+              datum: {
+                definition_id: definition_obj.id,
+                detail: "Answer 2..."
+              }
+            },
+            {
+              datum: {
+                id: datum_obj.id,
+                detail: "Answer 5..."
+              }
+            },
+            {
+              datum_id: datum_obj.id
+            }
+          ]
+        }
+
+        post "/applications", Oj.dump(application_request), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
-      it_behaves_like "a single spot"
-      it "returns the right value" do
-        expect(json['name']).to eq('Spot')
-        expect(json['detail']).to eq('Detail...')
-      end
-    end
-    context "not logged in" do
-      let(:unit) { create(:unit) }
-      before(:each) { post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" } }
-
-      it_behaves_like "an unauthorized account"
+      it_behaves_like "a single application"
     end
   end
 
-  # Retrieve spots
-  describe "GET #spots" do
-    context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) do
-        get "/units/#{spot.unit.id}/spots"
-      end
-
-      it_behaves_like "a retrieved object"
-      it_behaves_like "multiple spots"
-    end
-  end
-
-  # Retrieve one spot
-  describe "GET #spot" do
-    let(:spot) { create(:spot) }
-    before(:each) { get "/spots/#{spot.id}" }
-
-    it_behaves_like "a retrieved object"
-    it_behaves_like "a single spot"
-  end
-
-  # Update spot
-  describe "PUT #spot" do
+  # Remove application
+  describe "Delete #application" do
     context "logged in as admin" do
-      let(:spot) { create(:spot) }
+      let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{spot.unit.reviewers.first.account.api_key}"
-        put "/spots/#{spot.id}", { name: "Spot Change" }
-      end
-
-      it_behaves_like "a retrieved object"
-      it_behaves_like "a single spot"
-      it "returns the right value" do
-        expect(json['name']).to eq('Spot Change')
-      end
-    end
-    context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) { put "/spots/#{spot.id}", { name: "The Iron Yard" } }
-
-      it_behaves_like "an unauthorized account"
-    end
-  end
-
-  # Remove spot
-  describe "Delete #spot" do
-    context "logged in as admin" do
-      let(:spot) { create(:spot) }
-      before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{spot.unit.reviewers.first.account.api_key}"
-        delete "/spots/#{spot.id}"
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        delete "/applications/#{application.id}"
       end
 
       it_behaves_like "a deleted object"
       it_behaves_like "an empty response"
     end
     context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) { delete "/spots/#{spot.id}" }
+      let(:application) { create(:application) }
+      before(:each) { delete "/applications/#{application.id}" }
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
+  # Retrieve applications
+  describe "GET #applications" do
+    context "logged in as reviewer" do
+      let(:application) { create(:application) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        get "/spots/#{application.spots.first.id}/applications"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "multiple applications"
+    end
+    context "not logged in" do
+      let(:application) { create(:application) }
+      before(:each) do
+        get "/spots/#{application.spots.first.id}/applications"
+      end
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
+  # Retrieve one application
+  describe "GET #application" do
+    context "logged in" do
+      let(:application) { create(:application) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{application.submitter.api_key}"
+        get "/applications/#{application.id}"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "a single application"
+    end
+    context "not logged in" do
+      let(:application) { create(:application) }
+      before(:each) do
+        get "/applications/#{application.id}"
+      end
 
       it_behaves_like "an unauthorized account"
     end

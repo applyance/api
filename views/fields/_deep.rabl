@@ -1,13 +1,9 @@
 attributes :id, :created_at, :updated_at
 
-child :application do
+child :application => :application do
   extends 'applications/_shallow'
 end
 
-child :blueprint do
-  extends 'blueprints/_shallow'
-end
-
-child :answer do
-  extends 'answers/_shallow'
+child :datum => :datum do
+  extends 'datums/_shallow'
 end

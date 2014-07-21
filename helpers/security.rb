@@ -4,7 +4,7 @@ module Applyance
 
       # Retrieve the current account for the request
       def current_account
-        @account ||= _current_account
+        @__current_account ||= _current_account
       end
 
       # Ensure this request is coming from AJAX
@@ -28,7 +28,7 @@ module Applyance
       # based on the authorization header and loads the proper account.
       #
       # e.g.
-      # protected!(lambda { |account| account.pk == params[:id].to_i })
+      # protected!(lambda { |account| account.pk == params['id'].to_i })
       #
       def protected!(fn = nil)
         account = current_account

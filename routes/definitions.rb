@@ -20,7 +20,7 @@ module Applyance
         # List definitions for unit
         # Must be a full-access reviewer
         app.get '/units/:id/definitions', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
           @definitions = @unit.definitions
           rabl :'definitions/index'
@@ -28,7 +28,7 @@ module Applyance
 
         # List definitions for domain
         app.get '/domains/:id/definitions', :provides => [:json] do
-          @domain = Domain.first(:id => params[:id])
+          @domain = Domain.first(:id => params['id'])
           @definitions = @domain.definitions
           rabl :'definitions/index'
         end
@@ -36,13 +36,14 @@ module Applyance
         # Create a new definition
         # Must be a full access reviewer
         app.post '/units/:id/definitions', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
 
           @definition = Definition.new
-          @definition.set_fields(params, [:label, :description, :type, :helper], :missing => :skip)
-          @definition.unit = @unit
+          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
+
+          @unit.add_definition(@definition)
 
           status 201
           rabl :'definitions/show'
@@ -53,12 +54,13 @@ module Applyance
         app.post '/domains/:id/definitions', :provides => [:json] do
           protected!
 
-          @domain = Domain.first(:id => params[:id])
+          @domain = Domain.first(:id => params['id'])
 
           @definition = Definition.new
-          @definition.set_fields(params, [:label, :description, :type, :helper], :missing => :skip)
-          @definition.domain = @domain
+          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
+
+          @domain.add_definition(@definition)
 
           status 201
           rabl :'definitions/show'
@@ -66,29 +68,29 @@ module Applyance
 
         # Get definition by Id
         app.get '/definitions/:id', :provides => [:json] do
-          @definition = Definition.first(:id => params[:id])
+          @definition = Definition.first(:id => params['id'])
           rabl :'definitions/show'
         end
 
         # Update a definition by Id
         app.put '/definitions/:id', :provides => [:json] do
-          @definition = Definition.first(:id => params[:id])
+          @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
           protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
 
-          @definition.update_fields(params, [:label, :description, :type, :helper], :missing => :skip)
+          @definition.update_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           rabl :'definitions/show'
         end
 
         # Delete a definition by Id
         app.delete '/definitions/:id', :provides => [:json] do
-          @definition = Definition.first(:id => params[:id])
+          @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
           protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
 
-          @definition.answers_dataset.destroy
+          @definition.datums_dataset.destroy
           @definition.blueprints_dataset.destroy
           @definition.destroy
 

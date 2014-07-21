@@ -2,6 +2,7 @@ module Applyance
   class Application < Sequel::Model
 
     include Applyance::Lib::Tokens
+    include Applyance::Lib::Strings
 
     many_to_one :submitter, :class => :'Applyance::Account'
     many_to_one :submitted_from, :class => :'Applyance::Coordinate'
@@ -22,17 +23,17 @@ module Applyance
       ApplicationActivity.make_for_submission(self)
     end
 
-    def make(params)
+    def self.make(params)
 
       # Error checking
-      if params[:fields].empty?
-        raise BadRequestError({ :detail => "Applications need at least one field." })
+      if params['fields'].nil?
+        raise BadRequestError.new({ :detail => "Applications need at least one field." })
       end
-      if params[:spot_ids].empty?
-        raise BadRequestError({ :detail => "Application spots are required." })
+      if params['spot_ids'].nil?
+        raise BadRequestError.new({ :detail => "Application spots are required." })
       end
-      if params[:submitter].empty?
-        raise BadRequestError({ :detail => "Application submitter is required." })
+      if params['submitter'].nil?
+        raise BadRequestError.new({ :detail => "Application submitter is required." })
       end
 
       # Initialize application
@@ -40,36 +41,73 @@ module Applyance
       application.set_token(:digest)
 
       # Create coordinate
-      unless params[:submitted_from].empty?
-        coordinate = Coordinate.make(params[:submitted_from])
-        application.set(:submitted_from_id => coordinate.id)
+      unless params['submitted_from'].nil?
+        coordinate = Coordinate.make(params['submitted_from'])
+        application.set('submitted_from_id' => coordinate.id)
       end
 
       # Create submitter (account)
+      temp_password = application.friendly_token
       account = Account.make("applicant", {
-        :name => params[:submitter][:name],
-        :email => params[:submitter][:email],
-        :password => friendly_token
+        'name' => params['submitter']['name'],
+        'email' => params['submitter']['email'],
+        'password' => temp_password
       })
       application.set(:submitter_id => account.id)
 
-      # TODO: Send applicant welcome email
+      # Save so we can add assocations
+      application.save
 
       # Assign spots
-      params[:spot_ids].each do |spot_id|
+      params['spot_ids'].each do |spot_id|
         spot = Spot.first(:id => spot_id)
         application.add_spot(spot)
       end
 
       # Add fields
-      params[:fields].each do |field|
-        field[:label]
-        field[:answer]
-        field[:type]
+      params['fields'].each do |field|
+        application.add_field_from_datum(field)
       end
 
-      application.save
+      # TODO: Send applicant welcome email
+
       application
+    end
+
+    def add_field_from_datum(field)
+      if field[:datum].nil? && field[:datum_id].nil?
+        raise BadRequestError.new({ :detail => "Must supply a datum for all fields." })
+      end
+
+      if field[:datum_id]
+        field_obj = Field.create(:datum_id => field[:datum_id])
+        self.add_field(field_obj)
+        return
+      end
+
+      if field[:datum][:id]
+        datum = Datum.first(:id => field[:datum][:id])
+      else
+        datum = Datum.new
+        datum.account = self.submitter
+
+        # Figure out the definition
+        if field[:datum][:definition]
+          definition = Definition.make_from_field_for_spots(field[:datum], self.spots)
+        elsif field[:datum][:definition_id]
+          definition = Definition.first(:id => field[:datum][:definition_id])
+        else
+          raise BadRequestError.new({ :detail => "Must supply a definition for all fields." })
+        end
+        datum.definition = definition
+      end
+
+      datum.detail = field[:datum][:detail]
+      datum.save
+
+      field_obj = Field.create(:datum_id => datum.id)
+      self.add_field(field_obj)
+
     end
   end
 end

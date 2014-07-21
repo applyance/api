@@ -42,7 +42,7 @@ describe Applyance::Account do
     context "not logged in" do
       let(:account) { create(:admin_account) }
       before(:each) do
-        post "/accounts/auth", { email: "#{account.email}", password: "test" }
+        post "/accounts/auth", Oj.dump({ email: "#{account.email}", password: "test" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -71,7 +71,7 @@ describe Applyance::Account do
       let(:account) { create(:chief_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { name: "Steve 2" }
+        put "/accounts/#{account.id}", Oj.dump({ name: "Steve 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -85,7 +85,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { name: "Steve 2" }
+        put "/accounts/#{account.id}", Oj.dump({ name: "Steve 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -97,7 +97,7 @@ describe Applyance::Account do
     end
     context "not logged in" do
       let(:account) { create(:account) }
-      before(:each) { put "/accounts/#{account.id}", { name: "Steve 2" } }
+      before(:each) { put "/accounts/#{account.id}", Oj.dump({ name: "Steve 2" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -108,7 +108,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { new_password: "testing" }
+        put "/accounts/#{account.id}", Oj.dump({ new_password: "testing" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an invalid request"
@@ -117,7 +117,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { password: "test", new_password: "testing" }
+        put "/accounts/#{account.id}", Oj.dump({ password: "test", new_password: "testing" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -135,7 +135,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { email: "new@gmail.com" }
+        put "/accounts/#{account.id}", Oj.dump({ email: "new@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an invalid request"
@@ -144,7 +144,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) do
         account_auth
-        put "/accounts/#{account.id}", { password: "test", email: "new2@gmail.com" }
+        put "/accounts/#{account.id}", Oj.dump({ password: "test", email: "new2@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -190,7 +190,7 @@ describe Applyance::Account do
   describe "POST #account/password/reset" do
     context "not logged in" do
       let(:account) { create(:admin_account) }
-      before(:each) { post "/accounts/passwords/reset", { email: account.email } }
+      before(:each) { post "/accounts/passwords/reset", Oj.dump({ email: account.email }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a created object"
       it_behaves_like "an empty response"
@@ -206,9 +206,9 @@ describe Applyance::Account do
     context "not logged in" do
       let(:account) { create(:admin_account) }
       before(:each) do
-        post "/accounts/passwords/reset", { email: account.email }
+        post "/accounts/passwords/reset", Oj.dump({ email: account.email }), { "CONTENT_TYPE" => "application/json" }
         account.reload
-        post "/accounts/passwords/set", { reset_digest: account.reset_digest, new_password: "test4" }
+        post "/accounts/passwords/set", Oj.dump({ reset_digest: account.reset_digest, new_password: "test4" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -224,7 +224,7 @@ describe Applyance::Account do
   describe "POST #accounts/verify" do
     context "not logged in" do
       let(:account) { create(:admin_account) }
-      before(:each) { post "/accounts/verify", { verify_digest: account.verify_digest } }
+      before(:each) { post "/accounts/verify", Oj.dump({ verify_digest: account.verify_digest }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a retrieved object"
       it "verified the account" do

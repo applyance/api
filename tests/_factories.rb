@@ -138,4 +138,67 @@ FactoryGirl.define do
     type "text"
   end
 
+  factory :blueprint, class: Applyance::Blueprint do
+    definition
+    sequence(:position) { |n| n }
+    is_required false
+
+    trait :with_unit do
+      after(:create) do |blueprint|
+        create(:unit_with_reviewer).add_blueprint(blueprint)
+      end
+    end
+
+    trait :with_entity do
+      after(:create) do |blueprint|
+        create(:entity_with_admin).add_blueprint(blueprint)
+      end
+    end
+
+    trait :with_spot do
+      after(:create) do |blueprint|
+        create(:spot).add_blueprint(blueprint)
+      end
+    end
+
+    factory :blueprint_with_unit, traits: [:with_unit]
+    factory :blueprint_with_entity, traits: [:with_entity]
+    factory :blueprint_with_spot, traits: [:with_spot]
+  end
+
+  factory :datum, class: Applyance::Datum do
+    definition
+    association :account, factory: :applicant_account
+    detail "Detail..."
+  end
+
+  factory :coordinate, class: Applyance::Coordinate do
+    lat 34.5
+    lng -42.8
+  end
+
+  factory :application, class: Applyance::Application do
+    association :submitter, factory: :applicant_account
+    association :submitted_from, factory: :coordinate
+
+    digest { SecureRandom.urlsafe_base64(nil, false) }
+    submitted_at { DateTime.now }
+    last_activity_at { DateTime.now }
+
+    after(:create) do |application|
+      application.add_spot(create(:spot))
+      application.add_field(create(:field, :datum => create(:datum, :account => application.submitter)))
+    end
+  end
+
+  factory :field, class: Applyance::Field do
+    datum
+
+    trait :with_application do
+      application
+    end
+
+    factory :field_with_application, traits: [:with_application]
+  end
+
 end

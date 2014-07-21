@@ -20,6 +20,8 @@ describe Applyance::Field do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
     app.db[:admins].delete
+    app.db[:blueprints].delete
+    app.db[:definitions].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
@@ -34,102 +36,86 @@ describe Applyance::Field do
     header "Authorization", "ApplyanceLogin auth=#{account.api_key}"
   end
 
-  shared_examples_for "a single spot" do
-    it "returns the information for spot show" do
-      expect(json.keys).to contain_exactly('id', 'unit', 'name', 'detail', 'status', 'created_at', 'updated_at')
+  shared_examples_for "a single field" do
+    it "returns the information for field show" do
+      expect(json.keys).to contain_exactly('id', 'application', 'datum', 'created_at', 'updated_at')
     end
   end
 
-  shared_examples_for "multiple spots" do
-    it "returns the information for spot index" do
-      expect(json.first.keys).to contain_exactly('id', 'unit_id', 'name', 'detail', 'status', 'created_at', 'updated_at')
+  shared_examples_for "multiple fields" do
+    it "returns the information for field index" do
+      expect(json.first.keys).to contain_exactly('id', 'application_id', 'datum_id', 'created_at', 'updated_at')
     end
   end
 
-  # Create units
-  describe "POST #units" do
-    context "logged in as admin" do
-      let(:unit) { create(:unit) }
+  # Retrieve fields
+  describe "GET #fields" do
+    context "not logged in" do
+      let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" }
+        header "Authorization", "ApplyanceLogin auth=#{application.submitter.api_key}"
+        get "/applications/#{application.id}/fields"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "multiple fields"
+    end
+  end
+
+  # Retrieve one field
+  describe "GET #field" do
+    let(:application) { create(:application) }
+    before(:each) do
+      header "Authorization", "ApplyanceLogin auth=#{application.submitter.api_key}"
+      get "/fields/#{application.fields.first.id}"
+    end
+
+    it_behaves_like "a retrieved object"
+    it_behaves_like "a single field"
+  end
+
+  # Create fields
+  describe "POST #applications/fields" do
+    context "logged in as admin" do
+      let(:datum) { create(:datum) }
+      let(:application) { create(:application) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{application.submitter.api_key}"
+        post "/applications/#{application.id}/fields", Oj.dump({ datum_id: datum.id }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
-      it_behaves_like "a single spot"
+      it_behaves_like "a single field"
       it "returns the right value" do
-        expect(json['name']).to eq('Spot')
-        expect(json['detail']).to eq('Detail...')
+        expect(json['datum']['id']).to eq(datum.id)
       end
     end
     context "not logged in" do
-      let(:unit) { create(:unit) }
-      before(:each) { post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" } }
+      let(:datum) { create(:datum) }
+      let(:application) { create(:application) }
+      before(:each) do
+        post "/applications/#{application.id}/fields", Oj.dump({ datum_id: datum.id }), { "CONTENT_TYPE" => "application/json" }
+      end
 
       it_behaves_like "an unauthorized account"
     end
   end
 
-  # Retrieve spots
-  describe "GET #spots" do
-    context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) do
-        get "/units/#{spot.unit.id}/spots"
-      end
-
-      it_behaves_like "a retrieved object"
-      it_behaves_like "multiple spots"
-    end
-  end
-
-  # Retrieve one spot
-  describe "GET #spot" do
-    let(:spot) { create(:spot) }
-    before(:each) { get "/spots/#{spot.id}" }
-
-    it_behaves_like "a retrieved object"
-    it_behaves_like "a single spot"
-  end
-
-  # Update spot
-  describe "PUT #spot" do
+  # Remove field
+  describe "Delete #field" do
     context "logged in as admin" do
-      let(:spot) { create(:spot) }
+      let(:field) { create(:field_with_application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{spot.unit.reviewers.first.account.api_key}"
-        put "/spots/#{spot.id}", { name: "Spot Change" }
-      end
-
-      it_behaves_like "a retrieved object"
-      it_behaves_like "a single spot"
-      it "returns the right value" do
-        expect(json['name']).to eq('Spot Change')
-      end
-    end
-    context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) { put "/spots/#{spot.id}", { name: "The Iron Yard" } }
-
-      it_behaves_like "an unauthorized account"
-    end
-  end
-
-  # Remove spot
-  describe "Delete #spot" do
-    context "logged in as admin" do
-      let(:spot) { create(:spot) }
-      before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{spot.unit.reviewers.first.account.api_key}"
-        delete "/spots/#{spot.id}"
+        header "Authorization", "ApplyanceLogin auth=#{field.datum.account.api_key}"
+        delete "/fields/#{field.id}"
       end
 
       it_behaves_like "a deleted object"
       it_behaves_like "an empty response"
     end
     context "not logged in" do
-      let(:spot) { create(:spot) }
-      before(:each) { delete "/spots/#{spot.id}" }
+      let(:field) { create(:field_with_application) }
+      before(:each) { delete "/fields/#{field.id}" }
 
       it_behaves_like "an unauthorized account"
     end

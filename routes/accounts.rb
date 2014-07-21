@@ -22,23 +22,23 @@ module Applyance
 
         # Show an account specified by Id
         app.get '/accounts/:id', :provides => [:json] do
-          @account = protected! app.to_account_id(params[:id])
+          @account = protected! app.to_account_id(params['id'])
           rabl :'accounts/show'
         end
 
         # Update an account specified by Id
         app.put '/accounts/:id', :provides => [:json] do
-          @account = protected! app.to_account_id(params[:id])
+          @account = protected! app.to_account_id(params['id'])
           @account.handle_update(params)
           rabl :'accounts/show'
         end
 
         # Destroy account
         app.delete '/accounts/:id', :provides => [:json] do
-          @account = protected! app.to_account_id(params[:id])
+          @account = protected! app.to_account_id(params['id'])
 
           @account.remove_all_roles
-          @account.answers_dataset.destroy
+          @account.datums_dataset.destroy
           @account.reviewers_dataset.destroy
           @account.admins_dataset.destroy
           @account.destroy
@@ -48,7 +48,7 @@ module Applyance
 
         # Reset password
         app.post '/accounts/passwords/reset', :provides => [:json] do
-          @account = Account.first(:email => params[:email])
+          @account = Account.first(:email => params['email'])
           unless @account
             raise BadRequestError({ detail: "An account with that email does not exist." })
           end
@@ -58,7 +58,7 @@ module Applyance
 
         # Set password
         app.post '/accounts/passwords/set', :provides => [:json] do
-          @account = Account.first(:reset_digest => params[:reset_digest])
+          @account = Account.first(:reset_digest => params['reset_digest'])
           unless @account
             raise BadRequestError({ detail: "Invalid reset token." })
           end
@@ -68,7 +68,7 @@ module Applyance
 
         # Verify email address
         app.post '/accounts/verify', :provides => [:json] do
-          @account = Account.first(:verify_digest => params[:verify_digest])
+          @account = Account.first(:verify_digest => params['verify_digest'])
           unless @account
             raise BadRequestError({ :detail => "Invalid verify digest." })
           end

@@ -15,7 +15,7 @@ module Applyance
 
         # List admins for an entity
         app.get '/entities/:id/admins', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
           @admins = @entity.admins
           rabl :'admins/index'
@@ -23,7 +23,7 @@ module Applyance
 
         # Create admin for entity
         app.post '/entities/:id/admins', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
 
           if @entity.nil?
             raise BadRequestError({ :detail => "Must be a valid entity." })
@@ -40,14 +40,14 @@ module Applyance
 
         # Get admin by Id
         app.get '/admins/:id', :provides => [:json] do
-          @admin = Admin.first(:id => params[:id])
+          @admin = Admin.first(:id => params['id'])
           protected! app.to_admins(@admin.entity)
           rabl :'admins/show'
         end
 
         # Delete an admin by Id
         app.delete '/admins/:id', :provides => [:json] do
-          @admin = Admin.first(:id => params[:id])
+          @admin = Admin.first(:id => params['id'])
           protected! app.to_admins(@admin.entity)
 
           @admin.destroy

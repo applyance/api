@@ -19,7 +19,7 @@ module Applyance
 
         # List spots
         app.get '/units/:id/spots', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           @spots = @unit.spots
           rabl :'spots/index'
         end
@@ -27,12 +27,12 @@ module Applyance
         # Create a new unit
         # Must be a full access reviewer
         app.post '/units/:id/spots', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
 
           @spot = Spot.new
           @spot.set(:unit_id => @unit.id)
-          @spot.set_fields(params, [:name, :detail, :status], :missing => :skip)
+          @spot.set_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           @spot.save
 
           status 201
@@ -41,24 +41,24 @@ module Applyance
 
         # Get spot by Id
         app.get '/spots/:id', :provides => [:json] do
-          @spot = Spot.first(:id => params[:id])
+          @spot = Spot.first(:id => params['id'])
           rabl :'spots/show'
         end
 
         # Update a spot by Id
         # Must be a full access reviewer
         app.put '/spots/:id', :provides => [:json] do
-          @spot = Spot.first(:id => params[:id])
+          @spot = Spot.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@spot.unit)
 
-          @spot.update_fields(params, [:name, :detail, :status], :missing => :skip)
+          @spot.update_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           rabl :'spots/show'
         end
 
         # Delete a entity by Id
         # Must be a full access reviewer
         app.delete '/spots/:id', :provides => [:json] do
-          @spot = Spot.first(:id => params[:id])
+          @spot = Spot.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@spot.unit)
 
           @spot.ratings_dataset.destroy

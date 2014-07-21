@@ -46,6 +46,9 @@ module Applyance
 
       shared_examples_for "an unauthorized account" do
         it "returns the right status code" do
+          puts "------------------------------"
+          puts last_response.body
+          puts "------------------------------"
           expect(last_response.status).to eq(401)
         end
       end

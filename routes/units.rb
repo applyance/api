@@ -23,7 +23,7 @@ module Applyance
         # List units
         # Only entity admins can do this
         app.get '/entities/:id/units', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
           @units = @entity.units
@@ -33,11 +33,11 @@ module Applyance
         # Create a new unit
         # Only entity admins can do this
         app.post '/entities/:id/units', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
           @unit = Unit.new
-          @unit.set_fields(params, [:name], :missing => :skip)
+          @unit.set_fields(params, ['name'], :missing => :skip)
           @unit.set(:entity_id => @entity.id)
           @unit.save
 
@@ -47,24 +47,24 @@ module Applyance
 
         # Get unit by Id
         app.get '/units/:id', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           rabl :'units/show'
         end
 
         # Update a unit by Id
         # Must be an admin
         app.put '/units/:id', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           @account = protected! app.to_admins(@unit.entity)
 
-          @unit.update_fields(params, [:name], :missing => :skip)
+          @unit.update_fields(params, ['name'], :missing => :skip)
           rabl :'units/show'
         end
 
         # Delete a unit by Id
         # Must be an admin
         app.delete '/units/:id', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
 
           @unit.reviewers_dataset.destroy
@@ -73,7 +73,7 @@ module Applyance
           @unit.templates_dataset.destroy
           @unit.pipelines_dataset.destroy
           @unit.labels_dataset.destroy
-          @unit.remove_all_definitions
+          @unit.definitions_dataset.destroy
           @unit.remove_all_blueprints
           @unit.destroy
 

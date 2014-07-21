@@ -19,7 +19,7 @@ module Applyance
 
         # List reviewer invites
         app.get '/units/:id/reviewers/invites', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
 
           @reviewer_invites = @unit.reviewer_invites
@@ -28,7 +28,7 @@ module Applyance
 
         # Create a new reviewer invite
         app.post '/units/:id/reviewers/invites', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
 
           @reviewer_invite = ReviewerInvite.make(@unit, params)
@@ -39,14 +39,14 @@ module Applyance
 
         # Get reviewer invite by Id
         app.get '/reviewers/invites/:id', :provides => [:json] do
-          @reviewer_invite = ReviewerInvite.first(:id => params[:id])
+          @reviewer_invite = ReviewerInvite.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@reviewer_invite.unit)
           rabl :'reviewer_invites/show'
         end
 
         # Claim a reviewer invite
         app.put '/reviewers/invites/:id', :provides => [:json] do
-          @reviewer_invite = ReviewerInvite.first(:claim_digest => params[:claim_digest])
+          @reviewer_invite = ReviewerInvite.first(:claim_digest => params['claim_digest'])
 
           unless @reviewer_invite
             raise BadRequestError({ :detail => "Must send a valid claim digest." })

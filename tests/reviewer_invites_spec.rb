@@ -53,7 +53,7 @@ describe Applyance::ReviewerInvite do
     context "not logged in" do
       let(:unit) { create(:unit) }
       before(:each) do
-        post "/units/#{unit.id}/reviewers/invites", { email: "stjowa@gmail.com", access_level: "full" }
+        post "/units/#{unit.id}/reviewers/invites", Oj.dump({ email: "stjowa@gmail.com", access_level: "full" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -62,7 +62,7 @@ describe Applyance::ReviewerInvite do
       let(:unit) { create(:unit) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/reviewers/invites", { email: "stjowa@gmail.com", access_level: "full" }
+        post "/units/#{unit.id}/reviewers/invites", Oj.dump({ email: "stjowa@gmail.com", access_level: "full" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -123,7 +123,7 @@ describe Applyance::ReviewerInvite do
       let(:unit) { create(:unit_with_reviewer_invite) }
       before(:each) do
         invite = unit.reviewer_invites.first
-        put "/reviewers/invites/#{invite.id}", { claim_digest: invite.claim_digest, name: "Steve", password: "secret" }
+        put "/reviewers/invites/#{invite.id}", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"

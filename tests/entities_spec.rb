@@ -44,7 +44,7 @@ describe Applyance::Entity do
   # Create entities
   describe "POST #entities" do
     context "not logged in" do
-      before(:each) { post "/entities", { name: "The Iron Yard" } }
+      before(:each) { post "/entities", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a created object"
       it_behaves_like "a single entity"
@@ -129,7 +129,7 @@ describe Applyance::Entity do
     end
     context "not logged in" do
       let(:entity) { create(:entity) }
-      before(:each) { put "/entities/#{entity.id}", { name: "The Iron Yard" } }
+      before(:each) { put "/entities/#{entity.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

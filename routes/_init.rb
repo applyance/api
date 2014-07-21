@@ -1,4 +1,4 @@
-require_relative 'errors'
+require_relative '_errors'
 require_relative 'attachments'
 require_relative 'domains'
 require_relative 'roles'
@@ -12,8 +12,9 @@ require_relative 'reviewer_invites'
 require_relative 'spots'
 require_relative 'definitions'
 require_relative 'blueprints'
-require_relative 'answers'
+require_relative 'datums'
 require_relative 'fields'
+require_relative 'applications'
 
 module Applyance
   module Routing
@@ -33,8 +34,9 @@ module Applyance
         app.register Applyance::Routing::Spots
         app.register Applyance::Routing::Definitions
         app.register Applyance::Routing::Blueprints
-        app.register Applyance::Routing::Answers
+        app.register Applyance::Routing::Datums
         app.register Applyance::Routing::Fields
+        app.register Applyance::Routing::Applications
       end
     end
   end

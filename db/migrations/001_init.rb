@@ -244,7 +244,7 @@ Sequel.migration do
 
       foreign_key :submitter_id, :accounts, :on_delete => :set_null
       foreign_key :submitted_from_id, :coordinates, :on_delete => :set_null
-      foreign_key :stage_id, :stages, :on_delete => :set_null
+      foreign_key :stage_id, :stages, :null => true, :on_delete => :set_null
 
       String :digest, :null => false, :index => { :unique => true }
 
@@ -278,8 +278,8 @@ Sequel.migration do
       foreign_key :application_id, :applications, :on_delete => :cascade
       String :detail, :text => true
       DateTime :activity_at
-      DateTime :object_type
-      DateTime :object_id
+      String :object_type
+      Integer :object_id
     end
 
     # Create threads
@@ -345,9 +345,6 @@ Sequel.migration do
     create_table(:definitions) do
       primary_key :id
 
-      foreign_key :domain_id, :domains, :null => true, :on_delete => :cascade
-      foreign_key :unit_id, :units, :null => true, :on_delete => :cascade
-
       String :name, :null => false, :index => { :unique => true }
       String :label, :null => false
       String :description, :text => true
@@ -358,11 +355,24 @@ Sequel.migration do
       DateTime :updated_at
     end
 
+    # Domain definitions
+    create_table(:definitions_domains) do
+      foreign_key :definition_id, :definitions, :on_delete => :cascade, :unique => true
+      foreign_key :domain_id, :domains, :on_delete => :cascade
+    end
+
+    # Unit definitions
+    create_table(:definitions_units) do
+      foreign_key :definition_id, :definitions, :on_delete => :cascade, :unique => true
+      foreign_key :unit_id, :units, :on_delete => :cascade
+    end
+
     # Create blueprints
     create_table(:blueprints) do
       primary_key :id
 
       foreign_key :definition_id, :definitions
+
       Integer :position, :null => false, :index => true
       TrueClass :is_required, :default => false
 
@@ -372,31 +382,37 @@ Sequel.migration do
 
     # Spot blueprints
     create_table(:blueprints_spots) do
-      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade
+      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade, :unique => true
       foreign_key :spot_id, :spots, :on_delete => :cascade
     end
 
     # Unit blueprints
     create_table(:blueprints_units) do
-      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade
+      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade, :unique => true
       foreign_key :unit_id, :units, :on_delete => :cascade
     end
 
-    # Create answers
-    create_table(:answers) do
+    # Entity blueprints
+    create_table(:blueprints_entities) do
+      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade, :unique => true
+      foreign_key :entity_id, :entities, :on_delete => :cascade
+    end
+
+    # Create datums
+    create_table(:datums) do
       primary_key :id
 
       foreign_key :account_id, :accounts, :on_delete => :cascade
       foreign_key :definition_id, :definitions, :on_delete => :cascade
-      String :answer, :null => false, :text => true
+      String :detail, :null => false, :text => true
 
       DateTime :created_at
       DateTime :updated_at
     end
 
-    # Create answer attachments
-    create_table(:answers_attachments) do
-      foreign_key :answer_id, :answers, :on_delete => :cascade
+    # Create datum attachments
+    create_table(:attachments_datums) do
+      foreign_key :datum_id, :datums, :on_delete => :cascade
       foreign_key :attachment_id, :attachments, :on_delete => :cascade
     end
 
@@ -405,8 +421,7 @@ Sequel.migration do
       primary_key :id
 
       foreign_key :application_id, :applications, :on_delete => :cascade
-      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade
-      foreign_key :answer_id, :answers, :on_delete => :set_null
+      foreign_key :datum_id, :datums, :on_delete => :set_null
 
       DateTime :created_at
       DateTime :updated_at

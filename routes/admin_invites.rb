@@ -15,7 +15,7 @@ module Applyance
 
         # List admin invites
         app.get '/entities/:id/admins/invites', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
           @admin_invites = @entity.admin_invites
@@ -24,7 +24,7 @@ module Applyance
 
         # Create a new admin invite
         app.post '/entities/:id/admins/invites', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
           @admin_invite = AdminInvite.make(@entity, params)
@@ -35,14 +35,14 @@ module Applyance
 
         # Get admin invite by Id
         app.get '/admins/invites/:id', :provides => [:json] do
-          @admin_invite = AdminInvite.first(:id => params[:id])
+          @admin_invite = AdminInvite.first(:id => params['id'])
           protected! app.to_admins(@admin_invite.entity)
           rabl :'admin_invites/show'
         end
 
         # Claim an admin invite
         app.put '/admins/invites/:id', :provides => [:json] do
-          @admin_invite = AdminInvite.first(:claim_digest => params[:claim_digest])
+          @admin_invite = AdminInvite.first(:claim_digest => params['claim_digest'])
 
           unless @admin_invite
             raise BadRequestError({ :detail => "Must send a valid claim digest." })

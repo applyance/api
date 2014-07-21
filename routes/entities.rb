@@ -25,7 +25,7 @@ module Applyance
         # Only Chiefs can do this B)
         app.get '/domains/:id/entities', :provides => [:json] do
           protected!
-          @domain = Domain.first(:id => params[:id])
+          @domain = Domain.first(:id => params['id'])
           @entities = @domain.entities
           rabl :'entities/index'
         end
@@ -33,7 +33,7 @@ module Applyance
         # Create a new entity
         app.post '/entities', :provides => [:json] do
           @entity = Entity.new
-          @entity.set_fields(params, [:name, :domain_id], :missing => :skip)
+          @entity.set_fields(params, ['name', 'domain_id'], :missing => :skip)
           @entity.save
           status 201
           rabl :'entities/show'
@@ -41,23 +41,23 @@ module Applyance
 
         # Get entity by Id
         app.get '/entities/:id', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           rabl :'entities/show'
         end
 
         # Update a entity by Id
         # Must be an admin
         app.put '/entities/:id', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           @account = protected! app.to_admins(@entity)
-          @entity.update_fields(params, [:name, :domain_id], :missing => :skip)
+          @entity.update_fields(params, ['name', 'domain_id'], :missing => :skip)
           rabl :'entities/show'
         end
 
         # Delete a entity by Id
         # Must be an admin
         app.delete '/entities/:id', :provides => [:json] do
-          @entity = Entity.first(:id => params[:id])
+          @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
           @entity.admins_dataset.destroy

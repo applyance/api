@@ -27,7 +27,7 @@ module Applyance
 
         # List reviewers for a unit
         app.get '/units/:id/reviewers', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
+          @unit = Unit.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@unit)
           @reviewers = @unit.reviewers
           rabl :'reviewers/index'
@@ -35,22 +35,22 @@ module Applyance
 
         # Get reviewer by Id
         app.get '/reviewers/:id', :provides => [:json] do
-          @reviewer = Reviewer.first(:id => params[:id])
+          @reviewer = Reviewer.first(:id => params['id'])
           protected! app.to_full_access_reviewers_or_self(@reviewer)
           rabl :'reviewers/show'
         end
 
         # Update reviewer by Id
         app.put '/reviewers/:id', :provides => [:json] do
-          @reviewer = Reviewer.first(:id => params[:id])
+          @reviewer = Reviewer.first(:id => params['id'])
           protected! app.to_full_access_reviewers(@reviewer)
-          @reviewer.update_fields(params, [:access_level], :missing => :skip)
+          @reviewer.update_fields(params, ['access_level'], :missing => :skip)
           rabl :'reviewers/show'
         end
 
         # Delete a reviewer by Id
         app.delete '/reviewers/:id', :provides => [:json] do
-          @reviewer = Reviewer.first(:id => params[:id])
+          @reviewer = Reviewer.first(:id => params['id'])
           protected! app.to_full_access_reviewers_or_self(@reviewer)
 
           @reviewer.segments_dataset.destroy

@@ -1,0 +1,1 @@
+attributes :id, :lat, :lng

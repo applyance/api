@@ -53,7 +53,7 @@ describe Applyance::Domain do
     context "logged in as chief" do
       before(:each) do
         chief_auth
-        post "/domains", { name: "Retail" }
+        post "/domains", Oj.dump({ name: "Retail" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -62,13 +62,13 @@ describe Applyance::Domain do
     context "logged in as admin" do
       before(:each) do
         admin_auth
-        post "/domains", { name: "Retail" }
+        post "/domains", Oj.dump({ name: "Retail" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
     end
     context "not logged in" do
-      before(:each) { post "/domains", { name: "Retail" } }
+      before(:each) { post "/domains", Oj.dump({ name: "Retail" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -101,7 +101,7 @@ describe Applyance::Domain do
       let(:domain) { create(:domain) }
       before(:each) do
         chief_auth
-        put "/domains/#{domain.id}", { name: "Retail 2" }
+        put "/domains/#{domain.id}", Oj.dump({ name: "Retail 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -114,14 +114,14 @@ describe Applyance::Domain do
       let(:domain) { create(:domain) }
       before(:each) do
         admin_auth
-        put "/domains/#{domain.id}", { name: "Retail 2" }
+        put "/domains/#{domain.id}", Oj.dump({ name: "Retail 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
     end
     context "not logged in" do
       let(:domain) { create(:domain) }
-      before(:each) { put "/domains/#{domain.id}", { name: "Retail 2" } }
+      before(:each) { put "/domains/#{domain.id}", Oj.dump({ name: "Retail 2" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

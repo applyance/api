@@ -6,7 +6,7 @@ module Applyance
 
     many_to_many :roles, :class => :'Applyance::Role'
     many_to_one :avatar, :class => :'Applyance::Attachment'
-    one_to_many :answers, :class => :'Applyance::Answer'
+    one_to_many :datums, :class => :'Applyance::Datum'
     one_to_many :admins, :class => :'Applyance::Admin'
     one_to_many :reviewers, :class => :'Applyance::Reviewer'
 
@@ -24,17 +24,17 @@ module Applyance
 
     # Make the account with the specified role
     def self.make(role, params)
-      account = self.first(:email => params[:email])
+      account = self.first(:email => params['email'])
       if account
         account.add_role(Role.first(:name => role)) unless account.has_role?(role)
         return account
       end
 
       account = self.new
-      account.set_fields(params, [:name, :email], :missing => :skip)
+      account.set_fields(params, ['name', 'email'], :missing => :skip)
       account.set_token(:api_key)
       account.set_token(:verify_digest)
-      account.set(:password_hash => BCrypt::Password.create(params[:password]))
+      account.set(:password_hash => BCrypt::Password.create(params['password']))
       account.save
 
       account.add_role(Role.first(:name => role))
@@ -43,7 +43,7 @@ module Applyance
 
     # Authorize via email and password
     def self.authenticate(params)
-      account = self.first(:email => params[:email])
+      account = self.first(:email => params['email'])
 
       # Check for an existing account
       if account.nil?
@@ -51,7 +51,7 @@ module Applyance
       end
 
       # Check password
-      unless BCrypt::Password.new(account.password_hash) == params[:password]
+      unless BCrypt::Password.new(account.password_hash) == params['password']
         raise BadRequestError.new({ :detail => "Incorrect password." })
       end
 
@@ -69,53 +69,53 @@ module Applyance
     # This is after a reset password request
     def set_password(params)
       # Make sure the new password actually was entered
-      if params[:new_password].length == 0
+      if params['new_password'].length == 0
         raise BadRequestError.new({ :detail => "You must enter a new password." })
       end
 
-      self.update(:password_hash => BCrypt::Password.create(params[:new_password]))
+      self.update(:password_hash => BCrypt::Password.create(params['new_password']))
     end
 
     # Update account stuff
     def handle_update(params)
-      self.update_fields(params, [:name], :missing => :skip)
-      self.attach(params[:avatar], :avatar)
-      self.change_password(params) unless params[:new_password].nil?
-      self.change_email(params) unless params[:email].nil?
+      self.update_fields(params, ['name'], :missing => :skip)
+      self.attach(params['avatar'], :avatar)
+      self.change_password(params) unless params['new_password'].nil?
+      self.change_email(params) unless params['email'].nil?
     end
 
     # Password change request from the user
     def change_password(params)
       # Make sure current password is correct
-      unless BCrypt::Password.new(self.password_hash) == params[:password]
+      unless BCrypt::Password.new(self.password_hash) == params['password']
         raise BadRequestError.new({ :detail => "Incorrect password." })
       end
 
       # Make sure the new password actually was entered
-      if params[:new_password].length == 0
+      if params['new_password'].length == 0
         raise BadRequestError.new({ :detail => "You must enter a new password." })
       end
 
-      self.update(:password_hash => BCrypt::Password.create(params[:new_password]))
+      self.update(:password_hash => BCrypt::Password.create(params['new_password']))
     end
 
     # Used for a user changing their email
     def change_email(params)
       # Make sure current password is correct
-      unless BCrypt::Password.new(self.password_hash) == params[:password]
+      unless BCrypt::Password.new(self.password_hash) == params['password']
         raise BadRequestError.new({ :detail => "Incorrect password." })
       end
 
       # Make sure the new email actually was entered
-      if params[:email].length == 0
+      if params['email'].length == 0
         raise BadRequestError.new({ :detail => "You must enter a new email." })
       end
 
-      self.update(:email => params[:email], :is_verified => false)
+      self.update(:email => params['email'], :is_verified => false)
 
       # TODO: Send notification to verify new email address
 
-      params[:email]
+      params['email']
     end
 
     # Used for a user verifying their email

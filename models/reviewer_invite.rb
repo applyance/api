@@ -18,7 +18,7 @@ module Applyance
 
     def self.make(unit, params)
       reviewer_invite = self.new
-      reviewer_invite.set_fields(params, [:email, :access_level], :missing => :skip)
+      reviewer_invite.set_fields(params, ['email', 'access_level'], :missing => :skip)
       reviewer_invite.set(:unit_id => unit.id)
       reviewer_invite.set_token(:claim_digest)
       reviewer_invite.save
@@ -29,7 +29,7 @@ module Applyance
       self.update(:status => "claimed")
 
       # Create account and verify it
-      account = Account.make("reviewer", params.merge({ :email => self.email }))
+      account = Account.make("reviewer", params.merge({ 'email' => self.email }))
       account.update(:is_verified => true)
 
       # Create reviewer

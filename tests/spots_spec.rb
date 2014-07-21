@@ -51,7 +51,7 @@ describe Applyance::Spot do
       let(:unit) { create(:unit) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" }
+        post "/units/#{unit.id}/spots", Oj.dump({ name: "Spot", detail: "Detail...", status: "open" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -63,7 +63,7 @@ describe Applyance::Spot do
     end
     context "not logged in" do
       let(:unit) { create(:unit) }
-      before(:each) { post "/units/#{unit.id}/spots", { name: "Spot", detail: "Detail...", status: "open" } }
+      before(:each) { post "/units/#{unit.id}/spots", Oj.dump({ name: "Spot", detail: "Detail...", status: "open" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -97,7 +97,7 @@ describe Applyance::Spot do
       let(:spot) { create(:spot) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{spot.unit.reviewers.first.account.api_key}"
-        put "/spots/#{spot.id}", { name: "Spot Change" }
+        put "/spots/#{spot.id}", Oj.dump({ name: "Spot Change" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -108,7 +108,7 @@ describe Applyance::Spot do
     end
     context "not logged in" do
       let(:spot) { create(:spot) }
-      before(:each) { put "/spots/#{spot.id}", { name: "The Iron Yard" } }
+      before(:each) { put "/spots/#{spot.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

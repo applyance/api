@@ -49,7 +49,7 @@ describe Applyance::Unit do
       let(:entity) { create(:entity_with_admin) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{entity.admins.first.account.api_key}"
-        post "/entities/#{entity.id}/units", { name: "Building 1" }
+        post "/entities/#{entity.id}/units", Oj.dump({ name: "Building 1" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -60,7 +60,7 @@ describe Applyance::Unit do
     end
     context "not logged in" do
       let(:entity) { create(:entity_with_admin) }
-      before(:each) { post "/entities/#{entity.id}/units", { name: "Building 1" } }
+      before(:each) { post "/entities/#{entity.id}/units", Oj.dump({ name: "Building 1" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -103,7 +103,7 @@ describe Applyance::Unit do
       let(:unit) { create(:unit_with_reviewer) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{unit.entity.admins.first.account.api_key}"
-        put "/units/#{unit.id}", { name: "Retail 2" }
+        put "/units/#{unit.id}", Oj.dump({ name: "Retail 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -114,7 +114,7 @@ describe Applyance::Unit do
     end
     context "not logged in" do
       let(:unit) { create(:unit) }
-      before(:each) { put "/units/#{unit.id}", { name: "The Iron Yard" } }
+      before(:each) { put "/units/#{unit.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

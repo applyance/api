@@ -42,7 +42,7 @@ describe Applyance::Admin do
   describe "POST #admins" do
     context "not logged in" do
       let(:entity) { create(:entity) }
-      before(:each) { post "/entities/#{entity.id}/admins", { name: "Steve", email: "stjowa@gmail.com", password: "secret" } }
+      before(:each) { post "/entities/#{entity.id}/admins", Oj.dump({ name: "Steve", email: "stjowa@gmail.com", password: "secret" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a created object"
       it_behaves_like "a single admin"
