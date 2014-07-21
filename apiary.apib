@@ -602,7 +602,7 @@ Possible status values:
 
 + Parameters
 
-    + id (required, number, `1`)
+    + id (required, number, `1`) ... Admin Invite ID
 
 + Model (application/json)
 
@@ -610,6 +610,12 @@ Possible status values:
 
             {
                 "id": 1,
+                "entity": {
+                    "id": 1,
+                    "name": "Entity Name",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
                 "email": "johnny@gmail.com",
                 "status": "open",
                 "created_at": "2012-03-22T16:56:48-05:00",
@@ -617,7 +623,7 @@ Possible status values:
             }
 
 ### Get Invite [GET]
-Must be an entity admin to retrieve another invitation.
+*Must be an admin.*
 
 + Request (application/json)
 
@@ -630,7 +636,7 @@ Must be an entity admin to retrieve another invitation.
     [Admin Invite][]
 
 ### Claim Invite [PUT]
-Claims the invitation. This means that the admin received their email invitation and clicked the link with the claim digest to claim it.
+Claims the invitation by sending the `claim_digest` that was received in the invite email.
 
 + Request (application/json)
 
@@ -644,7 +650,7 @@ Claims the invitation. This means that the admin received their email invitation
 
 + Response 200 (application/json)
 
-    [Admin Invite][]
+    [Admin][]
 
 ## Admin Invites [/entities/{id}/admins/invites]
 + Parameters
@@ -658,6 +664,7 @@ Claims the invitation. This means that the admin received their email invitation
             [
                 {
                     "id": 1,
+                    "entity_id": 1,
                     "email": "johnny@gmail.com",
                     "status": "claimed",
                     "created_at": "2012-03-22T16:56:48-05:00",
@@ -666,7 +673,7 @@ Claims the invitation. This means that the admin received their email invitation
             ]
 
 ### Create Invite [POST]
-Must be an entity admin to create this invite.
+*Must be an admin.*
 
 + Request (application/json)
 
@@ -685,7 +692,7 @@ Must be an entity admin to create this invite.
     [Admin Invite][]
 
 ### List Invites [GET]
-Must be an entity admin to list invites for an entity.
+*Must be an admin.*
 
 + Request (application/json)
 
