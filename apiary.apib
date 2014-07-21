@@ -1666,9 +1666,7 @@ They are used to populate fields already asked and answered on Applyance.
     [Datum][]
 
 # Group Applications
-Applications are what this tool is all about. Applications are what are submitted by applicants.
-
-Their data is made up of a list of `Field` objects.
+Applications are a list of `Field` objects.
 
 Activity time is determined by the following:
 
@@ -1714,19 +1712,7 @@ Activity time is determined by the following:
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "fields": [
                     {
-                        "id": 1,
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "id": 1,
-                        "definition": {
-                            "id": 1,
-                            "label": "Question Title",
-                            "type": "text"
-                        },
-                        "answer": "Answer..."
+                        
                     }
                 ],
                 "submitted_from": {
@@ -1752,47 +1738,8 @@ Must be a reviewer or the owner to access.
 
     [Application][]
 
-### Update [PUT]
-Must be the owner to update.
-
-Fields can be updated, added to, or removed. Must pass entire fields object.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "fields": [
-                    {
-                        "id": 1,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "id": 2,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "definition_id": 1,
-                        "answer": "Answer..."
-                    }
-                ]
-            }
-
-+ Response 200 (application/json)
-
-    [Application][]
-
 ### Remove [DELETE]
-Must be a full-access reviewer to delete an application.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -1803,8 +1750,8 @@ Must be a full-access reviewer to delete an application.
 
 + Response 204
 
-## Applications - Unit [/units/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
+## Applications - Spot [/spots/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
+List of applications by spot.
 
 *Note that fields are not returned for application listings.*
 
@@ -1937,7 +1884,7 @@ Must be a reviewer to access.
 
 + Response 200 (application/json)
 
-    [Applications - Unit][]
+    [Applications - Spot][]
 
 ### Create [POST]
 Anyone can create an application.
@@ -1954,13 +1901,29 @@ Anyone can create an application.
                 "spots": [1],
                 "fields": [
                     {
-                        "definition_id": 1,
-                        "answer": "Answer..."
+                      datum: {
+                        detail: "Answer...",
+                        definition: {
+                          label: "Question 1",
+                          description: "Description...",
+                          type: "text"
+                        }
+                      }
                     },
                     {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
+                      datum: {
+                        definition_id: definition_obj.id,
+                        detail: "Answer 2..."
+                      }
+                    },
+                    {
+                      datum: {
+                        id: datum_obj.id,
+                        detail: "Answer 5..."
+                      }
+                    },
+                    {
+                      datum_id: datum_obj.id
                     }
                 ],
                 "submitted_from": {
@@ -1972,53 +1935,6 @@ Anyone can create an application.
 + Response 200 (application/json)
 
     [Application][]
-
-## Applications - Export [/units/{id}/applications/export{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
-### Export [GET]
-Must be a reviewer to access.
-
-Returns a CSV containing the applications. Columns are the fields.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (text/csv)
-
-## Applications - Reviewers [/reviewers/{id}/applications]
-Applications assigned to the specify reviewer.
-
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer ID
-
-### List [GET]
-Must be a reviewer of the unit to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Applications - Unit][]
 
 # Group Fields
 Fields are the building blocks of applications.
