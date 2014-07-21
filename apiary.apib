@@ -479,11 +479,7 @@ A single Entity object with all its details. Note that entities are created when
     [Entities][]
 
 # Group Admins
-Admins represent administrators within entities.
-
-The first entity admin is created when a reviewer registers. After that, they must be invited by another entity admin.
-
-*No update method because there is nothing to update. This may change in the future.*
+Admins manage `Entity` objects.
 
 ## Admin [/admins/{id}]
 + Parameters
@@ -509,10 +505,20 @@ The first entity admin is created when a reviewer registers. After that, they mu
                             "name": "admin"
                         }
                     ]
-                }
+                },
+                "entity": {
+                    "id": 1,
+                    "name": "Test",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
             }
 
 ### Retrieve [GET]
+*Must be an admin.*
+
 + Request (application/json)
 
     + Header
@@ -524,6 +530,10 @@ The first entity admin is created when a reviewer registers. After that, they mu
     [Admin][]
 
 ### Remove [DELETE]
+This does not delete the account. Just the admin from the entity.
+
+*Must be an admin.*
+
 + Request (application/json)
 
     + Header
@@ -544,25 +554,15 @@ The first entity admin is created when a reviewer registers. After that, they mu
             [
                 {
                     "id": 1,
-                    "account": {
-                        "id": 1,
-                        "name": "Johnny Rocket",
-                        "email": "johnny@gmail.com",
-                        "is_verified": false,
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00",
-                        "roles": [
-                            {
-                                "id": 1,
-                                "name": "admin"
-                            }
-                        ]
-                    }
+                    "entity_id": 1,
+                    "account_id": 1,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
 ### List [GET]
-List all admins for an entity specified.
+*Must be an entity admin.*
 
 + Request (application/json)
 
@@ -573,6 +573,23 @@ List all admins for an entity specified.
 + Response 200 (application/json)
 
     [Admins][]
+
+### Create [POST]
+Creates an admin for the entity.
+
++ Request (application/json)
+
+    + Body
+    
+            {
+                "name": "Stephen Watkins",
+                "email": "stjowa@gmail.com",
+                "password": "secret"
+            }
+
++ Response 200 (application/json)
+
+    [Admin][]
 
 ## Admin Invite [/admins/invites/{id}]
 Invite an admin to an entity. This can be done by other entity admins.
