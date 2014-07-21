@@ -1169,6 +1169,170 @@ Spots can have the following `status`:
 
     [Spot][]
 
+# Group Definitions
+`Definition` objects are the underlying backbone of `Field` objects.
+
+Through `Definition` objects, we can server standardized questions.
+
+Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). Extra information is stored as a helper object.
+
+`Definition` objects can belong to *domains*, *units*, or neither.
+
+## Definition [/definitions/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Definition ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "domain": {
+                    "id": 1,
+                    "name": "Domain",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
+                "unit": null,
+                "label": "Question Title",
+                "type": "text",
+                "description": "Detail...",
+                "helper": null,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+### Update [PUT]
+*Must be unit full reviewer (unit definition) or chief (domain definition).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "description": "Detail...",
+                "type": "text",
+                "helper": null
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+### Remove [DELETE]
+*Must be unit full reviewer (unit definition) or chief (domain definition).*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Definitions - Domain [/domains/{id}/definitions]
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "domain_id": 1, // Can be null if it belongs to no domain
+                    "unit_id": 1, // Can be null if it belongs to no unit
+                    "label": "Question Title",
+                    "description": "Detail...",
+                    "type": "text",
+                    "helper": null
+                }
+            ]
+
+### List [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Definitions - Domain][]
+
+### Create [POST]
+*Must be a chief.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "type": "select",
+                "description": "Detail...",
+                "helper": {
+                    "choices": ["Option 1", "Option 2"]
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
+
+## Definitions - Unit [/units/{id}/definitions]
++ Paramters
+
+    + id (required, number, `1`) ... Unit ID
+
+### List [GET]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Definitions - Domain][]
+
+### Create [POST]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "type": "select",
+                "description": "Detail...",
+                "helper": {
+                    "choices": ["Option 1", "Option 2"]
+                }
+            }
+
++ Response 200 (application/json)
+
+    [Definition][]
 
 # Group Applications
 Applications are what this tool is all about. Applications are what are submitted by applicants.
@@ -1578,141 +1742,6 @@ Must be a reviewer or application owner to create.
 + Response 200 (application/json)
 
     [Field][]
-
-# Group Definitions
-While `Field` objects are the backbone of applications, `Definition` objects are the backbone of `Field` objects.
-
-Through `Definition` objects, we can server standardized questions.
-
-Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). This stuff is stored as a helper object.
-
-*Write access is given only to Super Admins for now.*
-
-## Definition [/definitions/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Definition ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "text",
-                "helper": null,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-### Update [PUT]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "text",
-                "helper": null
-            }
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-### Remove [DELETE]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Definitions [/definitions]
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "domain_id": 1, // Can be null if it belongs to no domain
-                    "label": "Question Title",
-                    "type": "text",
-                    "helper": null
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definitions][]
-
-### Create [POST]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "domain_id": 1, // Can be null if it belongs to no domain
-                "label": "Question Title",
-                "type": "select",
-                "helper": {
-                    "choices": ["Option 1", "Option 2"]
-                }
-            }
-
-+ Response 200 (application/json)
-
-    [Definition][]
-
-## Definitions [/domains/{id}/definitions]
-Lists definitions by domain.
-
-+ Paramters
-
-    + id (required, number, `1`) ... Domain ID
-
-### List [GET]
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Definitions][]
 
 # Group Spot Definitions
 `Definition` field objects that an applicant needs to answer for a spot.
