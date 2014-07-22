@@ -176,18 +176,36 @@ The `Authorization` header in the response will return the `api_key` for future 
     + Body
     
             {
-                "id": 1,
-                "name": "John Smith",
-                "email": "johnny@gmail.com",
-                "is_verified": false,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00",
-                "roles": [
+                "account": {
+                    "id": 3458,
+                    "name": "Stephen Watkins",
+                    "email": "email2@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2014-07-22 14:11:56 -0500",
+                    "updated_at": null,
+                    "avatar": null,
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "chief"
+                        }
+                    ]
+                },
+                "admins": [
                     {
-                        "id": 1,
-                        "name": "admin"
+                        "id": 1612,
+                        "created_at": "2014-07-22 14:11:56 -0500",
+                        "updated_at": null,
+                        "entity": {
+                            "id": 3292,
+                            "name": "The Iron Yard",
+                            "domain_id": 3366,
+                            "created_at": "2014-07-22 14:11:56 -0500",
+                            "updated_at": null
+                        }
                     }
-                ]
+                ],
+                "reviewers": []
             }
 
 ### Authenticate [POST]
@@ -201,6 +219,53 @@ The `Authorization` header in the response will return the `api_key` for future 
 + Response 200 (application/json)
 
     [Authentication][]
+
+## Me [/accounts/me]
+Endpoint that always gives the contextual information for the current user, provided by the API key.
+
++ Model
+
+    + Body
+    
+            {
+                "account": {
+                    "id": 3458,
+                    "name": "Stephen Watkins",
+                    "email": "email2@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2014-07-22 14:11:56 -0500",
+                    "updated_at": null,
+                    "avatar": null,
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "chief"
+                        }
+                    ]
+                },
+                "admins": [
+                    {
+                        "id": 1612,
+                        "created_at": "2014-07-22 14:11:56 -0500",
+                        "updated_at": null,
+                        "entity": {
+                            "id": 3292,
+                            "name": "The Iron Yard",
+                            "domain_id": 3366,
+                            "created_at": "2014-07-22 14:11:56 -0500",
+                            "updated_at": null
+                        }
+                    }
+                ],
+                "reviewers": []
+            }
+
+### Me [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Me][]
 
 ## Account [/accounts/{id}]
 A single Account object with all its details.
@@ -1666,9 +1731,7 @@ They are used to populate fields already asked and answered on Applyance.
     [Datum][]
 
 # Group Applications
-Applications are what this tool is all about. Applications are what are submitted by applicants.
-
-Their data is made up of a list of `Field` objects.
+Applications are a list of `Field` objects.
 
 Activity time is determined by the following:
 
@@ -1714,19 +1777,7 @@ Activity time is determined by the following:
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "fields": [
                     {
-                        "id": 1,
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "id": 1,
-                        "definition": {
-                            "id": 1,
-                            "label": "Question Title",
-                            "type": "text"
-                        },
-                        "answer": "Answer..."
+                        
                     }
                 ],
                 "submitted_from": {
@@ -1752,47 +1803,8 @@ Must be a reviewer or the owner to access.
 
     [Application][]
 
-### Update [PUT]
-Must be the owner to update.
-
-Fields can be updated, added to, or removed. Must pass entire fields object.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "fields": [
-                    {
-                        "id": 1,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "id": 2,
-                        "answer": "Answer..."
-                    },
-                    {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
-                    },
-                    {
-                        "definition_id": 1,
-                        "answer": "Answer..."
-                    }
-                ]
-            }
-
-+ Response 200 (application/json)
-
-    [Application][]
-
 ### Remove [DELETE]
-Must be a full-access reviewer to delete an application.
+*Must be a full reviewer.*
 
 + Request (application/json)
 
@@ -1803,20 +1815,7 @@ Must be a full-access reviewer to delete an application.
 
 + Response 204
 
-## Applications - Unit [/units/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
+## Applications [/applications]
 + Model
 
     + Body
@@ -1926,8 +1925,17 @@ List of applications.
                 }
             ]
 
+## Applications - Spot [/spots/{id}/applications]
+List of applications for a spot.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Spot ID
+
 ### List [GET]
-Must be a reviewer to access.
+*Must be a reviewer to access.*
 
 + Request (application/json)
 
@@ -1937,7 +1945,7 @@ Must be a reviewer to access.
 
 + Response 200 (application/json)
 
-    [Applications - Unit][]
+    [Applications][]
 
 ### Create [POST]
 Anyone can create an application.
@@ -1954,13 +1962,29 @@ Anyone can create an application.
                 "spots": [1],
                 "fields": [
                     {
-                        "definition_id": 1,
-                        "answer": "Answer..."
+                      datum: {
+                        detail: "Answer...",
+                        definition: {
+                          label: "Question 1",
+                          description: "Description...",
+                          type: "text"
+                        }
+                      }
                     },
                     {
-                        "label": "Question Title",
-                        "answer": "Answer...",
-                        "type": "text"
+                      datum: {
+                        definition_id: definition_obj.id,
+                        detail: "Answer 2..."
+                      }
+                    },
+                    {
+                      datum: {
+                        id: datum_obj.id,
+                        detail: "Answer 5..."
+                      }
+                    },
+                    {
+                      datum_id: datum_obj.id
                     }
                 ],
                 "submitted_from": {
@@ -1973,42 +1997,17 @@ Anyone can create an application.
 
     [Application][]
 
-## Applications - Export [/units/{id}/applications/export{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications.
+## Applications - Unit [/units/{id}/applications]
+List of applications for a unit.
 
 *Note that fields are not returned for application listings.*
 
 + Parameters
 
     + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
-### Export [GET]
-Must be a reviewer to access.
-
-Returns a CSV containing the applications. Columns are the fields.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (text/csv)
-
-## Applications - Reviewers [/reviewers/{id}/applications]
-Applications assigned to the specify reviewer.
-
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer ID
 
 ### List [GET]
-Must be a reviewer of the unit to access.
+*Must be a reviewer to access.*
 
 + Request (application/json)
 
@@ -2018,12 +2017,12 @@ Must be a reviewer of the unit to access.
 
 + Response 200 (application/json)
 
-    [Applications - Unit][]
+    [Applications][]
 
 # Group Fields
 Fields are the building blocks of applications.
 
-Fields may or may not be based on previous definitions. Previous definitions allow for a common app scenario.
+Fields may or may not be based on previous definitions. Previous definitions allow for the common app.
 
 ## Field [/fields/{id}]
 + Parameters
@@ -2036,49 +2035,33 @@ Fields may or may not be based on previous definitions. Previous definitions all
 
             {
                 "id": 1,
-                "application_id": 1,
-                "label": "Question Title",
-                "answer": "Answer...",
-                "type": "text",
+                "application": {
+                    "id": 1,
+                    ...
+                },
+                "datum": {
+                    "id": 1,
+                    ...
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
 
 ### Retrieve [GET]
-Must be a reviewer or application owner to access.
+*Must be reviewer or owner.*
 
 + Request (application/json)
 
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Field][]
-
-### Update [PUT]
-Must be a reviewer or application owner to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "answer": "Answer..."
-            }
 
 + Response 200 (application/json)
 
     [Field][]
 
 ### Remove [DELETE]
-Must be a reviewer or application owner to update.
+*Must be reviewer or owner.*
 
 + Response 204
 
@@ -2095,16 +2078,14 @@ Must be a reviewer or application owner to update.
                 {
                     "id": 1,
                     "application_id": 1,
-                    "label": "Question Title",
-                    "answer": "Answer...",
-                    "type": "text",
+                    "datum_id": 1,
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
 ### List [GET]
-Must be a reviewer or application owner to access.
+*Must be reviewer or owner.*
 
 + Request (application/json)
 
@@ -2117,7 +2098,7 @@ Must be a reviewer or application owner to access.
     [Fields][]
 
 ### Create [POST]
-Must be a reviewer or application owner to create.
+*Must be reviewer or owner.*
 
 + Request (application/json)
 
@@ -2128,14 +2109,7 @@ Must be a reviewer or application owner to create.
     + Body
 
             {
-                "label": "Question Title",
-                "answer": "Answer...",
-                "type": "text"
-            }
-
-            {
-                "definition_id": 1,
-                "answer": "Answer..."
+                "datum_id": 1
             }
 
 + Response 200 (application/json)
