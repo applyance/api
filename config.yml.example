@@ -5,3 +5,5 @@ development:
   database_password: <secret>
   aws_s3_access_key_id: <secret>
   aws_s3_secret_access_key: <secret>
+  mandrill_api_key: <secret>
+  client_url: http://localhost:4567

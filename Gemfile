@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 gem 'rack-parser'
 gem 'sinatra'
 gem 'sinatra-contrib'
-gem 'sinatra-cross_origin'
 
 # Database
 gem 'pg'

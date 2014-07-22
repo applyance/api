@@ -26,13 +26,15 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
 
           if @entity.nil?
-            raise BadRequestError({ :detail => "Must be a valid entity." })
+            raise BadRequestError.new({ :detail => "Must be a valid entity." })
           end
 
           account = Account.make("admin", params)
           @admin = Admin.create(
             :entity_id => @entity.id,
             :account_id => account.id)
+
+          @admin.send_welcome_email
 
           status 201
           rabl :'admins/show'

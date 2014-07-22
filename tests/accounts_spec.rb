@@ -19,6 +19,9 @@ describe Applyance::Account do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
+    app.db[:domains].delete
+    app.db[:entities].delete
+    app.db[:admins].delete
   end
   after(:all) do
   end
@@ -37,19 +40,39 @@ describe Applyance::Account do
     end
   end
 
+  shared_examples_for "a single me" do
+    it "returns the information for me show" do
+      expect(json.keys).to contain_exactly('account', 'admins', 'reviewers')
+    end
+  end
+
   # Authenticate into account
   describe "POST #accounts/auth" do
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:admin) { create(:admin) }
       before(:each) do
-        post "/accounts/auth", Oj.dump({ email: "#{account.email}", password: "test" }), { "CONTENT_TYPE" => "application/json" }
+        post "/accounts/auth", Oj.dump({ email: "#{admin.account.email}", password: "test" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
-      it_behaves_like "a single account"
+      it_behaves_like "a single me"
       it "contains authorization header" do
-        expect(last_response.headers['Authorization']).to eq("ApplyanceLogin auth=#{account.api_key}")
+        expect(last_response.headers['Authorization']).to eq("ApplyanceLogin auth=#{admin.account.api_key}")
       end
+    end
+  end
+
+  # Get me
+  describe "GET #accounts/me" do
+    context "not logged in" do
+      let(:account) { create(:admin_account) }
+      before(:each) do
+        account_auth
+        get "/accounts/me"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "a single me"
     end
   end
 

@@ -5,5 +5,10 @@ module Applyance
     one_to_many :admin_invites, :class => :'Applyance::AdminInvite'
     one_to_many :units, :class => :'Applyance::Unit'
     many_to_many :blueprints, :class => :'Applyance::Blueprint'
+
+    def validate
+      super
+      validates_presence :name
+    end
   end
 end

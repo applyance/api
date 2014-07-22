@@ -40,6 +40,18 @@ module Applyance
           rabl :'applications/index'
         end
 
+        # List applications for unit
+        app.get '/units/:id/applications', :provides => [:json] do
+          @unit = Unit.first(:id => params['id'])
+          protected! app.to_reviewers(@unit)
+
+          @applications = []
+          @unit.spots.each { |s| @applications.concat(s.applications) }
+          @applications.uniq! { |a| a.id }
+          
+          rabl :'applications/index'
+        end
+
         # Create a new application
         # Open to the public
         app.post '/applications', :provides => [:json] do

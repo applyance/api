@@ -30,6 +30,10 @@ module Applyance
         return account
       end
 
+      if params['password'].nil?
+        raise BadRequestError.new({ detail: "Password required." })
+      end
+
       account = self.new
       account.set_fields(params, ['name', 'email'], :missing => :skip)
       account.set_token(:api_key)
@@ -62,7 +66,18 @@ module Applyance
     def reset_password
       self.update(:reset_digest => self.generate_token(:reset_digest))
 
-      # TODO: Send email with reset digest
+      # Send the reset email
+      return if Applyance::Server.test?
+
+      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      message = {
+        :subject => "Reset Password",
+        :from_name => "The Team at Applyance",
+        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/reset?code=#{self.account.verify_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
+        :to => [ { :email => self.email, :name => self.name } ],
+        :from_email => "contact@applyance.co"
+      }
+      sending = m.messages.send(message)
     end
 
     # Set password for the user
@@ -111,9 +126,23 @@ module Applyance
         raise BadRequestError.new({ :detail => "You must enter a new email." })
       end
 
-      self.update(:email => params['email'], :is_verified => false)
+      self.update(
+        :email => params['email'],
+        :verify_digest => self.generate_token(:verify_digest),
+        :is_verified => false)
 
-      # TODO: Send notification to verify new email address
+      # Send notification to verify new email address
+      unless Applyance::Server.test?
+        m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+        message = {
+          :subject => "Verify Email",
+          :from_name => "The Team at Applyance",
+          :text => "Hello #{self.name},\n\nWe've recently updated your email address, per your request. Please verify this new email by visiting the following URL: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
+          :to => [ { :email => self.email, :name => self.name } ],
+          :from_email => "contact@applyance.co"
+        }
+        sending = m.messages.send(message)
+      end
 
       params['email']
     end

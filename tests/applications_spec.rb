@@ -127,7 +127,7 @@ describe Applyance::Application do
   end
 
   # Retrieve applications
-  describe "GET #applications" do
+  describe "GET #spot/applications" do
     context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
@@ -142,6 +142,28 @@ describe Applyance::Application do
       let(:application) { create(:application) }
       before(:each) do
         get "/spots/#{application.spots.first.id}/applications"
+      end
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
+  # Retrieve unit applications
+  describe "GET #unit/applications" do
+    context "logged in as reviewer" do
+      let(:application) { create(:application) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        get "/units/#{application.spots.first.unit.id}/applications"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "multiple applications"
+    end
+    context "not logged in" do
+      let(:application) { create(:application) }
+      before(:each) do
+        get "/units/#{application.spots.first.unit.id}/applications"
       end
 
       it_behaves_like "an unauthorized account"
