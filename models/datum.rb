@@ -1,5 +1,5 @@
 module Applyance
-  class Datum < Sequel::Model
+  class Datum < Sequel::Model(:datums)
 
     include Applyance::Lib::Attachments
 
@@ -13,5 +13,4 @@ module Applyance
       validates_presence :detail
     end
   end
-  Datum.set_dataset :datums
 end
