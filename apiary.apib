@@ -176,18 +176,36 @@ The `Authorization` header in the response will return the `api_key` for future 
     + Body
     
             {
-                "id": 1,
-                "name": "John Smith",
-                "email": "johnny@gmail.com",
-                "is_verified": false,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00",
-                "roles": [
+                "account": {
+                    "id": 3458,
+                    "name": "Stephen Watkins",
+                    "email": "email2@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2014-07-22 14:11:56 -0500",
+                    "updated_at": null,
+                    "avatar": null,
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "chief"
+                        }
+                    ]
+                },
+                "admins": [
                     {
-                        "id": 1,
-                        "name": "admin"
+                        "id": 1612,
+                        "created_at": "2014-07-22 14:11:56 -0500",
+                        "updated_at": null,
+                        "entity": {
+                            "id": 3292,
+                            "name": "The Iron Yard",
+                            "domain_id": 3366,
+                            "created_at": "2014-07-22 14:11:56 -0500",
+                            "updated_at": null
+                        }
                     }
-                ]
+                ],
+                "reviewers": []
             }
 
 ### Authenticate [POST]
@@ -201,6 +219,53 @@ The `Authorization` header in the response will return the `api_key` for future 
 + Response 200 (application/json)
 
     [Authentication][]
+
+## Me [/accounts/me]
+Endpoint that always gives the contextual information for the current user, provided by the API key.
+
++ Model
+
+    + Body
+    
+            {
+                "account": {
+                    "id": 3458,
+                    "name": "Stephen Watkins",
+                    "email": "email2@gmail.com",
+                    "is_verified": false,
+                    "created_at": "2014-07-22 14:11:56 -0500",
+                    "updated_at": null,
+                    "avatar": null,
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "chief"
+                        }
+                    ]
+                },
+                "admins": [
+                    {
+                        "id": 1612,
+                        "created_at": "2014-07-22 14:11:56 -0500",
+                        "updated_at": null,
+                        "entity": {
+                            "id": 3292,
+                            "name": "The Iron Yard",
+                            "domain_id": 3366,
+                            "created_at": "2014-07-22 14:11:56 -0500",
+                            "updated_at": null
+                        }
+                    }
+                ],
+                "reviewers": []
+            }
+
+### Me [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Me][]
 
 ## Account [/accounts/{id}]
 A single Account object with all its details.
