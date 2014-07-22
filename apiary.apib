@@ -1750,20 +1750,7 @@ Must be a reviewer or the owner to access.
 
 + Response 204
 
-## Applications - Spot [/spots/{id}/applications{?offset}{&limit}{&pipeline}{&stage}{&label}]
-List of applications by spot.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-    + offset (optional, number, `0`) ... The order number of the first row you want to retrieve, specially useful for pagination.
-    + limit (optional, number, `50`) ... The number of responses you want to retrieve, specially useful for pagination.
-    + pipeline (optional, number, `1`) ... Filter by pipeline ID.
-    + stage (optional, number, `1`) ... Filter by stage ID.
-    + label (optional, number, `1`) ... Filter by label ID.
-
+## Applications [/applications]
 + Model
 
     + Body
@@ -1873,8 +1860,17 @@ List of applications by spot.
                 }
             ]
 
+## Applications - Spot [/spots/{id}/applications]
+List of applications for a spot.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Spot ID
+
 ### List [GET]
-Must be a reviewer to access.
+*Must be a reviewer to access.*
 
 + Request (application/json)
 
@@ -1884,7 +1880,7 @@ Must be a reviewer to access.
 
 + Response 200 (application/json)
 
-    [Applications - Spot][]
+    [Applications][]
 
 ### Create [POST]
 Anyone can create an application.
@@ -1935,6 +1931,28 @@ Anyone can create an application.
 + Response 200 (application/json)
 
     [Application][]
+
+## Applications - Unit [/units/{id}/applications]
+List of applications for a unit.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
+### List [GET]
+*Must be a reviewer to access.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications][]
 
 # Group Fields
 Fields are the building blocks of applications.
