@@ -69,6 +69,8 @@ module Applyance
         application.add_field_from_datum(field)
       end
 
+      application.update(:submitted_at => DateTime.now)
+
       # TODO: Send applicant welcome email
 
       application
