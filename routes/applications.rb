@@ -22,7 +22,7 @@ module Applyance
         def to_reviewers_or_self(application)
           lambda do |account|
             return true if account.id == application.submitter_id
-            application.unit.reviewers.collect(&:account_id).include?(account.id)
+            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
           end
         end
 
@@ -48,7 +48,7 @@ module Applyance
           @applications = []
           @unit.spots.each { |s| @applications.concat(s.applications) }
           @applications.uniq! { |a| a.id }
-          
+
           rabl :'applications/index'
         end
 
