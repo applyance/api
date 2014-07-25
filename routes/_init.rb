@@ -15,6 +15,11 @@ require_relative 'blueprints'
 require_relative 'datums'
 require_relative 'fields'
 require_relative 'applications'
+require_relative 'pipelines'
+require_relative 'stages'
+require_relative 'labels'
+require_relative 'segments'
+require_relative 'ratings'
 
 module Applyance
   module Routing
@@ -37,6 +42,11 @@ module Applyance
         app.register Applyance::Routing::Datums
         app.register Applyance::Routing::Fields
         app.register Applyance::Routing::Applications
+        app.register Applyance::Routing::Pipelines
+        app.register Applyance::Routing::Stages
+        app.register Applyance::Routing::Labels
+        app.register Applyance::Routing::Segments
+        app.register Applyance::Routing::Ratings
       end
     end
   end

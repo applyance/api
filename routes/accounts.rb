@@ -67,7 +67,6 @@ module Applyance
             raise BadRequestError({ detail: "An account with that email does not exist." })
           end
           @account.reset_password
-          201
         end
 
         # Set password
@@ -77,7 +76,6 @@ module Applyance
             raise BadRequestError({ detail: "Invalid reset token." })
           end
           @account.set_password(params)
-          201
         end
 
         # Verify email address

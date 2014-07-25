@@ -44,7 +44,7 @@ describe Applyance::ReviewerInvite do
 
   shared_examples_for "a single reviewer" do
     it "returns the information for reviewer show" do
-      expect(json.keys).to contain_exactly('id', 'account', 'unit', 'access_level', 'is_entity_admin', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'account', 'unit', 'access_level', 'created_at', 'updated_at')
     end
   end
 

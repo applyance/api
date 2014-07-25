@@ -33,10 +33,11 @@ module Applyance
       account.update(:is_verified => true)
 
       # Create reviewer
-      reviewer = Reviewer.create(
+      reviewer = Reviewer.find_or_create(
         :unit_id => self.unit_id,
-        :account_id => account.id,
-        :access_level => self.access_level)
+        :account_id => account.id
+      )
+      reviewer.update(:access_level => self.access_level)
 
       reviewer
     end

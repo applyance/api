@@ -10,7 +10,7 @@ module Applyance
 
         def to_full_access_reviewers(unit)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
+            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
           end
         end
 

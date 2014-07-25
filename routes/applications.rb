@@ -4,17 +4,24 @@ module Applyance
 
       module Protection
 
-        # Protection to reviewers
-        def to_reviewers(unit)
+        # Protection to reviewers of unit
+        def to_reviewers_of_unit(unit)
           lambda do |account|
             unit.reviewers.collect(&:account_id).include?(account.id)
+          end
+        end
+
+        # Protection to reviewers of application
+        def to_reviewers_of_application(application)
+          lambda do |account|
+            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
           end
         end
 
         # Protection to reviewers
         def to_full_access_reviewers(unit)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
+            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
           end
         end
 
@@ -35,7 +42,7 @@ module Applyance
         # List applications for spot
         app.get '/spots/:id/applications', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_reviewers(@spot.unit)
+          protected! app.to_reviewers_of_unit(@spot.unit)
           @applications = @spot.applications
           rabl :'applications/index'
         end
@@ -43,7 +50,7 @@ module Applyance
         # List applications for unit
         app.get '/units/:id/applications', :provides => [:json] do
           @unit = Unit.first(:id => params['id'])
-          protected! app.to_reviewers(@unit)
+          protected! app.to_reviewers_of_unit(@unit)
 
           @applications = []
           @unit.spots.each { |s| @applications.concat(s.applications) }
@@ -65,6 +72,32 @@ module Applyance
         app.get '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
           protected! app.to_reviewers_or_self(@application)
+          rabl :'applications/show'
+        end
+
+        # Update an application by Id
+        app.put '/applications/:id', :provides => [:json] do
+          @application = Application.first(:id => params['id'])
+          protected! app.to_reviewers_of_application(@application)
+
+          @application.update_fields(params, ['stage_id'], :missing => :skip)
+
+          # Update labels
+          unless params['label_ids'].nil?
+            @application.remove_all_labels
+            params['label_ids'].each do |label_id|
+              @application.add_label(Label.first(:id => label_id))
+            end
+          end
+
+          # Update reviewers
+          unless params['reviewer_ids'].nil?
+            @application.remove_all_reviewers
+            params['reviewer_ids'].each do |reviewer_id|
+              @application.add_reviewer(Reviewer.first(:id => reviewer_id))
+            end
+          end
+
           rabl :'applications/show'
         end
 

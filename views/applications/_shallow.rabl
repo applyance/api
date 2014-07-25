@@ -11,3 +11,11 @@ end
 child :stage => :stage do
   extends 'stages/_shallow'
 end
+
+node(:label_ids) do |application|
+  application.labels.collect(&:id)
+end
+
+node(:reviewer_ids) do |application|
+  application.reviewers.collect(&:id)
+end

@@ -7,7 +7,7 @@ module Applyance
         # Protection to admins or reviewers
         def to_full_access_reviewers(unit)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
+            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
           end
         end
 
@@ -15,7 +15,7 @@ module Applyance
         def to_full_access_reviewers_or_self(reviewer)
           lambda do |account|
             return true if account.id == reviewer.account_id
-            reviewer.unit.reviewers_dataset.where(:access_level => "full").collect(&:account_id).include?(account.id)
+            reviewer.unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
           end
         end
 

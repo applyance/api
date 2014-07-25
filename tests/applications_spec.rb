@@ -40,13 +40,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'submitter', 'digest', 'submitted_from_id', 'stage', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'submitter', 'digest', 'submitted_from_id', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -121,6 +121,33 @@ describe Applyance::Application do
     context "not logged in" do
       let(:application) { create(:application) }
       before(:each) { delete "/applications/#{application.id}" }
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
+  # Update applications
+  describe "PUT #applications" do
+    context "logged in as reviewer" do
+      let(:label) { create(:label) }
+      let(:application) { create(:application) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        put "/applications/#{application.spots.first.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "a single application"
+      it "returns the right value" do
+        expect(json['labels'].first['name']).to eq(label.name)
+      end
+    end
+    context "not logged in" do
+      let(:label) { create(:label) }
+      let(:application) { create(:application) }
+      before(:each) do
+        put "/applications/#{application.spots.first.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
+      end
 
       it_behaves_like "an unauthorized account"
     end

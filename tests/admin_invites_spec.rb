@@ -29,19 +29,19 @@ describe Applyance::AdminInvite do
 
   shared_examples_for "a single admin invite" do
     it "returns the information for admin invite show" do
-      expect(json.keys).to contain_exactly('id', 'entity', 'email', 'status', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'entity', 'email', 'status', 'access_level', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple admin invites" do
     it "returns the information for admin invite index" do
-      expect(json.first.keys).to contain_exactly('id', 'entity_id', 'email', 'status', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'entity_id', 'email', 'status', 'access_level', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "a single admin" do
     it "returns the information for admin show" do
-      expect(json.keys).to contain_exactly('id', 'account', 'entity', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'account', 'entity', 'access_level', 'created_at', 'updated_at')
     end
   end
 
@@ -50,7 +50,7 @@ describe Applyance::AdminInvite do
     context "not logged in" do
       let(:entity) { create(:entity_with_admin) }
       before(:each) do
-        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com", access_level: "limited" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -59,7 +59,7 @@ describe Applyance::AdminInvite do
       let(:entity) { create(:entity_with_admin) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{entity.admins.first.account.api_key}"
-        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{entity.id}/admins/invites", Oj.dump({ email: "stjowa@gmail.com", access_level: "limited" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"

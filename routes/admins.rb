@@ -32,7 +32,8 @@ module Applyance
           account = Account.make("admin", params)
           @admin = Admin.create(
             :entity_id => @entity.id,
-            :account_id => account.id)
+            :account_id => account.id,
+            :access_level => "owner")
 
           @admin.send_welcome_email
 
@@ -47,10 +48,22 @@ module Applyance
           rabl :'admins/show'
         end
 
+        # Update admin by Id
+        app.put '/admins/:id', :provides => [:json] do
+          @admin = Admin.first(:id => params['id'])
+          protected! app.to_admins(@admin)
+          @admin.update_fields(params, ['access_level'], :missing => :skip)
+          rabl :'admins/show'
+        end
+
         # Delete an admin by Id
         app.delete '/admins/:id', :provides => [:json] do
           @admin = Admin.first(:id => params['id'])
           protected! app.to_admins(@admin.entity)
+
+          if @admin.access_level == "owner"
+            raise BadRequestError.new({ :detail => "Cannot remove owner from entity." })
+          end
 
           @admin.destroy
 

@@ -16,6 +16,14 @@ child :stage => :stage do
   extends 'stages/_shallow'
 end
 
+child :labels => :labels do
+  extends 'labels/_shallow'
+end
+
+child :reviewers => :reviewers do
+  extends 'reviewers/_shallow'
+end
+
 child :fields => :fields do
   extends 'fields/_application'
 end

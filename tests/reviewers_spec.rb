@@ -30,13 +30,13 @@ describe Applyance::Reviewer do
 
   shared_examples_for "a single reviewer" do
     it "returns the information for reviewer show" do
-      expect(json.keys).to contain_exactly('id', 'account', 'unit', 'access_level', 'is_entity_admin', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'account', 'unit', 'access_level', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple reviewers" do
     it "returns the information for reviewer index" do
-      expect(json.first.keys).to contain_exactly('id', 'account_id', 'unit_id', 'access_level', 'is_entity_admin', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'account_id', 'unit_id', 'access_level', 'created_at', 'updated_at')
     end
   end
 
@@ -77,6 +77,29 @@ describe Applyance::Reviewer do
     context "not logged in" do
       let(:reviewer) { create(:reviewer) }
       before(:each) { get "/reviewers/#{reviewer.id}" }
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
+  # Update one reviewer
+  describe "PUT #reviewer" do
+    context "logged in" do
+      let(:reviewer) { create(:reviewer) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{reviewer.account.api_key}"
+        put "/reviewers/#{reviewer.id}", Oj.dump({ :access_level => "limited" }), { "CONTENT_TYPE" => "application/json" }
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "a single reviewer"
+      it "returns the right value" do
+        expect(json['access_level']).to eq('limited')
+      end
+    end
+    context "not logged in" do
+      let(:reviewer) { create(:reviewer) }
+      before(:each) { put "/reviewers/#{reviewer.id}", Oj.dump({ :access_level => "limited" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

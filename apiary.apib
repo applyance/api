@@ -170,11 +170,11 @@ The `Authorization` header in the response will return the `api_key` for future 
 + Model
 
     + Header
-    
+
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     + Body
-    
+
             {
                 "account": {
                     "id": 3458,
@@ -226,7 +226,7 @@ Endpoint that always gives the contextual information for the current user, prov
 + Model
 
     + Body
-    
+
             {
                 "account": {
                     "id": 3458,
@@ -356,7 +356,7 @@ Reset the account password. This creates a reset digest and emails the account t
             "email": "johnny@gmail.com"
         }
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
 ## Password Set [/accounts/passwords/set]
 Sets the account password by supplying the reset digest and new password.
@@ -369,7 +369,7 @@ Sets the account password by supplying the reset digest and new password.
             "new_password": "secret"
         }
 
-+ Response 201 (application/json)
++ Response 200 (application/json)
 
     [Account][]
 
@@ -513,15 +513,15 @@ A single Entity object with all its details. Note that entities are created when
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
-            
+
             {
                 "name": "Frothy Monkey",
                 "domain_id": 1 // Optional
             }
 
-+ Response 200
++ Response 201
 
     [Entity][]
 
@@ -557,6 +557,7 @@ Admins manage `Entity` objects.
 
             {
                 "id": 1,
+                "access_level": "owner",
                 "account": {
                     "id": 1,
                     "name": "Johnny Rocket",
@@ -594,6 +595,25 @@ Admins manage `Entity` objects.
 
     [Admin][]
 
+### Update [PUT]
+*Must be an admin.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "access_level": "limited"
+            }
+
++ Response 200
+
+    [Admin][]
+
 ### Remove [DELETE]
 This does not delete the account. Just the admin from the entity.
 
@@ -619,6 +639,7 @@ This does not delete the account. Just the admin from the entity.
             [
                 {
                     "id": 1,
+                    "access_level": "owner",
                     "entity_id": 1,
                     "account_id": 1,
                     "created_at": "2012-03-22T16:56:48-05:00",
@@ -642,17 +663,19 @@ This does not delete the account. Just the admin from the entity.
 ### Create [POST]
 Creates an admin for the entity.
 
+Sets *access_level* to *owner*.
+
 + Request (application/json)
 
     + Body
-    
+
             {
                 "name": "Stephen Watkins",
                 "email": "stjowa@gmail.com",
                 "password": "secret"
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
     [Admin][]
 
@@ -675,6 +698,7 @@ Possible status values:
 
             {
                 "id": 1,
+                "access_level": "limited",
                 "entity": {
                     "id": 1,
                     "name": "Entity Name",
@@ -730,6 +754,7 @@ Claims the invitation by sending the `claim_digest` that was received in the inv
                 {
                     "id": 1,
                     "entity_id": 1,
+                    "access_level": "limited",
                     "email": "johnny@gmail.com",
                     "status": "claimed",
                     "created_at": "2012-03-22T16:56:48-05:00",
@@ -749,7 +774,8 @@ Claims the invitation by sending the `claim_digest` that was received in the inv
     + Body
 
             {
-                "email": "johnny@gmail.com"
+                "email": "johnny@gmail.com",
+                "access_level": "limited"
             }
 
 + Response 201 (application/json)
@@ -881,8 +907,9 @@ Reviewers manage units and review applications.
 
 They can have one of three access levels:
 
-- `full` - Can review applicants, invite other reviewers, and view insights.
-- `limited` - Can review applicants.
+- `admin` - Can review applicants, invite other reviewers, remove reviewers, and view insights.
+- `full` - Can review applicants, invite other reviewers, remove reviewers, and view insights. Cannot remove admins.
+- `review` - Can review applicants.
 
 ## Reviewer [/reviewers/{id}]
 + Parameters
@@ -896,7 +923,6 @@ They can have one of three access levels:
             {
                 "id": 1,
                 "access_level": "full",
-                "is_entity_admin": true,
                 "account": {
                     "id": 1,
                     "name": "Johnny Rocket",
@@ -942,9 +968,9 @@ They can have one of three access levels:
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-    
+
     + Body
-            
+
             {
                 "access_level": "limited"
             }
@@ -977,7 +1003,6 @@ They can have one of three access levels:
                 {
                     "id": 1,
                     "access_level": "full",
-                    "is_entity_admin": false,
                     "account_id": 1,
                     "entity_id": 1
                 }
@@ -1006,8 +1031,9 @@ Possible `status` values:
 
 Possible `access_level` values:
 
-- `full` - Has not yet been claimed.
-- `limited` - Has been claimed.
+- `admin` - Represents an entity admin.
+- `full` - Full-access reviewer.
+- `limited` - Limited-access reviewer.
 
 ## Reviewer Invite [/reviewers/invites/{id}]
 + Parameters
@@ -1777,7 +1803,7 @@ Activity time is determined by the following:
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "fields": [
                     {
-                        
+
                     }
                 ],
                 "submitted_from": {
@@ -1798,6 +1824,29 @@ Must be a reviewer or the owner to access.
     + Header
 
             Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Application][]
+
+### Update [PUT]
+*Must be a reviewer.*
+
+This method allows reviewers to update management properties of the application.
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "stage_id": 1,
+                "label_ids": [1,2],
+                "reviewer_ids": [1,2]
+            }
 
 + Response 200 (application/json)
 
@@ -1925,28 +1974,6 @@ Must be a reviewer or the owner to access.
                 }
             ]
 
-## Applications - Spot [/spots/{id}/applications]
-List of applications for a spot.
-
-*Note that fields are not returned for application listings.*
-
-+ Parameters
-
-    + id (required, number, `1`) ... Spot ID
-
-### List [GET]
-*Must be a reviewer to access.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Applications][]
-
 ### Create [POST]
 Anyone can create an application.
 
@@ -1959,7 +1986,7 @@ Anyone can create an application.
                     "name": "John Smith",
                     "email": "johnny@gmail.com"
                 },
-                "spots": [1],
+                "spot_ids": [1],
                 "fields": [
                     {
                       datum: {
@@ -1993,9 +2020,31 @@ Anyone can create an application.
                 }
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
     [Application][]
+
+## Applications - Spot [/spots/{id}/applications]
+List of applications for a spot.
+
+*Note that fields are not returned for application listings.*
+
++ Parameters
+
+    + id (required, number, `1`) ... Spot ID
+
+### List [GET]
+*Must be a reviewer to access.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Applications][]
 
 ## Applications - Unit [/units/{id}/applications]
 List of applications for a unit.
@@ -2116,6 +2165,471 @@ Fields may or may not be based on previous definitions. Previous definitions all
 
     [Field][]
 
+# Group Pipelines
+Pipelines are a method of organization for units.
+
+## Pipeline [/pipelines/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "unit_id": 1,
+                "name": "Subject",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Pipeline][]
+
+### Update [PUT]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject"
+            }
+
++ Response 200 (application/json)
+
+    [Pipeline][]
+
+### Remove [DELETE]
+*Must be a full reviewer.*
+
++ Response 204
+
+## Pipelines [/units/{id}/pipelines]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "unit_id": 1,
+                    "name": "Subject",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Pipelines][]
+
+### Create [POST]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject"
+            }
+
++ Response 201 (application/json)
+
+    [Pipeline][]
+
+# Group Stages
+Stages are a method of organization within pipelines. They are sequential.
+
+(e.g. New > Reviewed > Interviewed > Done)
+
+## Stage [/stages/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "pipeline_id": 1,
+                "name": "New",
+                "position": 1,
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Stage][]
+
+### Update [PUT]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Interviewed",
+                "position": 1
+            }
+
++ Response 200 (application/json)
+
+    [Stage][]
+
+### Remove [DELETE]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Stages [/pipelines/{id}/stages]
++ Parameters
+
+    + id (required, number, `1`) ... Pipeline ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "pipeline": {
+                        "id": 1,
+                        ...
+                    },
+                    "name": "Subject",
+                    "position": 1,
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Stages][]
+
+### Create [POST]
+*Must be a full reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "position": 1
+            }
+
++ Response 201 (application/json)
+
+    [Stage][]
+
+# Group Labels
+Labels are a method of organization for a unit. They are like tags and are assigned to applications.
+
+## Label [/labels/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Label ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "name": "New",
+                "color": "990000", // Hex code without the hash
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Label][]
+
+### Update [PUT]
+*Must be a full-access reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Test",
+                "color": "990000"
+            }
+
++ Response 200 (application/json)
+
+    [Label][]
+
+### Remove [DELETE]
+*Must be a full-access reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Labels [/units/{id}/labels]
++ Parameters
+
+    + id (required, number, `1`) ... Unit ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "name": "New",
+                    "color": "990000",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Labels][]
+
+### Create [POST]
+*Must be a full-access reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "color": "990000"
+            }
+
++ Response 200 (application/json)
+
+    [Label][]
+
+# Group Segments
+Segments are saved application segments for reviewers based on filters selected.
+
+## Segment [/segments/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Segment ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "reviewer_id": 1,
+                "name": "Fresh",
+                "dsl": "Stage=1,2,3&Label=1,2",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Segment][]
+
+### Update [PUT]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Test",
+                "dsl": "Stage=1,2,3"
+            }
+
++ Response 200 (application/json)
+
+    [Segment][]
+
+### Remove [DELETE]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Segments [/reviewers/{id}/segments]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "reviewer_id": 1,
+                    "name": "Fresh",
+                    "dsl": "Stage=1,2,3&Label=1,2",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Segments][]
+
+### Create [POST]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Subject",
+                "dsl": "Stage=1,2,3"
+            }
+
++ Response 201 (application/json)
+
+    [Segment][]
+
 # Group Ratings
 Numeric rating for an application at a certain spot.
 
@@ -2143,7 +2657,7 @@ Only 1 rating allowed per application per spot per reviewer.
             }
 
 ### Retrieve [GET]
-Must be a reviewer to access.
+*Must be a reviewer.*
 
 + Request (application/json)
 
@@ -2156,7 +2670,7 @@ Must be a reviewer to access.
     [Rating][]
 
 ### Update [PUT]
-Must be the rating owner to update.
+*Must be the owner.*
 
 + Request (application/json)
 
@@ -2175,7 +2689,7 @@ Must be the rating owner to update.
     [Rating][]
 
 ### Remove [DELETE]
-Must be the rating owner to delete.
+*Must be the owner.*
 
 + Request (application/json)
 
@@ -2197,9 +2711,18 @@ Must be the rating owner to delete.
             [
                 {
                     "id": 1,
-                    "application_id": 1,
-                    "spot_id": 1,
-                    "reviewer_id": 1,
+                    "application": {
+                        "id": 1,
+                        ...
+                    },
+                    "spot": {
+                        "id": 1,
+                        ...
+                    },
+                    "reviewer": {
+                        "id": 1,
+                        ...
+                    },
                     "rating": 4,
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
@@ -2207,7 +2730,7 @@ Must be the rating owner to delete.
             ]
 
 ### List [GET]
-Must be a reviewer to access.
+*Must be a reviewer.*
 
 + Request (application/json)
 
@@ -2219,8 +2742,13 @@ Must be a reviewer to access.
 
     [Ratings][]
 
+## Ratings - Reviewer [/reviewers/{id}/ratings]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
 ### Create [POST]
-Must be a reviewer to create.
+*Must be a reviewer.*
 
 + Request (application/json)
 
@@ -2232,11 +2760,11 @@ Must be a reviewer to create.
 
             {
                 "spot_id": 1,
-                "reviewer_id": 2,
+                "application_id": 2,
                 "rating": 3
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
     [Rating][]
 
@@ -2825,453 +3353,3 @@ Must be a reviewer to access.
 + Response 200 (application/json)
 
     [Notes - Reviewer][]
-
-# Group Pipelines
-Pipelines are a method of organization for units.
-
-## Pipeline [/pipelines/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Pipeline ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "unit_id": 1,
-                "name": "Subject",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Pipeline][]
-
-### Update [PUT]
-Must be at least a full-access reviewer to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Subject"
-            }
-
-+ Response 200 (application/json)
-
-    [Pipeline][]
-
-### Remove [DELETE]
-Must be at least a full-access reviewer to delete.
-
-+ Response 204
-
-## Pipelines [/units/{id}/pipelines]
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "unit_id": 1,
-                    "name": "Subject",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Pipelines][]
-
-### Create [POST]
-Must be at least a full-access reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Subject"
-            }
-
-+ Response 200 (application/json)
-
-    [Pipeline][]
-
-# Group Stages
-Stages are a method of organization within pipelines. They are sequential.
-
-(e.g. New > Reviewed > Interviewed > Done)
-
-## Stage [/stages/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Pipeline ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "pipeline_id": 1,
-                "name": "New",
-                "position": 1,
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Stage][]
-
-### Update [PUT]
-Must be at least a full-access reviewer to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Interviewed",
-                "position": 1
-            }
-
-+ Response 200 (application/json)
-
-    [Stage][]
-
-### Remove [DELETE]
-Must be at least a full-access reviewer to delete.
-
-+ Response 204
-
-## Stages [/pipelines/{id}/stages]
-+ Parameters
-
-    + id (required, number, `1`) ... Pipeline ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "pipeline_id": 1,
-                    "name": "Subject",
-                    "position": 1,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Stages][]
-
-### Create [POST]
-Must be at least a full-access reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Subject",
-                "position": 1
-            }
-
-+ Response 200 (application/json)
-
-    [Stage][]
-
-# Group Labels
-Labels are a method of organization for a unit. They are like tags and are assigned to applications.
-
-## Label [/labels/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Label ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "name": "New",
-                "color": "990000",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Label][]
-
-### Update [PUT]
-Must be at least a full-access reviewer to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Test",
-                "color": "990000"
-            }
-
-+ Response 200 (application/json)
-
-    [Label][]
-
-### Remove [DELETE]
-Must be at least a full-access reviewer to delete.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Labels [/units/{id}/labels]
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "name": "New",
-                    "color": "990000",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Labels][]
-
-### Create [POST]
-Must be at least a full-access reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Subject",
-                "color": "990000"
-            }
-
-+ Response 200 (application/json)
-
-    [Label][]
-
-# Group Segments
-Segments are saved application segments for reviewers based on filters selected.
-
-## Segment [/segments/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Segment ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "reviewer_id": 1,
-                "name": "Fresh",
-                "dsl": "Stage=1,2,3&Label=1,2",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be the owner to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Segment][]
-
-### Update [PUT]
-Must be the owner to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Test",
-                "dsl": "Stage=1,2,3"
-            }
-
-+ Response 200 (application/json)
-
-    [Segment][]
-
-### Remove [DELETE]
-Must be the owner to delete.
-
-+ Response 204
-
-## Segments [/reviewers/{id}/segments]
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "reviewer_id": 1,
-                    "name": "Fresh",
-                    "dsl": "Stage=1,2,3&Label=1,2",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be the owner to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Segments][]
-
-### Create [POST]
-Must be a reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Subject",
-                "dsl": "Stage=1,2,3"
-            }
-
-+ Response 200 (application/json)
-
-    [Segment][]

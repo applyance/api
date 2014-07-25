@@ -7,11 +7,11 @@ module Applyance
     one_to_many :ratings, :class => :'Applyance::Rating'
 
     def self.make_from_admin(unit, admin)
-      reviewer = self.create(
+      reviewer = self.find_or_create(
         :unit_id => unit.id,
-        :account_id => admin.account_id,
-        :access_level => "full",
-        :is_entity_admin => true)
+        :account_id => admin.account_id
+      )
+      reviewer.update(:access_level => "admin")
       reviewer
     end
   end

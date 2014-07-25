@@ -18,7 +18,7 @@ module Applyance
 
     def self.make(entity, params)
       admin_invite = self.new
-      admin_invite.set_fields(params, ['email'], :missing => :skip)
+      admin_invite.set_fields(params, ['email', 'access_level'], :missing => :skip)
       admin_invite.set(:entity_id => entity.id)
       admin_invite.set_token(:claim_digest)
       admin_invite.save
@@ -36,6 +36,7 @@ module Applyance
       admin = Admin.find_or_create(
         :entity_id => self.entity_id,
         :account_id => account.id)
+      admin.update(:access_level => self.access_level)
 
       # Initialize as reviewer for each unit
       self.entity.units.each do |unit|

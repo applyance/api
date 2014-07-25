@@ -18,11 +18,12 @@ module Applyance
 
     def after_create
       super
-
+      
       # Create submission activity
       ApplicationActivity.make_for_submission(self)
     end
 
+    # Create the application from given request parameters
     def self.make(params)
 
       # Error checking
@@ -76,6 +77,7 @@ module Applyance
       application
     end
 
+    # Create a field from the given datum parameter
     def add_field_from_datum(field)
       if field[:datum].nil? && field[:datum_id].nil?
         raise BadRequestError.new({ :detail => "Must supply a datum for all fields." })

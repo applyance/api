@@ -74,6 +74,7 @@ FactoryGirl.define do
   factory :admin, class: Applyance::Admin do
     association :account, factory: :chief_account
     entity
+    access_level "owner"
   end
 
   factory :admin_invite, class: Applyance::AdminInvite do
@@ -81,6 +82,7 @@ FactoryGirl.define do
     sequence(:email) { |n| "email#{n}@gmail.com" }
     claim_digest { SecureRandom.urlsafe_base64(nil, false) }
     status "open"
+    access_level "owner"
   end
 
   factory :unit, class: Applyance::Unit do
@@ -114,7 +116,6 @@ FactoryGirl.define do
     association :account, factory: :chief_account
     unit
     access_level "full"
-    is_entity_admin false
   end
 
   factory :reviewer_invite, class: Applyance::ReviewerInvite do
@@ -193,12 +194,40 @@ FactoryGirl.define do
 
   factory :field, class: Applyance::Field do
     datum
-
     trait :with_application do
       application
     end
-
     factory :field_with_application, traits: [:with_application]
+  end
+
+  factory :pipeline, class: Applyance::Pipeline do
+    association :unit, factory: :unit_with_reviewer
+    sequence(:name) { |n| "Pipeline #{n}" }
+  end
+
+  factory :stage, class: Applyance::Stage do
+    pipeline
+    sequence(:name) { |n| "Stage #{n}" }
+    sequence(:position) { |n| n }
+  end
+
+  factory :label, class: Applyance::Label do
+    association :unit, factory: :unit_with_reviewer
+    sequence(:name) { |n| "Label #{n}" }
+    color "ff0000"
+  end
+
+  factory :segment, class: Applyance::Segment do
+    reviewer
+    sequence(:name) { |n| "Segment #{n}" }
+    dsl "test"
+  end
+
+  factory :rating, class: Applyance::Rating do
+    reviewer
+    application
+    spot
+    sequence(:rating) { |n| n }
   end
 
 end
