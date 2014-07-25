@@ -20,6 +20,7 @@ require_relative 'stages'
 require_relative 'labels'
 require_relative 'segments'
 require_relative 'ratings'
+require_relative 'notes'
 
 module Applyance
   module Routing
@@ -47,6 +48,7 @@ module Applyance
         app.register Applyance::Routing::Labels
         app.register Applyance::Routing::Segments
         app.register Applyance::Routing::Ratings
+        app.register Applyance::Routing::Notes
       end
     end
   end

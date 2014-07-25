@@ -230,4 +230,10 @@ FactoryGirl.define do
     sequence(:rating) { |n| n }
   end
 
+  factory :note, class: Applyance::Note do
+    reviewer
+    application
+    note "Detail..."
+  end
+
 end

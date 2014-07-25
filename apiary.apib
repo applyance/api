@@ -2768,6 +2768,136 @@ Only 1 rating allowed per application per spot per reviewer.
 
     [Rating][]
 
+# Group Notes
+Reviewers can leave notes on an application.
+
+Markdown supported on the *note* field.
+
+## Note [/notes/{id}]
++ Parameters
+
+    + id (required, number, `1`) ... Note ID
+
++ Model
+
+    + Body
+
+            {
+                "id": 1,
+                "reviewer": {
+                    "id": 1,
+                    ...
+                },
+                "application": {
+                    "id": 1,
+                    ...
+                },
+                "note": "Lorem ipsum...",
+                "created_at": "2012-03-22T16:56:48-05:00",
+                "updated_at": "2012-03-22T16:56:48-05:00"
+            }
+
+### Retrieve [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Note][]
+
+### Update [PUT]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "note": "Lorem ipsum..."
+            }
+
++ Response 200 (application/json)
+
+    [Note][]
+
+### Remove [DELETE]
+*Must be the owner.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 204
+
+## Notes - Application [/applications/{id}/notes]
++ Parameters
+
+    + id (required, number, `1`) ... Application ID
+
++ Model
+
+    + Body
+
+            [
+                {
+                    "id": 1,
+                    "reviewer_id": 1,
+                    "application_id": 1,
+                    "note": "Lorem ipsum...",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                }
+            ]
+
+### List [GET]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200 (application/json)
+
+    [Notes - Application][]
+
+## Notes - Reviewer [/reviewers/{id}/notes]
++ Parameters
+
+    + id (required, number, `1`) ... Reviewer ID
+
+### Create [POST]
+*Must be a reviewer.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "application_id": 1,
+                "note": "Lorem ipsum..." // Markdown supported
+            }
+
++ Response 201 (application/json)
+
+    [Note][]
+
 # Group Threads
 Threads are conversations that happen between a reviewer and an applicant.
 
@@ -3224,132 +3354,3 @@ Must be a reviewer to create.
 + Response 200 (application/json)
 
     [Message][]
-
-# Group Notes
-Reviewers can leave notes on an application.
-
-Markdown supported.
-
-## Note [/notes/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Note ID
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "reviewer_id": 1,
-                "application_id": 1,
-                "note": "Lorem ipsum...",
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Note][]
-
-### Update [PUT]
-Must be the note owner to update.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "id": 1,
-                "note": "Lorem ipsum..."
-            }
-
-+ Response 200 (application/json)
-
-    [Note][]
-
-### Remove [DELETE]
-Must be the note owner to delete.
-
-+ Response 204
-
-## Notes - Reviewer [/reviewers/{id}/notes]
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "reviewer_id": 1,
-                    "application_id": 1,
-                    "note": "Lorem ipsum...",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Notes - Reviewer][]
-
-### Create [POST]
-Must be a reviewer to create.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "application_id": 1,
-                "note": "Lorem ipsum...",
-            }
-
-+ Response 200 (application/json)
-
-    [Note][]
-
-## Notes - Application [/applications/{id}/notes]
-
-### List [GET]
-Must be a reviewer to access.
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Notes - Reviewer][]
