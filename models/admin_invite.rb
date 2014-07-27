@@ -46,5 +46,19 @@ module Applyance
       admin
     end
 
+    # Allow admin to claim account
+    def send_claim_email
+      return if Applyance::Server.test?
+      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      message = {
+        :subject => "Claim Your Invite",
+        :from_name => "The Team at Applyance",
+        :text => "Hello,\n\nYou've been invited to manage #{self.entity.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/admins/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
+        :to => [ { :email => self.email } ],
+        :from_email => "contact@applyance.co"
+      }
+      sending = m.messages.send(message)
+    end
+
   end
 end

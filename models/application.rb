@@ -4,8 +4,7 @@ module Applyance
     include Applyance::Lib::Tokens
     include Applyance::Lib::Strings
 
-    many_to_one :submitter, :class => :'Applyance::Account'
-    many_to_one :submitted_from, :class => :'Applyance::Coordinate'
+    many_to_one :applicant, :class => :'Applyance::Applicant'
     many_to_one :stage, :class => :'Applyance::Stage'
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :threads, :class => :'Applyance::Thread'
@@ -37,30 +36,31 @@ module Applyance
       if params['spot_ids'].nil? && params['unit_ids'].nil? && params['entity_ids'].nil?
         raise BadRequestError.new({ :detail => "Applications need to be assigned entities, units, or spots." })
       end
-      if params['submitter'].nil?
-        raise BadRequestError.new({ :detail => "Application submitter is required." })
+      if params['applicant'].nil?
+        raise BadRequestError.new({ :detail => "Applicant is required." })
       end
 
       # Initialize application
       application = self.new
       application.set_token(:digest)
 
-      # Create coordinate
-      unless params['submitted_from'].nil?
-        coordinate = Coordinate.make(params['submitted_from'])
-        application.set('submitted_from_id' => coordinate.id)
-      end
-
-      # Create submitter (account)
+      # Create applicant (account)
       temp_password = application.friendly_token
       account = Account.make("applicant", {
-        'name' => params['submitter']['name'],
-        'email' => params['submitter']['email'],
+        'name' => params['applicant']['name'],
+        'email' => params['applicant']['email'],
         'password' => temp_password
       })
-      application.set(:submitter_id => account.id)
+      applicant = Applicant.find_or_create(:account_id => account.id)
+
+      # Create applicant location
+      unless params['applicant']['location'].nil?
+        location = Location.make(params['applicant']['location'])
+        applicant.set('location_id' => location.id)
+      end
 
       # Save so we can add assocations
+      application.set(:applicant_id => applicant.id)
       application.save
 
       # Assign spots
@@ -115,7 +115,7 @@ module Applyance
         datum = Datum.first(:id => field[:datum][:id])
       else
         datum = Datum.new
-        datum.account = self.submitter
+        datum.applicant = self.applicant
 
         # Figure out the definition
         if field[:datum][:definition]

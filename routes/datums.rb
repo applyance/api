@@ -15,23 +15,23 @@ module Applyance
 
         app.extend(Applyance::Routing::Datums::Protection)
 
-        # List datums for account
+        # List datums for applicant
         # Must be account owner
-        app.get '/accounts/:id/datums', :provides => [:json] do
-          @account = Account.first(:id => params['id'])
-          protected! app.to_account_owner(@account)
-          @datums = @account.datums
+        app.get '/applicants/:id/datums', :provides => [:json] do
+          @applicant = Applicant.first(:id => params['id'])
+          protected! app.to_account_owner(@applicant.account)
+          @datums = @applicant.datums
           rabl :'datums/index'
         end
 
         # Create a new datum for an account
         # Must be account owner
-        app.post '/accounts/:id/datums', :provides => [:json] do
-          @account = Account.first(:id => params['id'])
-          protected! app.to_account_owner(@account)
+        app.post '/applicants/:id/datums', :provides => [:json] do
+          @applicant = Applicant.first(:id => params['id'])
+          protected! app.to_account_owner(@applicant.account)
 
           @datum = Datum.new
-          @datum.set(:account_id => @account.id)
+          @datum.set(:applicant_id => @applicant.id)
           @datum.set_fields(params, ['definition_id', 'detail'], :missing => :skip)
           @datum.save
           @datum.attach(params['attachments'], :attachments)
@@ -50,7 +50,7 @@ module Applyance
         # Must be an account owner
         app.put '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
-          protected! app.to_account_owner(@datum.account)
+          protected! app.to_account_owner(@datum.applicant.account)
 
           @datum.update_fields(params, ['detail'], :missing => :skip)
           @datum.attach(params['attachments'], :attachments)
@@ -62,7 +62,7 @@ module Applyance
         app.delete '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
 
-          protected! app.to_account_owner(@datum.account)
+          protected! app.to_account_owner(@datum.applicant.account)
 
           @datum.fields_dataset.destroy
           @datum.attachments_dataset.destroy

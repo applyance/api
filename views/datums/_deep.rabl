@@ -1,7 +1,7 @@
 attributes :id, :detail, :created_at, :updated_at
 
-child :account => :account do
-  extends 'accounts/_shallow'
+child :applicant => :applicant do
+  extends 'applicants/_shallow'
 end
 
 child :definition => :definition do

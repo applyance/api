@@ -18,7 +18,7 @@ module Applyance
 
         def to_reviewers_or_owner(application)
           lambda do |account|
-            return true if application.submitter_id == account.id
+            return true if application.applicant.account_id == account.id
             application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
           end
         end

@@ -40,13 +40,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'submitter', 'digest', 'submitted_from_id', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -60,13 +60,15 @@ describe Applyance::Application do
       before(:each) do
 
         application_request = {
-          submitter: {
+          applicant: {
             name: "Stephen Watkins",
-            email: "stjowa@gmail.com"
-          },
-          submitted_from: {
-            lat: 30.5,
-            lng: -40.2
+            email: "stjowa@gmail.com",
+            location: {
+              coordinate: {
+                lat: 30.5,
+                lng: -40.2
+              }
+            }
           },
           spot_ids: [blueprint.spot.id],
           fields: [
@@ -139,7 +141,7 @@ describe Applyance::Application do
       let(:application) { create(:application) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
-        put "/applications/#{application.spots.first.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
+        put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -152,7 +154,7 @@ describe Applyance::Application do
       let(:label) { create(:label) }
       let(:application) { create(:application) }
       before(:each) do
-        put "/applications/#{application.spots.first.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
+        put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -208,7 +210,7 @@ describe Applyance::Application do
     context "logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.submitter.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.applicant.account.api_key}"
         get "/applications/#{application.id}"
       end
 

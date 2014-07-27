@@ -52,7 +52,6 @@ module Applyance
           @account = protected! app.to_account_id(params['id'])
 
           @account.remove_all_roles
-          @account.datums_dataset.destroy
           @account.reviewers_dataset.destroy
           @account.admins_dataset.destroy
           @account.destroy

@@ -23,10 +23,13 @@ module Applyance
         # Sequel connection
         require_relative 'error'
         require_relative 'coordinate'
+        require_relative 'address'
+        require_relative 'location'
         require_relative 'attachment'
         require_relative 'domain'
         require_relative 'role'
         require_relative 'account'
+        require_relative 'applicant'
         require_relative 'entity'
         require_relative 'admin'
         require_relative 'admin_invite'

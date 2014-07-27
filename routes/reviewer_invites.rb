@@ -32,6 +32,7 @@ module Applyance
           protected! app.to_full_access_reviewers(@unit)
 
           @reviewer_invite = ReviewerInvite.make(@unit, params)
+          @reviewer_invite.send_claim_email
 
           status 201
           rabl :'reviewer_invites/show'

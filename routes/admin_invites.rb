@@ -28,6 +28,7 @@ module Applyance
           protected! app.to_admins(@entity)
 
           @admin_invite = AdminInvite.make(@entity, params)
+          @admin_invite.send_claim_email
 
           status 201
           rabl :'admin_invites/show'

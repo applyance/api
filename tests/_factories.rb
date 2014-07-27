@@ -71,6 +71,10 @@ FactoryGirl.define do
     factory :entity_with_admin_invite, traits: [:with_admin, :with_admin_invite]
   end
 
+  factory :applicant, class: Applyance::Applicant do
+    association :account, factory: :applicant_account
+  end
+
   factory :admin, class: Applyance::Admin do
     association :account, factory: :chief_account
     entity
@@ -175,7 +179,7 @@ FactoryGirl.define do
 
   factory :datum, class: Applyance::Datum do
     definition
-    association :account, factory: :applicant_account
+    applicant
     detail { { value: "Detail..." } }
   end
 
@@ -185,8 +189,7 @@ FactoryGirl.define do
   end
 
   factory :application, class: Applyance::Application do
-    association :submitter, factory: :applicant_account
-    association :submitted_from, factory: :coordinate
+    applicant
 
     digest { SecureRandom.urlsafe_base64(nil, false) }
     submitted_at { DateTime.now }
@@ -194,7 +197,7 @@ FactoryGirl.define do
 
     after(:create) do |application|
       application.add_spot(create(:spot))
-      application.add_field(create(:field, :datum => create(:datum, :account => application.submitter)))
+      application.add_field(create(:field, :datum => create(:datum, :applicant => application.applicant)))
     end
   end
 

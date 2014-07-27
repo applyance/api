@@ -28,7 +28,7 @@ module Applyance
         # Protection to reviewers or self
         def to_reviewers_or_self(application)
           lambda do |account|
-            return true if account.id == application.submitter_id
+            return true if account.id == application.applicant.account_id
             application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
           end
         end

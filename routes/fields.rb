@@ -7,7 +7,7 @@ module Applyance
         # Protection to full-access reviewers
         def to_reviewers_or_owner_field(field)
           lambda do |account|
-            return true if field.datum.account_id == account.id
+            return true if field.datum.applicant.account_id == account.id
             field.application.spots.any? do |spot|
               spot.unit.reviewers.collect(&:account_id).include?(account.id)
             end
@@ -17,7 +17,7 @@ module Applyance
         # Protection to full-access reviewers
         def to_reviewers_or_owner_application(application)
           lambda do |account|
-            return true if application.submitter_id == account.id
+            return true if application.applicant.account_id == account.id
             application.spots.any? do |spot|
               spot.unit.reviewers.collect(&:account_id).include?(account.id)
             end

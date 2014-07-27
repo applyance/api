@@ -30,10 +30,11 @@ module Applyance
           end
 
           account = Account.make("admin", params)
-          @admin = Admin.create(
+          @admin = Admin.find_or_create(
             :entity_id => @entity.id,
-            :account_id => account.id,
-            :access_level => "owner")
+            :account_id => account.id
+          )
+          @admin.update(:access_level => "owner")
 
           @admin.send_welcome_email
 

@@ -1830,20 +1830,46 @@ Activity time is determined by the following:
 
             {
                 "id": 1,
-                "submitter": {
+                "applicant": {
                     "id": 1,
-                    "name": "John Smith",
-                    "email": "johnny@gmail.com",
-                    "is_verified": false,
-                    "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00",
-                    "roles": [
-                        {
+                    "location": {
+                        "id": 1,
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "coordinate": {
                             "id": 1,
-                            "name": "admin"
+                            "lat": 23,
+                            "lng": -40,
+                            "created_at": "2012-03-22T16:56:48-05:00",
+                            "updated_at": "2012-03-22T16:56:48-05:00"
+                        },
+                        "address": {
+                            "id": 1,
+                            "address_1": "Street address",
+                            "address_2": "Street address",
+                            "city": "Nashville",
+                            "state": "TN",
+                            "postal_code": "12345",
+                            "country": "US",
+                            "created_at": "2012-03-22T16:56:48-05:00",
+                            "updated_at": "2012-03-22T16:56:48-05:00"
                         }
-                    ]
+                    },
+                    "account": {
+                        "id": 1,
+                        "name": "John Smith",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "admin"
+                            }
+                        ]
+                    }
                 },
                 "spots": [
                     {
@@ -1860,10 +1886,6 @@ Activity time is determined by the following:
 
                     }
                 ],
-                "submitted_from": {
-                    "lat": 30.456,
-                    "lng": -45.00
-                },
                 "submitted_at": "2012-03-22T16:56:48-05:00",
                 "last_activity_at": "2012-03-22T16:56:48-05:00",
                 "created_at": "2012-03-22T16:56:48-05:00",
@@ -1926,92 +1948,46 @@ This method allows reviewers to update management properties of the application.
             [
                 {
                     "id": 1,
-                    "submitter": {
+                    "applicant": {
                         "id": 1,
-                        "name": "John Smith",
-                        "email": "johnny@gmail.com",
-                        "is_verified": false,
-                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00",
-                        "roles": [
-                            {
-                                "id": 1,
-                                "name": "admin"
-                            }
-                        ]
-                    },
-                    "spots": [
-                        {
+                        "location": {
                             "id": 1,
-                            "name": "Cohort 4",
-                            "description": "Lorem ipsum ..."
-                        }
-                    ],
-                    "units": [],
-                    "entities": [],
-                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                    "submitted_from": {
-                        "lat": 30.456,
-                        "lng": -45.00
-                    },
-                    "submitted_at": "2012-03-22T16:56:48-05:00",
-                    "last_activity_at": "2012-03-22T16:56:48-05:00",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                {
-                    "id": 2,
-                    "submitter": {
-                        "id": 2,
-                        "name": "Jimmy Dean",
-                        "email": "johnny@gmail.com",
-                        "is_verified": false,
-                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00",
-                        "roles": [
-                            {
+                            "created_at": "2012-03-22T16:56:48-05:00",
+                            "updated_at": "2012-03-22T16:56:48-05:00",
+                            "coordinate": {
                                 "id": 1,
-                                "name": "admin"
+                                "lat": 23,
+                                "lng": -40,
+                                "created_at": "2012-03-22T16:56:48-05:00",
+                                "updated_at": "2012-03-22T16:56:48-05:00"
+                            },
+                            "address": {
+                                "id": 1,
+                                "address_1": "Street address",
+                                "address_2": "Street address",
+                                "city": "Nashville",
+                                "state": "TN",
+                                "postal_code": "12345",
+                                "country": "US",
+                                "created_at": "2012-03-22T16:56:48-05:00",
+                                "updated_at": "2012-03-22T16:56:48-05:00"
                             }
-                        ]
-                    },
-                    "spots": [
-                        {
+                        },
+                        "account": {
                             "id": 1,
-                            "name": "Cohort 4",
-                            "description": "Lorem ipsum ..."
+                            "name": "John Smith",
+                            "email": "johnny@gmail.com",
+                            "is_verified": false,
+                            "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                            "created_at": "2012-03-22T16:56:48-05:00",
+                            "updated_at": "2012-03-22T16:56:48-05:00",
+                            "roles": [
+                                {
+                                    "id": 1,
+                                    "name": "admin"
+                                }
+                            ]
                         }
-                    ],
-                    "units": [],
-                    "entities": [],
-                    "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                    "submitted_from": {
-                        "lat": 30.456,
-                        "lng": -45.00
-                    },
-                    "submitted_at": "2012-03-22T16:56:48-05:00",
-                    "last_activity_at": "2012-03-22T16:56:48-05:00",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                {
-                    "id": 3,
-                    "submitter": {
-                        "id": 3,
-                        "name": "Jane Smith",
-                        "email": "johnny@gmail.com",
-                        "is_verified": false,
-                        "api_key": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00",
-                        "roles": [
-                            {
-                                "id": 1,
-                                "name": "admin"
-                            }
-                        ]
                     },
                     "spots": [
                         {
@@ -2042,9 +2018,15 @@ Anyone can create an application.
     + Body
 
             {
-                "submitter": {
+                "applicant": {
                     "name": "John Smith",
-                    "email": "johnny@gmail.com"
+                    "email": "johnny@gmail.com",
+                    "location": {
+                        "coordinate": {
+                            "lat": 10,
+                            "lng": 24
+                        }
+                    }
                 },
                 "spot_ids": [1],
                 "fields": [
@@ -2073,11 +2055,7 @@ Anyone can create an application.
                     {
                       datum_id: datum_obj.id
                     }
-                ],
-                "submitted_from": {
-                    "lat": 30.456,
-                    "lng": -45.00
-                }
+                ]
             }
 
 + Response 201 (application/json)

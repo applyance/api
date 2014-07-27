@@ -1,7 +1,7 @@
-attributes :id, :digest, :submitted_from_id, :submitted_at, :last_activity_at, :created_at, :updated_at
+attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 
-child :submitter => :submitter do
-  extends 'accounts/_shallow'
+child :applicant => :applicant do
+  extends 'applicants/_shallow'
 end
 
 child :spots => :spots do
