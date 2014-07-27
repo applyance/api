@@ -85,6 +85,7 @@ Sequel.migration do
       primary_key :id
 
       foreign_key :domain_id, :domains, :null => true, :on_delete => :set_null
+      foreign_key :logo_id, :attachments
       String :name, :null => false
 
       DateTime :created_at
@@ -123,6 +124,7 @@ Sequel.migration do
       primary_key :id
 
       foreign_key :entity_id, :entities, :on_delete => :cascade
+      foreign_key :logo_id, :attachments
       String :name, :null => false
 
       DateTime :created_at
@@ -262,6 +264,18 @@ Sequel.migration do
       foreign_key :spot_id, :spots, :on_delete => :cascade
     end
 
+    # Create application units
+    create_table(:applications_units) do
+      foreign_key :application_id, :applications, :on_delete => :cascade
+      foreign_key :unit_id, :units, :on_delete => :cascade
+    end
+
+    # Create application entities
+    create_table(:applications_entities) do
+      foreign_key :application_id, :applications, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
+    end
+
     # Create application reviewers
     create_table(:applications_reviewers) do
       foreign_key :application_id, :applications, :on_delete => :cascade
@@ -352,6 +366,8 @@ Sequel.migration do
       String :description, :text => true
       String :type, :null => false
       String :helper, :text => true
+      TrueClass :is_contextual, :default => false
+      TrueClass :is_sensitive, :default => false
 
       DateTime :created_at
       DateTime :updated_at

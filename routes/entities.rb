@@ -35,6 +35,7 @@ module Applyance
           @entity = Entity.new
           @entity.set_fields(params, ['name', 'domain_id'], :missing => :skip)
           @entity.save
+          @entity.attach(params['logo'], :logo)
           status 201
           rabl :'entities/show'
         end
@@ -49,8 +50,9 @@ module Applyance
         # Must be an admin
         app.put '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          @account = protected! app.to_admins(@entity)
+          protected! app.to_admins(@entity)
           @entity.update_fields(params, ['name', 'domain_id'], :missing => :skip)
+          @entity.attach(params['logo'], :logo)
           rabl :'entities/show'
         end
 

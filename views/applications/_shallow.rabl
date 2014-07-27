@@ -8,6 +8,14 @@ child :spots => :spots do
   extends 'spots/_shallow'
 end
 
+child :units => :units do
+  extends 'units/_shallow'
+end
+
+child :entities => :entities do
+  extends 'entities/_shallow'
+end
+
 child :stage => :stage do
   extends 'stages/_shallow'
 end

@@ -40,6 +40,7 @@ module Applyance
           @unit.set_fields(params, ['name'], :missing => :skip)
           @unit.set(:entity_id => @entity.id)
           @unit.save
+          @unit.attach(params['logo'], :logo)
 
           status 201
           rabl :'units/show'
@@ -58,6 +59,8 @@ module Applyance
           @account = protected! app.to_admins(@unit.entity)
 
           @unit.update_fields(params, ['name'], :missing => :skip)
+          @unit.attach(params['logo'], :logo)
+          
           rabl :'units/show'
         end
 

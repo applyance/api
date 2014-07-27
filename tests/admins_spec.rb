@@ -122,7 +122,7 @@ describe Applyance::Admin do
   # Remove admin
   describe "Delete #admin" do
     context "logged in as admin" do
-      let(:admin) { create(:admin) }
+      let(:admin) { create(:admin_limited) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{admin.account.api_key}"
         delete "/admins/#{admin.id}"

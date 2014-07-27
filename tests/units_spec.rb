@@ -33,13 +33,13 @@ describe Applyance::Unit do
 
   shared_examples_for "a single unit" do
     it "returns the information for unit show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'entity', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'logo', 'entity', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple units" do
     it "returns the information for unit index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'entity_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'logo', 'entity_id', 'created_at', 'updated_at')
     end
   end
 

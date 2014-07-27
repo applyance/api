@@ -215,7 +215,7 @@ describe Applyance::Account do
       let(:account) { create(:admin_account) }
       before(:each) { post "/accounts/passwords/reset", Oj.dump({ email: account.email }), { "CONTENT_TYPE" => "application/json" } }
 
-      it_behaves_like "a created object"
+      it_behaves_like "a retrieved object"
       it_behaves_like "an empty response"
       it "created the reset digest" do
         _account = Applyance::Account.first(:id => account.id)
@@ -234,7 +234,7 @@ describe Applyance::Account do
         post "/accounts/passwords/set", Oj.dump({ reset_digest: account.reset_digest, new_password: "test4" }), { "CONTENT_TYPE" => "application/json" }
       end
 
-      it_behaves_like "a created object"
+      it_behaves_like "a retrieved object"
       it_behaves_like "an empty response"
       it "updated the password" do
         _account = Applyance::Account.first(:id => account.id)

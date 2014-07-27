@@ -437,6 +437,15 @@ A single Entity object with all its details. Note that entities are created when
                     "name": "Retail"
                 },
                 "name": "Frothy Monkey",
+                "logo": {
+                    "id": 1,
+                    "name": "test.gif",
+                    "content_type": "image/gif",
+                    "byte_size": 12345,
+                    "url": "http://applyance.com/avatars/image.gif",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -461,7 +470,11 @@ A single Entity object with all its details. Note that entities are created when
 
             {
                 "name": "The Frothy Monkey",
-                "domain_id": 1 // Optional
+                "domain_id": 1, // Optional
+                "logo": {
+                  "name": "logo.png",
+                  "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                }
             }
 
 + Response 200 (application/json)
@@ -489,6 +502,15 @@ A single Entity object with all its details. Note that entities are created when
                     "id": 1,
                     "domain_id": 1,
                     "name": "Frothy Monkey",
+                    "logo": {
+                        "id": 1,
+                        "name": "test.gif",
+                        "content_type": "image/gif",
+                        "byte_size": 12345,
+                        "url": "http://applyance.com/avatars/image.gif",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00"
+                    },
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -518,7 +540,11 @@ A single Entity object with all its details. Note that entities are created when
 
             {
                 "name": "Frothy Monkey",
-                "domain_id": 1 // Optional
+                "domain_id": 1, // Optional
+                "logo": {
+                  "name": "logo.png",
+                  "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                }
             }
 
 + Response 201
@@ -816,6 +842,15 @@ Units are subsystems of entities. Usually they would represent locations or camp
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 },
+                "logo": {
+                    "id": 1,
+                    "name": "test.gif",
+                    "content_type": "image/gif",
+                    "byte_size": 12345,
+                    "url": "http://applyance.com/avatars/image.gif",
+                    "created_at": "2012-03-22T16:56:48-05:00",
+                    "updated_at": "2012-03-22T16:56:48-05:00"
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -839,7 +874,11 @@ Units are subsystems of entities. Usually they would represent locations or camp
     + Body
 
             {
-                "name": "Charleston, SC"
+                "name": "Charleston, SC",
+                "logo": {
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                }
             }
 
 + Response 200 (application/json)
@@ -871,6 +910,15 @@ Units are subsystems of entities. Usually they would represent locations or camp
                     "id": 1,
                     "name": "Atlanta, GA",
                     "entity_id": 1,
+                    "logo": {
+                        "id": 1,
+                        "name": "test.gif",
+                        "content_type": "image/gif",
+                        "byte_size": 12345,
+                        "url": "http://applyance.com/avatars/image.gif",
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00"
+                    },
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -895,7 +943,11 @@ Units are subsystems of entities. Usually they would represent locations or camp
     + Body
 
             {
-                "name": "Atlanta, GA"
+                "name": "Atlanta, GA",
+                "logo": {
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                }
             }
 
 + Response 201 (application/json)
@@ -1800,6 +1852,8 @@ Activity time is determined by the following:
                         "description": "Lorem ipsum ..."
                     }
                 ],
+                "units": [],
+                "entities": [],
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "fields": [
                     {
@@ -1894,6 +1948,8 @@ This method allows reviewers to update management properties of the application.
                             "description": "Lorem ipsum ..."
                         }
                     ],
+                    "units": [],
+                    "entities": [],
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                     "submitted_from": {
                         "lat": 30.456,
@@ -1924,10 +1980,12 @@ This method allows reviewers to update management properties of the application.
                     "spots": [
                         {
                             "id": 1,
-                            "name": "King of Sonic",
+                            "name": "Cohort 4",
                             "description": "Lorem ipsum ..."
                         }
                     ],
+                    "units": [],
+                    "entities": [],
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                     "submitted_from": {
                         "lat": 30.456,
@@ -1958,10 +2016,12 @@ This method allows reviewers to update management properties of the application.
                     "spots": [
                         {
                             "id": 1,
-                            "name": "Burger King Manager",
+                            "name": "Cohort 4",
                             "description": "Lorem ipsum ..."
                         }
                     ],
+                    "units": [],
+                    "entities": [],
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                     "submitted_from": {
                         "lat": 30.456,

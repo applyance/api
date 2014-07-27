@@ -21,7 +21,63 @@ namespace :db do
     Applyance::Server.db[:roles].insert(:name => "admin")
     Applyance::Server.db[:roles].insert(:name => "reviewer")
 
-    Applyance::Server.db[:domains].insert(:name => "retail")
+    # Domains
+    Applyance::Domain.create(:name => "retail")
+  end
+
+  # Definitions
+  desc "Seed definitions"
+  task :seed_definitions, :env do |cmd, args|
+    Applyance::Definition.create(
+      :label => 'Social Security Number',
+      :type => 'text',
+      :is_sensitive => true
+    )
+    Applyance::Definition.create(
+      :label => 'Phone Number',
+      :type => 'text'
+    )
+    Applyance::Definition.create(
+      :label => 'Date of Birth',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Current Address',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Previous Address',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'References',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Education History',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Employment History',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Criminal Activity',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Hours of Availability',
+      :type => 'special'
+    )
+    Applyance::Definition.create(
+      :label => 'Are you legally allowed to work in the United States?',
+      :type => 'boolean'
+    )
+    Applyance::Definition.create(
+      :label => 'Please explain how you would be an asset to {{ entity.name }}.',
+      :type => 'textarea',
+      :is_contextual => true
+    )
   end
 
   desc "Empty the database (truncate all tables)"

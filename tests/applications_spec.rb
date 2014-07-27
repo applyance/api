@@ -40,13 +40,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'fields', 'submitter', 'digest', 'submitted_from', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'submitter', 'digest', 'submitted_from_id', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'submitter', 'digest', 'submitted_from_id', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -72,7 +72,9 @@ describe Applyance::Application do
           fields: [
             {
               datum: {
-                detail: "Answer...",
+                detail: {
+                  value: "Answer..."
+                },
                 definition: {
                   label: "Question 1",
                   description: "Description...",
@@ -83,13 +85,17 @@ describe Applyance::Application do
             {
               datum: {
                 definition_id: definition_obj.id,
-                detail: "Answer 2..."
+                detail: {
+                  value: "Answer 2..."
+                }
               }
             },
             {
               datum: {
                 id: datum_obj.id,
-                detail: "Answer 5..."
+                detail: {
+                  value: "Answer 5..."
+                }
               }
             },
             {

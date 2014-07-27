@@ -75,6 +75,12 @@ FactoryGirl.define do
     association :account, factory: :chief_account
     entity
     access_level "owner"
+
+    trait :limited do
+      access_level "limited"
+    end
+
+    factory :admin_limited, traits: [:limited]
   end
 
   factory :admin_invite, class: Applyance::AdminInvite do
@@ -170,7 +176,7 @@ FactoryGirl.define do
   factory :datum, class: Applyance::Datum do
     definition
     association :account, factory: :applicant_account
-    detail "Detail..."
+    detail { { value: "Detail..." } }
   end
 
   factory :coordinate, class: Applyance::Coordinate do

@@ -21,6 +21,7 @@ require_relative 'labels'
 require_relative 'segments'
 require_relative 'ratings'
 require_relative 'notes'
+require_relative 'threads'
 
 module Applyance
   module Routing
@@ -49,6 +50,7 @@ module Applyance
         app.register Applyance::Routing::Segments
         app.register Applyance::Routing::Ratings
         app.register Applyance::Routing::Notes
+        app.register Applyance::Routing::Threads
       end
     end
   end

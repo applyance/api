@@ -52,7 +52,7 @@ module Applyance
           @unit = Unit.first(:id => params['id'])
           protected! app.to_reviewers_of_unit(@unit)
 
-          @applications = []
+          @applications = @unit.applications
           @unit.spots.each { |s| @applications.concat(s.applications) }
           @applications.uniq! { |a| a.id }
 
@@ -71,6 +71,9 @@ module Applyance
         # Must be a reviewer or application owner
         app.get '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
+          if @application.nil?
+            raise BaidRequestError.new({ detail: "Application doesn't exist." })
+          end
           protected! app.to_reviewers_or_self(@application)
           rabl :'applications/show'
         end

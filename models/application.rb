@@ -7,18 +7,22 @@ module Applyance
     many_to_one :submitter, :class => :'Applyance::Account'
     many_to_one :submitted_from, :class => :'Applyance::Coordinate'
     many_to_one :stage, :class => :'Applyance::Stage'
-    many_to_many :spots, :class => :'Applyance::Spot'
-    many_to_many :reviewers, :class => :'Applyance::Reviewer'
-    many_to_many :labels, :class => :'Applyance::Label'
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :threads, :class => :'Applyance::Thread'
     one_to_many :notes, :class => :'Applyance::Note'
     one_to_many :ratings, :class => :'Applyance::Rating'
     one_to_many :fields, :class => :'Applyance::Field'
 
+    many_to_many :reviewers, :class => :'Applyance::Reviewer'
+    many_to_many :labels, :class => :'Applyance::Label'
+
+    many_to_many :spots, :class => :'Applyance::Spot'
+    many_to_many :units, :class => :'Applyance::Unit'
+    many_to_many :entities, :class => :'Applyance::Entity'
+
     def after_create
       super
-      
+
       # Create submission activity
       ApplicationActivity.make_for_submission(self)
     end
@@ -30,8 +34,8 @@ module Applyance
       if params['fields'].nil?
         raise BadRequestError.new({ :detail => "Applications need at least one field." })
       end
-      if params['spot_ids'].nil?
-        raise BadRequestError.new({ :detail => "Application spots are required." })
+      if params['spot_ids'].nil? && params['unit_ids'].nil? && params['entity_ids'].nil?
+        raise BadRequestError.new({ :detail => "Applications need to be assigned entities, units, or spots." })
       end
       if params['submitter'].nil?
         raise BadRequestError.new({ :detail => "Application submitter is required." })
@@ -60,9 +64,27 @@ module Applyance
       application.save
 
       # Assign spots
-      params['spot_ids'].each do |spot_id|
-        spot = Spot.first(:id => spot_id)
-        application.add_spot(spot)
+      if params['spot_ids']
+        params['spot_ids'].each do |spot_id|
+          spot = Spot.first(:id => spot_id)
+          application.add_spot(spot)
+        end
+      end
+
+      # Assign units
+      if params['unit_ids']
+        params['unit_ids'].each do |unit_id|
+          unit = Unit.first(:id => unit_id)
+          application.add_unit(unit)
+        end
+      end
+
+      # Assign entities
+      if params['entity_ids']
+        params['entity_ids'].each do |entity_id|
+          entity = Entity.first(:id => entity_id)
+          application.add_entity(entity)
+        end
       end
 
       # Add fields
