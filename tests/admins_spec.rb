@@ -34,7 +34,7 @@ describe Applyance::Admin do
 
   shared_examples_for "multiple admins" do
     it "returns the information for admin index" do
-      expect(json.first.keys).to contain_exactly('id', 'account_id', 'entity_id', 'access_level', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'account', 'entity_id', 'access_level', 'created_at', 'updated_at')
     end
   end
 
