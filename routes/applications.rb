@@ -4,6 +4,13 @@ module Applyance
 
       module Protection
 
+        # Protection to admins of entity
+        def to_admins(entity)
+          lambda do |account|
+            entity.admins.collect(&:account_id).include?(account.id)
+          end
+        end
+
         # Protection to reviewers of unit
         def to_reviewers_of_unit(unit)
           lambda do |account|
@@ -43,7 +50,7 @@ module Applyance
         app.get '/spots/:id/applications', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
           protected! app.to_reviewers_of_unit(@spot.unit)
-          @applications = @spot.applications
+          @applications = @spot.applications_dataset.by_last_active
           rabl :'applications/index'
         end
 
@@ -54,7 +61,22 @@ module Applyance
 
           @applications = @unit.applications
           @unit.spots.each { |s| @applications.concat(s.applications) }
-          @applications.uniq! { |a| a.id }
+          @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
+
+          rabl :'applications/index'
+        end
+
+        # List applications for entity
+        app.get '/entities/:id/applications', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_admins(@entity)
+
+          @applications = @entity.applications
+          @entity.units.each do |u|
+            @applications.concat(u.applications)
+            u.spots.each { |s| @applications.concat(s.applications) }
+          end
+          @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
 
           rabl :'applications/index'
         end

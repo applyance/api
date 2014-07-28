@@ -19,6 +19,12 @@ module Applyance
     many_to_many :units, :class => :'Applyance::Unit'
     many_to_many :entities, :class => :'Applyance::Entity'
 
+    dataset_module do
+      def by_last_active
+        reverse_order(:last_activity_at)
+      end
+    end
+
     def after_create
       super
 
