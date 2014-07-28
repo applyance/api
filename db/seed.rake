@@ -28,6 +28,9 @@ namespace :db do
   # Definitions
   desc "Seed definitions"
   task :seed_definitions, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
     Applyance::Definition.create(
       :label => 'Social Security Number',
       :type => 'text',

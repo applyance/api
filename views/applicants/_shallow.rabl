@@ -1,1 +1,5 @@
-attributes :id, :account_id, :location_id, :created_at, :updated_at
+attributes :id, :location_id, :created_at, :updated_at
+
+child :account => :account do
+  extends 'accounts/_shallow'
+end

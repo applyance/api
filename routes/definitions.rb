@@ -17,6 +17,11 @@ module Applyance
 
         app.extend(Applyance::Routing::Definitions::Protection)
 
+        app.get '/definitions', :provides => [:json] do
+          @definitions = Definition.exclude(:id => app.db[:definitions_units].select(:definition_id))
+          rabl :'definitions/index'
+        end
+
         # List definitions for unit
         # Must be a full-access reviewer
         app.get '/units/:id/definitions', :provides => [:json] do
@@ -61,6 +66,19 @@ module Applyance
           @definition.save
 
           @domain.add_definition(@definition)
+
+          status 201
+          rabl :'definitions/show'
+        end
+
+        # Create a new definition that's not tied to a domain
+        # Must be a chief B)
+        app.post '/definitions', :provides => [:json] do
+          protected!
+
+          @definition = Definition.new
+          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.save
 
           status 201
           rabl :'definitions/show'

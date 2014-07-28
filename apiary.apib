@@ -1387,11 +1387,7 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
 
 + Response 204
 
-## Definitions - Domain [/domains/{id}/definitions]
-+ Parameters
-
-    + id (required, number, `1`) ... Domain ID
-
+## Definitions [/definitions]
 + Model
 
     + Body
@@ -1413,7 +1409,43 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
 
 + Response 200 (application/json)
 
-    [Definitions - Domain][]
+    [Definitions][]
+
+### Create [POST]
+*Must be a chief.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "label": "Question Title",
+                "type": "select",
+                "description": "Detail...",
+                "helper": {
+                    "choices": ["Option 1", "Option 2"]
+                }
+            }
+
++ Response 201 (application/json)
+
+    [Definition][]
+
+## Definitions - Domain [/domains/{id}/definitions]
++ Parameters
+
+    + id (required, number, `1`) ... Domain ID
+
+### List [GET]
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    [Definitions][]
 
 ### Create [POST]
 *Must be a chief.*
@@ -1455,7 +1487,7 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
 
 + Response 200 (application/json)
 
-    [Definitions - Domain][]
+    [Definitions][]
 
 ### Create [POST]
 *Must be a full reviewer.*
@@ -1477,10 +1509,9 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
                 }
             }
 
-+ Response 200 (application/json)
++ Response 201 (application/json)
 
     [Definition][]
-
 
 # Group Blueprints
 Blueprints lay out the `Definition` objects that applicants need to answer.
@@ -1697,7 +1728,7 @@ They are used to populate fields already asked and answered on Applyance.
 
             {
                 "id": 1,
-                "account": {
+                "applicant": {
                     "id": 1
                     ...
                 },
@@ -1755,10 +1786,10 @@ They are used to populate fields already asked and answered on Applyance.
 
 + Response 204
 
-## Datums [/accounts/{id}/datums]
+## Datums [/applicants/{id}/datums]
 + Parameter
 
-    + id (required, number, `1`) ... Account ID
+    + id (required, number, `1`) ... Applicant ID
 
 + Model
 
@@ -1767,7 +1798,7 @@ They are used to populate fields already asked and answered on Applyance.
             [
                 {
                     "id": 1,
-                    "account_id": 1,
+                    "applicant_id": 1,
                     "definition_id": 1,
                     "detail": "Answer here...",
                     "created_at": "2012-03-22T16:56:48-05:00",

@@ -91,8 +91,48 @@ describe Applyance::Definition do
     end
   end
 
+  # Create definitions
+  describe "POST #definitions" do
+    context "logged in as admin" do
+      let(:account) { create(:chief_account) }
+      before(:each) do
+        account_auth
+        post "/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
+      end
+
+      it_behaves_like "a created object"
+      it_behaves_like "a single definition"
+      it "returns the right value" do
+        expect(json['label']).to eq('Question 1')
+        expect(json['description']).to eq('Detail...')
+      end
+    end
+    context "not logged in" do
+      before(:each) { post "/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
+
+      it_behaves_like "an unauthorized account"
+    end
+  end
+
   # Retrieve definitions
   describe "GET #definitions" do
+    context "not logged in" do
+      let!(:definition) { create(:definition) }
+      let!(:unit) { create(:unit_with_definition) }
+      before(:each) do
+        get "/definitions"
+      end
+
+      it_behaves_like "a retrieved object"
+      it_behaves_like "multiple definitions"
+      it "returns the right number of definitions" do
+        expect(json.count).to eq(1)
+      end
+    end
+  end
+
+  # Retrieve definitions
+  describe "GET #domain/definitions" do
     context "not logged in" do
       let(:domain) { create(:domain_with_definition) }
       before(:each) do
@@ -105,7 +145,7 @@ describe Applyance::Definition do
   end
 
   # Retrieve definitions
-  describe "GET #definitions" do
+  describe "GET #unit/definitions" do
     context "logged in " do
       let(:unit) { create(:unit_with_definition) }
       before(:each) do
