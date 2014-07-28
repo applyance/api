@@ -25,7 +25,6 @@ module Applyance
         # Must be a full-access reviewer
         app.get '/units/:id/blueprints', :provides => [:json] do
           @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
           @blueprints = @unit.blueprints
           rabl :'blueprints/index'
         end
@@ -34,7 +33,6 @@ module Applyance
         # Must be a full-access reviewer
         app.get '/spots/:id/blueprints', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@spot.unit)
           @blueprints = @spot.blueprints
           rabl :'blueprints/index'
         end
@@ -43,7 +41,6 @@ module Applyance
         # Must be an admin
         app.get '/entities/:id/blueprints', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
           @blueprints = @entity.blueprints
           rabl :'blueprints/index'
         end
