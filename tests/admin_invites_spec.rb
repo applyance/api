@@ -115,12 +115,12 @@ describe Applyance::AdminInvite do
   end
 
   # Claim one admin invite
-  describe "PUT #admins/invites/claim" do
+  describe "POST #admins/invites/claim" do
     context "not logged in" do
       let(:entity) { create(:entity_with_admin_invite) }
       before(:each) do
         invite = entity.admin_invites.first
-        put "/admins/invites/#{invite.id}", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
+        post "/admins/invites/claim", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"

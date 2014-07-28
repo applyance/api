@@ -42,7 +42,7 @@ module Applyance
         end
 
         # Claim an admin invite
-        app.put '/admins/invites/:id', :provides => [:json] do
+        app.post '/admins/invites/claim', :provides => [:json] do
           @admin_invite = AdminInvite.first(:claim_digest => params['claim_digest'])
 
           unless @admin_invite

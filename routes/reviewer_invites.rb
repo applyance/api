@@ -46,7 +46,7 @@ module Applyance
         end
 
         # Claim a reviewer invite
-        app.put '/reviewers/invites/:id', :provides => [:json] do
+        app.post '/reviewers/invites/claim', :provides => [:json] do
           @reviewer_invite = ReviewerInvite.first(:claim_digest => params['claim_digest'])
 
           unless @reviewer_invite

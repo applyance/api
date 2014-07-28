@@ -750,23 +750,6 @@ Possible status values:
 
     [Admin Invite][]
 
-### Claim Invite [PUT]
-Claims the invitation by sending the `claim_digest` that was received in the invite email.
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                "name": "Stephen",
-                "password": "secret"
-            }
-
-+ Response 200 (application/json)
-
-    [Admin][]
-
 ## Admin Invites [/entities/{id}/admins/invites]
 + Parameters
 
@@ -820,6 +803,25 @@ Claims the invitation by sending the `claim_digest` that was received in the inv
 + Response 200 (application/json)
 
     [Admin Invites][]
+
+## Admin Invite - Claim [/admins/invites/claim]
+
+### Claim [POST]
+Claims the invitation by sending the `claim_digest` that was received in the invite email.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
+            }
+
++ Response 200 (application/json)
+
+    [Admin][]
 
 # Group Units
 Units are subsystems of entities. Usually they would represent locations or campuses.
@@ -1124,23 +1126,6 @@ Possible `access_level` values:
 
     [Reviewer Invite][]
 
-### Claim Invite [PUT]
-Claims the invitation by sending the `claim_digest` that was received in the invite email.
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                "name": "Stephen",
-                "password": "secret"
-            }
-
-+ Response 200 (application/json)
-
-    [Reviewer Invite][]
-
 ## Reviewer Invites [/units/{id}/reviewers/invites]
 + Parameters
 
@@ -1193,6 +1178,25 @@ Claims the invitation by sending the `claim_digest` that was received in the inv
 + Response 200 (application/json)
 
     [Reviewer Invites][]
+
+## Reviewer Invite - Claim [/reviewers/invites/claim]
+
+### Claim [POST]
+Claims the invitation by sending the `claim_digest` that was received in the invite email.
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
+                "name": "Stephen",
+                "password": "secret"
+            }
+
++ Response 200 (application/json)
+
+    [Reviewer][]
 
 # Group Spots
 Represents an opening in the unit.

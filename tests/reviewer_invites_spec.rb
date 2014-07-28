@@ -118,12 +118,12 @@ describe Applyance::ReviewerInvite do
   end
 
   # Claim one admin invite
-  describe "PUT #admins/invites" do
+  describe "POST #reviewers/invites/claim" do
     context "not logged in" do
       let(:unit) { create(:unit_with_reviewer_invite) }
       before(:each) do
         invite = unit.reviewer_invites.first
-        put "/reviewers/invites/#{invite.id}", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
+        post "/reviewers/invites/claim", Oj.dump({ claim_digest: invite.claim_digest, name: "Steve", password: "secret" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
