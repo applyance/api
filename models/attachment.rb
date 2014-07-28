@@ -7,7 +7,6 @@ module Applyance
     def validate
       super
       validates_presence [:token, :name, :url, :content_type]
-      validates_unique :token
     end
   end
 end
