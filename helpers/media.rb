@@ -13,7 +13,9 @@ module Applyance
       # Upload a specified file and filename to Amazon S3
       def s3_new_attachment(token, data, opts)
         s3 = s3_init
-        s3.buckets['applyance.attachments'].objects[token].write(data, opts)
+        unless s3.buckets['applyance.attachments'].objects[token].exists?
+          s3.buckets['applyance.attachments'].objects[token].write(data, opts)
+        end
       end
 
       # Initialize s3
