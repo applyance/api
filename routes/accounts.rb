@@ -42,6 +42,9 @@ module Applyance
 
         # See if an email exists
         app.get '/emails', :provides => [:json] do
+          if params[:email].nil?
+            raise BadRequestError.now({ :detail => "Email required." })
+          end
           @account = Account.where(:email => params[:email])
           status = @account.nil? ? 404 : 200
           status
