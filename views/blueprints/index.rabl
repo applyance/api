@@ -1,2 +1,2 @@
 collection @blueprints
-extends 'blueprints/_shallow'
+extends 'blueprints/_deep'
