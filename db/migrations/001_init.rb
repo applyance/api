@@ -111,7 +111,7 @@ Sequel.migration do
 
       foreign_key :entity_id, :entities, :on_delete => :cascade
 
-      String :email, :null => false, :index => { :unique => true }
+      String :email, :null => false
       String :claim_digest, :null => false, :index => { :unique => true }
       String :status, :null => false, :default => "open"
 

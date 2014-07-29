@@ -42,7 +42,7 @@ namespace :db do
     )
     Applyance::Definition.create(
       :label => 'Date of Birth',
-      :type => 'special'
+      :type => 'text'
     )
     Applyance::Definition.create(
       :label => 'Current Address',

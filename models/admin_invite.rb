@@ -7,8 +7,7 @@ module Applyance
 
     def validate
       super
-      validates_presence [:email]
-      validates_unique :email
+      validates_presence [:email, :access_level]
     end
 
     def after_create
