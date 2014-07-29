@@ -117,6 +117,8 @@ Sequel.migration do
 
       DateTime :created_at
       DateTime :updated_at
+
+      index [:entity_id, :email], :unique => true
     end
 
     # Create units
@@ -160,6 +162,8 @@ Sequel.migration do
 
       DateTime :created_at
       DateTime :updated_at
+
+      index [:unit_id, :email], :unique => true
     end
 
     # Create spots
