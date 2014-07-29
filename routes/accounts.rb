@@ -45,7 +45,7 @@ module Applyance
           if params[:email].nil?
             raise BadRequestError.new({ :detail => "Email required." })
           end
-          @account = Account.where(:email => params[:email])
+          @account = Account.first(:email => params[:email])
           status = @account.nil? ? 404 : 200
           status
         end
