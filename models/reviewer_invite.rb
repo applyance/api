@@ -49,7 +49,7 @@ module Applyance
       message = {
         :subject => "Claim Your Invite",
         :from_name => "The Team at Applyance",
-        :text => "Hello,\n\nYou've been invited to be a reviewer at #{self.unite.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/reviewers/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
+        :text => "Hello,\n\nYou've been invited to be a reviewer at #{self.unit.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/reviewers/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.email } ],
         :from_email => "contact@applyance.co"
       }
