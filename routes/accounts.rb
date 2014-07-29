@@ -40,6 +40,13 @@ module Applyance
           rabl :'accounts/show'
         end
 
+        # See if an email exists
+        app.get '/emails', :provides => [:json] do
+          @account = Account.where(:email => params[:email])
+          status = @account.nil? 404 : 200
+          status
+        end
+
         # Update an account specified by Id
         app.put '/accounts/:id', :provides => [:json] do
           @account = protected! app.to_account_id(params['id'])
