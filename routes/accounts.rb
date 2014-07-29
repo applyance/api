@@ -96,6 +96,7 @@ module Applyance
             raise BadRequestError({ :detail => "Invalid verify digest." })
           end
           @account.verify_email(params)
+          response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
           rabl :'accounts/show'
         end
 
