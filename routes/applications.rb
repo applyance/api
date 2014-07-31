@@ -14,6 +14,8 @@ module Applyance
         # Protection to reviewers of entity
         def to_reviewers(entity)
           lambda do |account|
+            puts "==========="
+            puts account.inspect
             entity.reviewers.collect(&:account_id).include?(account.id)
           end
         end
