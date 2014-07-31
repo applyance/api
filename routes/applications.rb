@@ -52,11 +52,17 @@ module Applyance
         # List applications for entity
         app.get '/entities/:id/applications', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
+          puts "------------------1"
+          puts @entity.inspect
           protected! app.to_reviewers(@entity)
+
+          puts "------------------2"
 
           @applications = @entity.applications
           @entity.spots.each { |s| @applications.concat(s.applications) }
           @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
+
+          puts "------------------3"
 
           rabl :'applications/index'
         end
