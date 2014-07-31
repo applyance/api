@@ -581,6 +581,51 @@ A single Entity object with all its details. Note that entities are created when
 
     [Entity][]
 
+## Entities - Entities [/entities/{id}/entities]
++ Parameters
+
+    + id (required, number, `1`) ... Entity ID
+
+### List [GET]
+*Must be a reviewer with admin scope.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
++ Response 200
+
+    [Entities][]
+
+### Create [POST]
+*Must be a reviewer with admin scope.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Frothy Monkey",
+                "domain_id": 1, // Optional
+                "logo": {
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                },
+                "location": {
+                    "address": "123 Main Street, Birmingham, AL 35126"
+                }
+            }
+
++ Response 201
+
+    [Entity][]
+
 ## Entities - Domain [/domains/{id}/entities]
 *Must be a chief.*
 
@@ -598,6 +643,31 @@ A single Entity object with all its details. Note that entities are created when
 + Response 200
 
     [Entities][]
+
+### Create [POST]
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
+    + Body
+
+            {
+                "name": "Frothy Monkey",
+                "domain_id": 1, // Optional
+                "logo": {
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                },
+                "location": {
+                    "address": "123 Main Street, Birmingham, AL 35126"
+                }
+            }
+
++ Response 201
+
+    [Entity][]
 
 # Group Reviewers
 Reviewers manage `Entity` objects.
