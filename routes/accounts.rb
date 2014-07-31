@@ -2,16 +2,7 @@ module Applyance
   module Routing
     module Accounts
 
-      module Protection
-        # Protection for current account only
-        def to_account_id(id)
-          lambda { |account| account.id == id.to_i }
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Accounts::Protection)
 
         # Authenticate by email and password
         app.post '/accounts/auth', :provides => [:json] do
@@ -26,7 +17,6 @@ module Applyance
         # Return account data
         app.get '/accounts/me', :provides => [:json] do
           @account = protected!(lambda { |a| true })
-
           @reviewers = Reviewer.where(:account_id => @account.id)
 
           rabl :'accounts/me'

@@ -2,20 +2,7 @@ module Applyance
   module Routing
     module Spots
 
-      module Protection
-
-        # Protection to admins
-        def to_admins(entity)
-          lambda do |account|
-            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
-          end
-        end
-
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Spots::Protection)
 
         # List spots
         app.get '/entities/:id/spots', :provides => [:json] do
@@ -28,7 +15,7 @@ module Applyance
         # Must be a full access reviewer
         app.post '/entities/:id/spots', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_entity_admins(@entity)
 
           @spot = Spot.new
           @spot.set(:entity_id => @entity.id)
@@ -49,7 +36,7 @@ module Applyance
         # Must be an admin
         app.put '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_admins(@spot.entity)
+          protected! app.to_entity_admins(@spot.entity)
 
           @spot.update_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           rabl :'spots/show'
@@ -59,7 +46,7 @@ module Applyance
         # Must be an admin
         app.delete '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_admins(@spot.entity)
+          protected! app.to_entity_admins(@spot.entity)
 
           @spot.remove_all_blueprints
           @spot.remove_all_applications

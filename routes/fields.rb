@@ -2,39 +2,13 @@ module Applyance
   module Routing
     module Fields
 
-      module Protection
-
-        # Protection to full-access reviewers
-        def to_reviewers_or_owner_field(field)
-          lambda do |account|
-            return true if field.datum.applicant.account_id == account.id
-            field.application.spots.any? do |spot|
-              spot.unit.reviewers.collect(&:account_id).include?(account.id)
-            end
-          end
-        end
-
-        # Protection to full-access reviewers
-        def to_reviewers_or_owner_application(application)
-          lambda do |account|
-            return true if application.applicant.account_id == account.id
-            application.spots.any? do |spot|
-              spot.unit.reviewers.collect(&:account_id).include?(account.id)
-            end
-          end
-        end
-
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Fields::Protection)
 
         # List fields for application
         # Must be reviewer or application owner
         app.get '/applications/:id/fields', :provides => [:json] do
           @application = Application.first(:id => params['id'])
-          protected! app.to_reviewers_or_owner_application(@application)
+          protected! app.to_application_reviewers_or_self(@application)
           @fields = @application.fields
           rabl :'fields/index'
         end
@@ -43,7 +17,7 @@ module Applyance
         # Must be reviewer or application owner
         app.post '/applications/:id/fields', :provides => [:json] do
           @application = Application.first(:id => params['id'])
-          protected! app.to_reviewers_or_owner_application(@application)
+          protected! app.to_application_reviewers_or_self(@application)
 
           @field = Field.new
           @field.set(:application_id => @application.id)
@@ -57,7 +31,7 @@ module Applyance
         # Get field by Id
         app.get '/fields/:id', :provides => [:json] do
           @field = Field.first(:id => params['id'])
-          protected! app.to_reviewers_or_owner_field(@field)
+          protected! app.to_field_reviewers_or_self(@field)
           rabl :'fields/show'
         end
 
@@ -65,7 +39,7 @@ module Applyance
         # Must be a reviewer or owner
         app.delete '/fields/:id', :provides => [:json] do
           @field = Field.first(:id => params['id'])
-          protected! app.to_reviewers_or_owner_field(@field)
+          protected! app.to_field_reviewers_or_self(@field)
 
           @field.destroy
 

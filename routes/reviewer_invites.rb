@@ -2,21 +2,12 @@ module Applyance
   module Routing
     module ReviewerInvites
 
-      module Protection
-        # General protection function for entity reviewers
-        def to_reviewers(entity)
-          lambda { |account| entity.reviewers.collect(&:account_id).include?(account.id) }
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::ReviewerInvites::Protection)
 
         # List reviewer invites
         app.get '/entities/:id/reviewers/invites', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_reviewers(@entity)
+          protected! app.to_entity_reviewers(@entity)
 
           @reviewer_invites = @entity.reviewer_invites
           rabl :'reviewer_invites/index'
@@ -25,7 +16,7 @@ module Applyance
         # Create a new reviewer invite
         app.post '/entities/:id/reviewers/invites', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_reviewers(@entity)
+          protected! app.to_entity_reviewers(@entity)
 
           @reviewer_invite = ReviewerInvite.make(@entity, params)
           @reviewer_invite.send_claim_email
@@ -37,7 +28,7 @@ module Applyance
         # Get reviewer invite by Id
         app.get '/reviewers/invites/:id', :provides => [:json] do
           @reviewer_invite = ReviewerInvite.first(:id => params['id'])
-          protected! app.to_reviewers(@reviewer_invite.entity)
+          protected! app.to_entity_reviewers(@reviewer_invite.entity)
           rabl :'reviewer_invites/show'
         end
 

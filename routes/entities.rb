@@ -2,21 +2,7 @@ module Applyance
   module Routing
     module Entities
 
-      module Protection
-        # General protection function for entity admins
-        def to_admins(entity)
-          lambda { |account| entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id) }
-        end
-
-        # Protection to reviewers
-        def to_admins(entity)
-          lambda { |account| entity.reviewers.collect(&:account_id).include?(account.id) }
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Entities::Protection)
 
         # List top-level entities
         # Only Chiefs can do this B)
@@ -30,7 +16,7 @@ module Applyance
         # Only reviewers can do this
         app.get '/entities/:id/entities', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          protected! app.to_reviewers(@entity)
+          protected! app.to_entity_reviewers(@entity)
           @entities = @entity.entities
           rabl :'entities/index'
         end
@@ -75,7 +61,7 @@ module Applyance
         # Only admins can do this
         app.post '/entities/:id/entities', :provides => [:json] do
           @_entity = Entity.first(:id => params[:id])
-          protected! app.to_admins(@_entity)
+          protected! app.to_entity_admins(@_entity)
 
           @entity = Entity.new
           @entity.set(:parent_id => @_entity.id)
@@ -98,8 +84,8 @@ module Applyance
         # Must be an admin
         app.put '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
-          
+          protected! app.to_entity_admins(@entity)
+
           @entity.update_fields(params, ['name'], :missing => :skip)
           @entity.attach(params['logo'], :logo)
           @entity.locate(params['location'])
@@ -111,7 +97,7 @@ module Applyance
         # Must be an admin
         app.delete '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_entity_admins(@entity)
 
           @entity.reviewers_dataset.destroy
           @entity.reviewer_invites_dataset.destroy

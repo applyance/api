@@ -2,21 +2,12 @@ module Applyance
   module Routing
     module Reviewers
 
-      module Protection
-        # General protection function for entity reviewers
-        def to_reviewers(entity)
-          lambda { |account| entity.reviewers.collect(&:account_id).include?(account.id) }
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Reviewers::Protection)
 
         # List reviewers for an entity
         app.get '/entities/:id/reviewers', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_reviewers(@entity)
+          protected! app.to_entity_reviewers(@entity)
           @reviewers = @entity.reviewers
           rabl :'reviewers/index'
         end
@@ -45,14 +36,14 @@ module Applyance
         # Get reviewer by Id
         app.get '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_reviewers(@reviewer.entity)
+          protected! app.to_entity_reviewers(@reviewer.entity)
           rabl :'reviewers/show'
         end
 
         # Update reviewer by Id
         app.put '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_reviewers(@reviewer)
+          protected! app.to_entity_reviewers(@reviewer)
           @reviewer.update_fields(params, ['scope'], :missing => :skip)
           rabl :'reviewers/show'
         end
@@ -60,7 +51,7 @@ module Applyance
         # Delete an reviewer by Id
         app.delete '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_reviewers(@reviewer.entity)
+          protected! app.to_entity_reviewers(@reviewer.entity)
 
           if @reviewer.entity.reviewers.length == 1
             raise BadRequestError.new({ :detail => "Cannot remove last reviewer from entity." })

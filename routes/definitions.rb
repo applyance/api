@@ -2,20 +2,7 @@ module Applyance
   module Routing
     module Definitions
 
-      module Protection
-
-        # Protection to admins
-        def to_admins(entity)
-          lambda do |account|
-            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
-          end
-        end
-
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Definitions::Protection)
 
         app.get '/definitions', :provides => [:json] do
           @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id))
@@ -26,7 +13,7 @@ module Applyance
         # Must be an admin
         app.get '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_entity_admins(@entity)
           @definitions = @entity.definitions
           rabl :'definitions/index'
         end
@@ -42,7 +29,7 @@ module Applyance
         # Must be an admin
         app.post '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_entity_admins(@entity)
 
           @definition = Definition.new
           @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
@@ -95,7 +82,7 @@ module Applyance
           @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
-          protected! app.to_admins(@definition.entity) if @definition.entity
+          protected! app.to_entity_admins(@definition.entity) if @definition.entity
 
           @definition.update_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           rabl :'definitions/show'
@@ -106,7 +93,7 @@ module Applyance
           @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
-          protected! app.to_admins(@definition.entity) if @definition.entity
+          protected! app.to_entity_admins(@definition.entity) if @definition.entity
 
           @definition.datums_dataset.destroy
           @definition.blueprints_dataset.destroy

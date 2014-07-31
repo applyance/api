@@ -15,8 +15,10 @@ module Applyance
 
         # Create address
         results = Geocoder.search("#{coordinate.lat}, #{coordinate.lng}")
-        address = Address.make_from_geocoded_result(results.first)
-        location.set(:address_id => address.id)
+        if results.first
+          address = Address.make_from_geocoded_result(results.first)
+          location.set(:address_id => address.id)
+        end
 
       elsif params['address']
 

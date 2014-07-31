@@ -2,30 +2,13 @@ module Applyance
   module Routing
     module Notes
 
-      module Protection
-        # General protection function for reviewers
-        def to_reviewer(reviewer)
-          lambda do |account|
-            reviewer.account_id == account.id
-          end
-        end
-
-        def to_reviewers(application)
-          lambda do |account|
-            application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
-          end
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Notes::Protection)
 
         # List notes for applications
         # Only reviewers can do this
         app.get '/applications/:id/notes', :provides => [:json] do
           @application = Application.first(:id => params[:id])
-          protected! app.to_reviewers(@application)
+          protected! app.to_application_reviewers(@application)
 
           @notes = @application.notes
           rabl :'notes/index'
@@ -41,8 +24,8 @@ module Applyance
             raise BadRequestError.new({ :detail => "Proper application ID must be provided." })
           end
 
-          protected! app.to_reviewers(@application)
-          protected! app.to_reviewer(@reviewer)
+          protected! app.to_application_reviewers(@application)
+          protected! app.to_account(@reviewer.account)
 
           @note = Note.new
           @note.set(:reviewer_id => @reviewer.id)
@@ -56,7 +39,7 @@ module Applyance
         # Get note by Id
         app.get '/notes/:id', :provides => [:json] do
           @note = Note.first(:id => params['id'])
-          protected! app.to_reviewers(@note.application)
+          protected! app.to_application_reviewers(@note.application)
 
           rabl :'notes/show'
         end
@@ -65,7 +48,7 @@ module Applyance
         # Must be the owner
         app.put '/notes/:id', :provides => [:json] do
           @note = Note.first(:id => params['id'])
-          protected! app.to_reviewer(@note.reviewer)
+          protected! app.to_account(@note.reviewer.account)
 
           @note.update_fields(params, ['note'], :missing => :skip)
           rabl :'notes/show'
@@ -75,7 +58,7 @@ module Applyance
         # Must be the owner
         app.delete '/notes/:id', :provides => [:json] do
           @note = Note.first(:id => params['id'])
-          protected! app.to_reviewer(@note.reviewer)
+          protected! app.to_account(@note.reviewer.account)
 
           @note.destroy
 

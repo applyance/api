@@ -2,24 +2,13 @@ module Applyance
   module Routing
     module Datums
 
-      module Protection
-        # Protection to account
-        def to_account_owner(owner)
-          lambda do |account|
-            account.id == owner.id
-          end
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Datums::Protection)
 
         # List datums for applicant
         # Must be account owner
         app.get '/applicants/:id/datums', :provides => [:json] do
           @applicant = Applicant.first(:id => params['id'])
-          protected! app.to_account_owner(@applicant.account)
+          protected! app.to_account(@applicant.account)
           @datums = @applicant.datums
           rabl :'datums/index'
         end
@@ -28,7 +17,7 @@ module Applyance
         # Must be account owner
         app.post '/applicants/:id/datums', :provides => [:json] do
           @applicant = Applicant.first(:id => params['id'])
-          protected! app.to_account_owner(@applicant.account)
+          protected! app.to_account(@applicant.account)
 
           @datum = Datum.new
           @datum.set(:applicant_id => @applicant.id)
@@ -50,7 +39,7 @@ module Applyance
         # Must be an account owner
         app.put '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
-          protected! app.to_account_owner(@datum.applicant.account)
+          protected! app.to_account(@datum.applicant.account)
 
           @datum.update_fields(params, ['detail'], :missing => :skip)
           @datum.attach(params['attachments'], :attachments)
@@ -62,7 +51,7 @@ module Applyance
         app.delete '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
 
-          protected! app.to_account_owner(@datum.applicant.account)
+          protected! app.to_account(@datum.applicant.account)
 
           @datum.fields_dataset.destroy
           @datum.attachments_dataset.destroy

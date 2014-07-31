@@ -1,3 +1,4 @@
+require_relative '_protection'
 require_relative '_errors'
 require_relative 'attachments'
 require_relative 'domains'
@@ -24,6 +25,8 @@ module Applyance
   module Routing
     module Init
       def self.registered(app)
+        app.extend(Applyance::Routing::Protection)
+
         app.register Applyance::Routing::Errors
         app.register Applyance::Routing::Attachments
         app.register Applyance::Routing::Domains

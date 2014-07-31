@@ -2,37 +2,13 @@ module Applyance
   module Routing
     module Threads
 
-      module Protection
-        # General protection function for reviewers
-        def to_reviewer(reviewer)
-          lambda do |account|
-            reviewer.account_id == account.id
-          end
-        end
-
-        def to_reviewers(application)
-          lambda do |account|
-            application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
-          end
-        end
-
-        def to_reviewers_or_owner(application)
-          lambda do |account|
-            return true if application.applicant.account_id == account.id
-            to_reviewers(application).(account)
-          end
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Threads::Protection)
 
         # List threads for applications
         # Only reviewers or applicant can do this
         app.get '/applications/:id/threads', :provides => [:json] do
           @application = Application.first(:id => params[:id])
-          protected! app.to_reviewers_or_owner(@application)
+          protected! app.to_application_reviewers_or_self(@application)
 
           @threads = @application.threads
           rabl :'threads/index'
@@ -42,7 +18,7 @@ module Applyance
         # Must be a reviewer
         app.post '/applications/:id/threads', :provides => [:json] do
           @application = Application.first(:id => params[:application_id])
-          protected! app.to_reviewers(@application)
+          protected! app.to_application_reviewers(@application)
 
           @thread = Thread.new
           @thread.set(:application_id => @application.id)
@@ -58,7 +34,7 @@ module Applyance
         # Get thread by Id
         app.get '/threads/:id', :provides => [:json] do
           @thread = Thread.first(:id => params['id'])
-          protected! app.to_reviewers_or_owner(@thread.application)
+          protected! app.to_application_reviewers_or_self(@thread.application)
 
           rabl :'threads/show'
         end
@@ -67,7 +43,7 @@ module Applyance
         # Must be a reviewer
         app.put '/threads/:id', :provides => [:json] do
           @thread = Thread.first(:id => params['id'])
-          protected! app.to_reviewer(@thread.reviewer)
+          protected! app.to_account(@thread.reviewer.account)
 
           @thread.update_fields(params, ['subject'], :missing => :skip)
           rabl :'threads/show'
@@ -77,7 +53,7 @@ module Applyance
         # Must be the owner
         app.delete '/threads/:id', :provides => [:json] do
           @thread = Thread.first(:id => params['id'])
-          protected! app.to_reviewers(@thread.application)
+          protected! app.to_application_reviewers(@thread.application)
 
           @thread.messages_dataset.destroy
           @thread.destroy

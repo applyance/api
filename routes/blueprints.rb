@@ -2,25 +2,7 @@ module Applyance
   module Routing
     module Blueprints
 
-      module Protection
-        # Protection to full access reviewers
-        def to_reviewers(entity)
-          lambda do |account|
-            entity.reviewers.collect(&:account_id).include?(account.id)
-          end
-        end
-
-        # Protection to admins
-        def to_admins(entity)
-          lambda do |account|
-            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
-          end
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Blueprints::Protection)
 
         # List blueprints for spot
         # Must be a full-access reviewer
@@ -42,7 +24,7 @@ module Applyance
         # Must be a full-access reviewer
         app.post '/spots/:id/blueprints', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_reviewers(@spot.entity)
+          protected! app.to_entity_reviewers(@spot.entity)
 
           @blueprint = Blueprint.new
           @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
@@ -57,7 +39,7 @@ module Applyance
         # Must be an admin
         app.post '/entities/:id/blueprints', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_entity_admins(@entity)
 
           @blueprint = Blueprint.new
           @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
@@ -78,8 +60,8 @@ module Applyance
         app.put '/blueprints/:id', :provides => [:json] do
           @blueprint = Blueprint.first(:id => params['id'])
 
-          protected! app.to_admins(@blueprint.spot.entity) if @blueprint.spot
-          protected! app.to_admins(@blueprint.entity) if @blueprint.entity
+          protected! app.to_entity_admins(@blueprint.spot.entity) if @blueprint.spot
+          protected! app.to_entity_admins(@blueprint.entity) if @blueprint.entity
 
           @blueprint.update_fields(params, ['position', 'is_required'], :missing => :skip)
           rabl :'blueprints/show'
@@ -89,8 +71,8 @@ module Applyance
         app.delete '/blueprints/:id', :provides => [:json] do
           @blueprint = Blueprint.first(:id => params['id'])
 
-          protected! app.to_admins(@blueprint.spot.entity) if @blueprint.spot
-          protected! app.to_admins(@blueprint.entity) if @blueprint.entity
+          protected! app.to_entity_admins(@blueprint.spot.entity) if @blueprint.spot
+          protected! app.to_entity_admins(@blueprint.entity) if @blueprint.entity
 
           @blueprint.destroy
 
