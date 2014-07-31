@@ -3,14 +3,10 @@ module Applyance
     module ReviewerInvites
 
       module Protection
-
-        # Protection to admins or reviewers
-        def to_full_access_reviewers(unit)
-          lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
-          end
+        # General protection function for entity reviewers
+        def to_reviewers(entity)
+          lambda { |account| entity.reviewers.collect(&:account_id).include?(account.id) }
         end
-
       end
 
       def self.registered(app)
@@ -18,20 +14,20 @@ module Applyance
         app.extend(Applyance::Routing::ReviewerInvites::Protection)
 
         # List reviewer invites
-        app.get '/units/:id/reviewers/invites', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
+        app.get '/entities/:id/reviewers/invites', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_reviewers(@entity)
 
-          @reviewer_invites = @unit.reviewer_invites
+          @reviewer_invites = @entity.reviewer_invites
           rabl :'reviewer_invites/index'
         end
 
         # Create a new reviewer invite
-        app.post '/units/:id/reviewers/invites', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
+        app.post '/entities/:id/reviewers/invites', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_reviewers(@entity)
 
-          @reviewer_invite = ReviewerInvite.make(@unit, params)
+          @reviewer_invite = ReviewerInvite.make(@entity, params)
           @reviewer_invite.send_claim_email
 
           status 201
@@ -41,11 +37,11 @@ module Applyance
         # Get reviewer invite by Id
         app.get '/reviewers/invites/:id', :provides => [:json] do
           @reviewer_invite = ReviewerInvite.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@reviewer_invite.unit)
+          protected! app.to_reviewers(@reviewer_invite.entity)
           rabl :'reviewer_invites/show'
         end
 
-        # Claim a reviewer invite
+        # Claim an reviewer invite
         app.post '/reviewers/invites/claim', :provides => [:json] do
           @reviewer_invite = ReviewerInvite.first(:claim_digest => params['claim_digest'])
 

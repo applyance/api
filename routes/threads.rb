@@ -12,14 +12,14 @@ module Applyance
 
         def to_reviewers(application)
           lambda do |account|
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
+            application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
           end
         end
 
         def to_reviewers_or_owner(application)
           lambda do |account|
             return true if application.applicant.account_id == account.id
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
+            to_reviewers(application).(account)
           end
         end
       end

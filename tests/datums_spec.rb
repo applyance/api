@@ -19,7 +19,6 @@ describe Applyance::Datum do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:blueprints].delete
     app.db[:definitions].delete
     app.db[:entities].delete
@@ -27,7 +26,6 @@ describe Applyance::Datum do
     app.db[:domains].delete
     app.db[:reviewers].delete
     app.db[:spots].delete
-    app.db[:units].delete
   end
   after(:all) do
   end
@@ -40,7 +38,7 @@ describe Applyance::Datum do
 
   shared_examples_for "multiple datums" do
     it "returns the information for datum index" do
-      expect(json.first.keys).to contain_exactly('id', 'applicant_id', 'definition_id', 'detail', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'applicant_id', 'definition', 'attachments', 'detail', 'created_at', 'updated_at')
     end
   end
 

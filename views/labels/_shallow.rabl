@@ -1,1 +1,1 @@
-attributes :id, :name, :color, :unit_id, :created_at, :updated_at
+attributes :id, :name, :color, :entity_id, :created_at, :updated_at

@@ -4,6 +4,6 @@ child :domain => :domain do
   extends "domains/_shallow"
 end
 
-child :unit => :unit do
-  extends "units/_shallow"
+child :entity => :entity do
+  extends "entities/_shallow"
 end

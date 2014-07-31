@@ -4,10 +4,10 @@ module Applyance
 
       module Protection
 
-        # Protection to full access reviewers
-        def to_full_access_reviewers(unit)
+        # Protection to admins
+        def to_admins(entity)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
+            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
           end
         end
 
@@ -18,16 +18,16 @@ module Applyance
         app.extend(Applyance::Routing::Definitions::Protection)
 
         app.get '/definitions', :provides => [:json] do
-          @definitions = Definition.exclude(:id => app.db[:definitions_units].select(:definition_id))
+          @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id))
           rabl :'definitions/index'
         end
 
-        # List definitions for unit
-        # Must be a full-access reviewer
-        app.get '/units/:id/definitions', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
-          @definitions = @unit.definitions
+        # List definitions for entity
+        # Must be an admin
+        app.get '/entities/:id/definitions', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_admins(@entity)
+          @definitions = @entity.definitions
           rabl :'definitions/index'
         end
 
@@ -39,16 +39,16 @@ module Applyance
         end
 
         # Create a new definition
-        # Must be a full access reviewer
-        app.post '/units/:id/definitions', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
+        # Must be an admin
+        app.post '/entities/:id/definitions', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_admins(@entity)
 
           @definition = Definition.new
           @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
 
-          @unit.add_definition(@definition)
+          @entity.add_definition(@definition)
 
           status 201
           rabl :'definitions/show'
@@ -95,7 +95,7 @@ module Applyance
           @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
-          protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
+          protected! app.to_admins(@definition.entity) if @definition.entity
 
           @definition.update_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
           rabl :'definitions/show'
@@ -106,7 +106,7 @@ module Applyance
           @definition = Definition.first(:id => params['id'])
 
           protected! if @definition.domain
-          protected! app.to_full_access_reviewers(@definition.unit) if @definition.unit
+          protected! app.to_admins(@definition.entity) if @definition.entity
 
           @definition.datums_dataset.destroy
           @definition.blueprints_dataset.destroy

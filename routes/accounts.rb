@@ -18,7 +18,6 @@ module Applyance
           @account = Account.authenticate(params)
 
           response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
-          @admins = Admin.where(:account_id => @account.id)
           @reviewers = Reviewer.where(:account_id => @account.id)
 
           rabl :'accounts/me'
@@ -28,7 +27,6 @@ module Applyance
         app.get '/accounts/me', :provides => [:json] do
           @account = protected!(lambda { |a| true })
 
-          @admins = Admin.where(:account_id => @account.id)
           @reviewers = Reviewer.where(:account_id => @account.id)
 
           rabl :'accounts/me'
@@ -63,7 +61,6 @@ module Applyance
 
           @account.remove_all_roles
           @account.reviewers_dataset.destroy
-          @account.admins_dataset.destroy
           @account.destroy
 
           204

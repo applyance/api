@@ -18,7 +18,6 @@ namespace :db do
 
     Applyance::Server.db[:roles].insert(:name => "chief")
     Applyance::Server.db[:roles].insert(:name => "applicant")
-    Applyance::Server.db[:roles].insert(:name => "admin")
     Applyance::Server.db[:roles].insert(:name => "reviewer")
 
     # Domains

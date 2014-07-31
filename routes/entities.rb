@@ -5,7 +5,12 @@ module Applyance
       module Protection
         # General protection function for entity admins
         def to_admins(entity)
-          lambda { |account| entity.admins.collect(&:account_id).include?(account.id) }
+          lambda { |account| entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id) }
+        end
+
+        # Protection to reviewers
+        def to_admins(entity)
+          lambda { |account| entity.reviewers.collect(&:account_id).include?(account.id) }
         end
       end
 
@@ -13,11 +18,20 @@ module Applyance
 
         app.extend(Applyance::Routing::Entities::Protection)
 
-        # List entities
+        # List top-level entities
         # Only Chiefs can do this B)
         app.get '/entities', :provides => [:json] do
           protected!
-          @entities = Entity.all
+          @entities = Entity.where(:parent_id => nil)
+          rabl :'entities/index'
+        end
+
+        # List entities of an entity
+        # Only reviewers can do this
+        app.get '/entities/:id/entities', :provides => [:json] do
+          @entity = Entity.first(:id => params[:id])
+          protected! app.to_reviewers(@entity)
+          @entities = @entity.entities
           rabl :'entities/index'
         end
 
@@ -30,12 +44,46 @@ module Applyance
           rabl :'entities/index'
         end
 
-        # Create a new entity
+        # Create a new entity, sans domain
         app.post '/entities', :provides => [:json] do
           @entity = Entity.new
-          @entity.set_fields(params, ['name', 'domain_id'], :missing => :skip)
+          @entity.set_fields(params, ['name'], :missing => :skip)
           @entity.save
           @entity.attach(params['logo'], :logo)
+          @entity.locate(params['location'])
+
+          status 201
+          rabl :'entities/show'
+        end
+
+        # Create a new entity for a domain
+        app.post '/domains/:id/entities', :provides => [:json] do
+          @domain = Domain.first(:id => params[:id])
+
+          @entity = Entity.new
+          @entity.set(:domain_id => @domain.id)
+          @entity.set_fields(params, ['name'], :missing => :skip)
+          @entity.save
+          @entity.attach(params['logo'], :logo)
+          @entity.locate(params['location'])
+
+          status 201
+          rabl :'entities/show'
+        end
+
+        # Create a new entity for an entity
+        # Only admins can do this
+        app.post '/entities/:id/entities', :provides => [:json] do
+          @_entity = Entity.first(:id => params[:id])
+          protected! app.to_admins(@_entity)
+
+          @entity = Entity.new
+          @entity.set(:parent_id => @_entity.id)
+          @entity.set_fields(params, ['name'], :missing => :skip)
+          @entity.save
+          @entity.attach(params['logo'], :logo)
+          @entity.locate(params['location'])
+
           status 201
           rabl :'entities/show'
         end
@@ -51,8 +99,11 @@ module Applyance
         app.put '/entities/:id', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
-          @entity.update_fields(params, ['name', 'domain_id'], :missing => :skip)
+          
+          @entity.update_fields(params, ['name'], :missing => :skip)
           @entity.attach(params['logo'], :logo)
+          @entity.locate(params['location'])
+
           rabl :'entities/show'
         end
 
@@ -62,9 +113,19 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
           protected! app.to_admins(@entity)
 
-          @entity.admins_dataset.destroy
-          @entity.admin_invites_dataset.destroy
-          @entity.units_dataset.destroy
+          @entity.reviewers_dataset.destroy
+          @entity.reviewer_invites_dataset.destroy
+          @entity.entities_dataset.destroy
+
+          @entity.spots_dataset.destroy
+          @entity.templates_dataset.destroy
+          @entity.pipelines_dataset.destroy
+          @entity.labels_dataset.destroy
+
+          @entity.remove_all_definitions
+          @entity.remove_all_blueprints
+          @entity.remove_all_applications
+
           @entity.destroy
 
           204

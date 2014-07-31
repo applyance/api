@@ -7,28 +7,22 @@ module Applyance
         # Protection to admins of entity
         def to_admins(entity)
           lambda do |account|
-            entity.admins.collect(&:account_id).include?(account.id)
+            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
           end
         end
 
-        # Protection to reviewers of unit
-        def to_reviewers_of_unit(unit)
+        # Protection to reviewers of entity
+        def to_reviewers(entity)
           lambda do |account|
-            unit.reviewers.collect(&:account_id).include?(account.id)
+            entity.reviewers.collect(&:account_id).include?(account.id)
           end
         end
 
         # Protection to reviewers of application
         def to_reviewers_of_application(application)
           lambda do |account|
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
-          end
-        end
-
-        # Protection to reviewers
-        def to_full_access_reviewers(unit)
-          lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
+            return true if application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
+            application.entities.any? { |e| e.reviewers.collect(&:account_id).include?(account.id)  }
           end
         end
 
@@ -36,7 +30,7 @@ module Applyance
         def to_reviewers_or_self(application)
           lambda do |account|
             return true if account.id == application.applicant.account_id
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
+            to_reviewers_of_application(application).(account)
           end
         end
 
@@ -49,33 +43,19 @@ module Applyance
         # List applications for spot
         app.get '/spots/:id/applications', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_reviewers_of_unit(@spot.unit)
+          protected! app.to_reviewers(@spot.entity)
+
           @applications = @spot.applications_dataset.by_last_active
-          rabl :'applications/index'
-        end
-
-        # List applications for unit
-        app.get '/units/:id/applications', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_reviewers_of_unit(@unit)
-
-          @applications = @unit.applications
-          @unit.spots.each { |s| @applications.concat(s.applications) }
-          @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
-
           rabl :'applications/index'
         end
 
         # List applications for entity
         app.get '/entities/:id/applications', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          protected! app.to_admins(@entity)
+          protected! app.to_reviewers(@entity)
 
           @applications = @entity.applications
-          @entity.units.each do |u|
-            @applications.concat(u.applications)
-            u.spots.each { |s| @applications.concat(s.applications) }
-          end
+          @entity.spots.each { |s| @applications.concat(s.applications) }
           @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
 
           rabl :'applications/index'
@@ -126,13 +106,14 @@ module Applyance
           rabl :'applications/show'
         end
 
-        # Delete a entity by Id
-        # Must be a full access reviewer
+        # Delete an application by Id
+        # Must be an admin
         app.delete '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@application)
+          protected! app.to_admins(@application)
 
           @application.remove_all_spots
+          @application.remove_all_entities
           @application.remove_all_labels
           @application.remove_all_reviewers
 

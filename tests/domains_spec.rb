@@ -16,24 +16,24 @@ describe Applyance::Domain do
 
   before(:all) do
     @chief_account = create(:chief_account)
-    @admin_account = create(:admin_account)
+    @reviewer_account = create(:reviewer_account)
   end
   let(:chief) { @chief_account.reload }
-  let(:admin) { @admin_account.reload }
+  let(:reviewer) { @reviewer_account.reload }
   after(:each) { app.db[:domains].delete }
   after(:all) do
     @chief_account.remove_all_roles
     @chief_account.destroy
-    @admin_account.remove_all_roles
-    @admin_account.destroy
+    @reviewer_account.remove_all_roles
+    @reviewer_account.destroy
   end
 
   def chief_auth
     header "Authorization", "ApplyanceLogin auth=#{chief.api_key}"
   end
 
-  def admin_auth
-    header "Authorization", "ApplyanceLogin auth=#{admin.api_key}"
+  def reviewer_auth
+    header "Authorization", "ApplyanceLogin auth=#{reviewer.api_key}"
   end
 
   shared_examples_for "a single domain" do
@@ -59,9 +59,9 @@ describe Applyance::Domain do
       it_behaves_like "a created object"
       it_behaves_like "a single domain"
     end
-    context "logged in as admin" do
+    context "logged in as reviewer" do
       before(:each) do
-        admin_auth
+        reviewer_auth
         post "/domains", Oj.dump({ name: "Retail" }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -110,10 +110,10 @@ describe Applyance::Domain do
         expect(json['name']).to eq('Retail 2')
       end
     end
-    context "logged in as admin" do
+    context "logged in as reviewer" do
       let(:domain) { create(:domain) }
       before(:each) do
-        admin_auth
+        reviewer_auth
         put "/domains/#{domain.id}", Oj.dump({ name: "Retail 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -139,10 +139,10 @@ describe Applyance::Domain do
       it_behaves_like "a deleted object"
       it_behaves_like "an empty response"
     end
-    context "logged in as admin" do
+    context "logged in as reviewer" do
       let(:domain) { create(:domain) }
       before(:each) do
-        admin_auth
+        reviewer_auth
         delete "/domains/#{domain.id}"
       end
 

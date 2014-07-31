@@ -6,6 +6,7 @@ module Applyance
 
     many_to_one :applicant, :class => :'Applyance::Applicant'
     many_to_one :stage, :class => :'Applyance::Stage'
+    
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :threads, :class => :'Applyance::Thread'
     one_to_many :notes, :class => :'Applyance::Note'
@@ -16,7 +17,6 @@ module Applyance
     many_to_many :labels, :class => :'Applyance::Label'
 
     many_to_many :spots, :class => :'Applyance::Spot'
-    many_to_many :units, :class => :'Applyance::Unit'
     many_to_many :entities, :class => :'Applyance::Entity'
 
     dataset_module do
@@ -39,8 +39,8 @@ module Applyance
       if params['fields'].nil?
         raise BadRequestError.new({ :detail => "Applications need at least one field." })
       end
-      if params['spot_ids'].nil? && params['unit_ids'].nil? && params['entity_ids'].nil?
-        raise BadRequestError.new({ :detail => "Applications need to be assigned entities, units, or spots." })
+      if params['spot_ids'].nil? && params['entity_ids'].nil?
+        raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
       end
       if params['applicant'].nil?
         raise BadRequestError.new({ :detail => "Applicant is required." })
@@ -74,14 +74,6 @@ module Applyance
         params['spot_ids'].each do |spot_id|
           spot = Spot.first(:id => spot_id)
           application.add_spot(spot)
-        end
-      end
-
-      # Assign units
-      if params['unit_ids']
-        params['unit_ids'].each do |unit_id|
-          unit = Unit.first(:id => unit_id)
-          application.add_unit(unit)
         end
       end
 

@@ -19,7 +19,6 @@ describe Applyance::Note do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:blueprints].delete
     app.db[:definitions].delete
@@ -27,7 +26,6 @@ describe Applyance::Note do
     app.db[:fields].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:applications].delete
     app.db[:notes].delete
   end
@@ -55,8 +53,8 @@ describe Applyance::Note do
     context "logged in as reviewer" do
       let!(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
-        post "/reviewers/#{application.spots.first.unit.reviewers.first.id}/notes", Oj.dump({ note: "Detail...", application_id: application.id }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
+        post "/reviewers/#{application.spots.first.entity.reviewers.first.id}/notes", Oj.dump({ note: "Detail...", application_id: application.id }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -68,7 +66,7 @@ describe Applyance::Note do
     context "not logged in" do
       let!(:application) { create(:application) }
       before(:each) do
-        post "/reviewers/#{application.spots.first.unit.reviewers.first.id}/notes", Oj.dump({ note: "Detail...", application_id: application.id }), { "CONTENT_TYPE" => "application/json" }
+        post "/reviewers/#{application.spots.first.entity.reviewers.first.id}/notes", Oj.dump({ note: "Detail...", application_id: application.id }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"

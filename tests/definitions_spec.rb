@@ -19,36 +19,34 @@ describe Applyance::Definition do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:definitions].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
     app.db[:spots].delete
-    app.db[:units].delete
   end
   after(:all) do
   end
 
   shared_examples_for "a single definition" do
     it "returns the information for definition show" do
-      expect(json.keys).to contain_exactly('id', 'domain', 'unit', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'domain', 'entity', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple definitions" do
     it "returns the information for definition index" do
-      expect(json.first.keys).to contain_exactly('id', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
     end
   end
 
   # Create definitions
-  describe "POST #units/definitions" do
+  describe "POST #entities/definitions" do
     context "logged in as admin" do
-      let(:unit) { create(:unit) }
+      let(:entity) { create(:entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        post "/entities/#{entity.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -59,8 +57,8 @@ describe Applyance::Definition do
       end
     end
     context "not logged in" do
-      let(:unit) { create(:unit) }
-      before(:each) { post "/units/#{unit.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
+      let(:entity) { create(:entity) }
+      before(:each) { post "/entities/#{entity.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -118,7 +116,7 @@ describe Applyance::Definition do
   describe "GET #definitions" do
     context "not logged in" do
       let!(:definition) { create(:definition) }
-      let!(:unit) { create(:unit_with_definition) }
+      let!(:entity) { create(:entity_with_definition) }
       before(:each) do
         get "/definitions"
       end
@@ -147,19 +145,19 @@ describe Applyance::Definition do
   # Retrieve definitions
   describe "GET #unit/definitions" do
     context "logged in " do
-      let(:unit) { create(:unit_with_definition) }
+      let(:entity) { create(:entity_with_definition) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        get "/units/#{unit.id}/definitions"
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        get "/entities/#{entity.id}/definitions"
       end
 
       it_behaves_like "a retrieved object"
       it_behaves_like "multiple definitions"
     end
     context "not logged in" do
-      let(:unit) { create(:unit_with_definition) }
+      let(:entity) { create(:entity_with_definition) }
       before(:each) do
-        get "/units/#{unit.id}/definitions"
+        get "/entities/#{entity.id}/definitions"
       end
 
       it_behaves_like "an unauthorized account"
@@ -178,10 +176,10 @@ describe Applyance::Definition do
   # Update definition
   describe "PUT #definition" do
     context "logged in as admin" do
-      let(:unit) { create(:unit_with_definition) }
+      let(:entity) { create(:entity_with_definition) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        put "/definitions/#{unit.definitions.first.id}", Oj.dump({ label: "Definition Change" }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        put "/definitions/#{entity.definitions.first.id}", Oj.dump({ label: "Definition Change" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
@@ -191,8 +189,8 @@ describe Applyance::Definition do
       end
     end
     context "not logged in" do
-      let(:unit) { create(:unit_with_definition) }
-      before(:each) { put "/definitions/#{unit.definitions.first.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
+      let(:entity) { create(:entity_with_definition) }
+      before(:each) { put "/definitions/#{entity.definitions.first.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -201,18 +199,18 @@ describe Applyance::Definition do
   # Remove definition
   describe "Delete #definition" do
     context "logged in as admin" do
-      let(:unit) { create(:unit_with_definition) }
+      let(:entity) { create(:entity_with_definition) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        delete "/definitions/#{unit.definitions.first.id}"
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        delete "/definitions/#{entity.definitions.first.id}"
       end
 
       it_behaves_like "a deleted object"
       it_behaves_like "an empty response"
     end
     context "not logged in" do
-      let(:unit) { create(:unit_with_definition) }
-      before(:each) { delete "/definitions/#{unit.definitions.first.id}" }
+      let(:entity) { create(:entity_with_definition) }
+      before(:each) { delete "/definitions/#{entity.definitions.first.id}" }
 
       it_behaves_like "an unauthorized account"
     end

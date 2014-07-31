@@ -4,9 +4,9 @@ module Applyance
 
       module Protection
         # General protection function for reviewers
-        def to_full_access_reviewers(unit)
+        def to_admins(entity)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
+            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
           end
         end
 
@@ -21,23 +21,23 @@ module Applyance
 
         app.extend(Applyance::Routing::Pipelines::Protection)
 
-        # List pipelines by unit
+        # List pipelines for entities
         # Only reviewers can do this
-        app.get '/units/:id/pipelines', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
-          protected! app.to_reviewers(@unit)
-          @pipelines = @unit.pipelines
+        app.get '/entities/:id/pipelines', :provides => [:json] do
+          @entity = Entity.first(:id => params[:id])
+          protected! app.to_reviewers(@entity)
+          @pipelines = @entity.pipelines
           rabl :'pipelines/index'
         end
 
         # Create a new pipeline
-        # Must be a full reviewer
-        app.post '/units/:id/pipelines', :provides => [:json] do
-          @unit = Unit.first(:id => params[:id])
-          protected! app.to_full_access_reviewers(@unit)
+        # Must be an admin
+        app.post '/entities/:id/pipelines', :provides => [:json] do
+          @entity = Entity.first(:id => params[:id])
+          protected! app.to_admins(@entity)
 
           @pipeline = Pipeline.new
-          @pipeline.set(:unit_id => @unit.id)
+          @pipeline.set(:entity_id => @entity.id)
           @pipeline.set_fields(params, ['name'], :missing => :skip)
           @pipeline.save
 
@@ -48,26 +48,26 @@ module Applyance
         # Get pipeline by Id
         app.get '/pipelines/:id', :provides => [:json] do
           @pipeline = Pipeline.first(:id => params['id'])
-          protected! app.to_reviewers(@pipeline.unit)
+          protected! app.to_reviewers(@pipeline.entity)
 
           rabl :'pipelines/show'
         end
 
         # Update a pipeline by Id
-        # Must be a full reviewer
+        # Must be an admin
         app.put '/pipelines/:id', :provides => [:json] do
           @pipeline = Pipeline.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@pipeline.unit)
+          protected! app.to_admins(@pipeline.entity)
 
           @pipeline.update_fields(params, ['name'], :missing => :skip)
           rabl :'pipelines/show'
         end
 
         # Delete a pipeline by Id
-        # Must be a full reviewer
+        # Must be an admin
         app.delete '/pipelines/:id', :provides => [:json] do
           @pipeline = Pipeline.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@pipeline.unit)
+          protected! app.to_admins(@pipeline.entity)
 
           @pipeline.stages_dataset.destroy
           @pipeline.destroy

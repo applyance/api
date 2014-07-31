@@ -15,13 +15,13 @@ FactoryGirl.define do
   end
 
   factory :role, class: Applyance::Role do
-    name "admin"
+    name "reviewer"
   end
 
   factory :account, class: Applyance::Account do
 
     name "Stephen Watkins"
-    sequence(:email) { |n| "email#{n}@gmail.com" }
+    sequence(:email) { |n| "account#{n}@gmail.com" }
     password_hash { BCrypt::Password.create("test") }
     api_key { SecureRandom.urlsafe_base64(nil, false) }
     is_verified false
@@ -34,18 +34,11 @@ FactoryGirl.define do
     trait :applicant do
       after(:create) { |account| account.add_role(Applyance::Role.first(:name => "applicant")) }
     end
-    trait :admin do
-      after(:create) do |account|
-        account.add_role(Applyance::Role.first(:name => "admin"))
-        account.add_role(Applyance::Role.first(:name => "reviewer"))
-      end
-    end
     trait :reviewer do
       after(:create) { |account| account.add_role(Applyance::Role.first(:name => "reviewer")) }
     end
 
     factory :chief_account, traits: [:chief]
-    factory :admin_account, traits: [:admin]
     factory :reviewer_account, traits: [:reviewer]
     factory :applicant_account, traits: [:applicant]
 
@@ -55,90 +48,47 @@ FactoryGirl.define do
     name "The Iron Yard"
     domain
 
-    trait :with_admin do
+    after(:create) do |entity|
+      entity.add_reviewer(create(:reviewer, :entity => entity))
+      entity.add_reviewer_invite(create(:reviewer_invite, :entity => entity))
+    end
+
+    trait :with_definition do
       after(:create) do |entity|
-        entity.add_admin(create(:admin))
+        entity.add_definition(create(:definition))
       end
     end
 
-    trait :with_admin_invite do
-      after(:create) do |entity|
-        entity.add_admin_invite(create(:admin_invite))
-      end
-    end
-
-    factory :entity_with_admin, traits: [:with_admin]
-    factory :entity_with_admin_invite, traits: [:with_admin, :with_admin_invite]
+    factory :entity_with_definition, traits: [:with_definition]
   end
 
   factory :applicant, class: Applyance::Applicant do
     association :account, factory: :applicant_account
   end
 
-  factory :admin, class: Applyance::Admin do
-    association :account, factory: :chief_account
-    entity
-    access_level "owner"
-
-    trait :limited do
-      access_level "limited"
-    end
-
-    factory :admin_limited, traits: [:limited]
-  end
-
-  factory :admin_invite, class: Applyance::AdminInvite do
-    entity
-    sequence(:email) { |n| "email#{n}@gmail.com" }
-    claim_digest { SecureRandom.urlsafe_base64(nil, false) }
-    status "open"
-    access_level "owner"
-  end
-
-  factory :unit, class: Applyance::Unit do
-    name "Building 1"
-    association :entity, factory: :entity_with_admin
-
-    trait :with_reviewer do
-      after(:create) do |unit|
-        unit.add_reviewer(create(:reviewer))
-      end
-    end
-
-    trait :with_reviewer_invite do
-      after(:create) do |unit|
-        unit.add_reviewer_invite(create(:reviewer_invite))
-      end
-    end
-
-    trait :with_definition do
-      after(:create) do |unit|
-        unit.add_definition(create(:definition))
-      end
-    end
-
-    factory :unit_with_reviewer, traits: [:with_reviewer]
-    factory :unit_with_reviewer_invite, traits: [:with_reviewer, :with_reviewer_invite]
-    factory :unit_with_definition, traits: [:with_reviewer, :with_definition]
-  end
-
   factory :reviewer, class: Applyance::Reviewer do
     association :account, factory: :chief_account
-    unit
-    access_level "full"
+    entity
+    scope "admin"
+
+    trait :limited do
+      scope "limited"
+    end
+
+    factory :reviewer_limited, traits: [:limited]
   end
 
   factory :reviewer_invite, class: Applyance::ReviewerInvite do
-    unit
-    sequence(:email) { |n| "email#{n}@gmail.com" }
-    access_level "full"
+    entity
+    sequence(:email) { |n| "invite#{n}@gmail.com" }
     claim_digest { SecureRandom.urlsafe_base64(nil, false) }
     status "open"
+    scope "admin"
   end
 
   factory :spot, class: Applyance::Spot do
     name "Spot 1"
-    association :unit, factory: :unit_with_reviewer
+    entity
     detail "Detail..."
     status "open"
   end
@@ -154,15 +104,9 @@ FactoryGirl.define do
     sequence(:position) { |n| n }
     is_required false
 
-    trait :with_unit do
-      after(:create) do |blueprint|
-        create(:unit_with_reviewer).add_blueprint(blueprint)
-      end
-    end
-
     trait :with_entity do
       after(:create) do |blueprint|
-        create(:entity_with_admin).add_blueprint(blueprint)
+        create(:entity).add_blueprint(blueprint)
       end
     end
 
@@ -172,7 +116,6 @@ FactoryGirl.define do
       end
     end
 
-    factory :blueprint_with_unit, traits: [:with_unit]
     factory :blueprint_with_entity, traits: [:with_entity]
     factory :blueprint_with_spot, traits: [:with_spot]
   end
@@ -210,7 +153,7 @@ FactoryGirl.define do
   end
 
   factory :pipeline, class: Applyance::Pipeline do
-    association :unit, factory: :unit_with_reviewer
+    entity
     sequence(:name) { |n| "Pipeline #{n}" }
   end
 
@@ -221,7 +164,7 @@ FactoryGirl.define do
   end
 
   factory :label, class: Applyance::Label do
-    association :unit, factory: :unit_with_reviewer
+    entity
     sequence(:name) { |n| "Label #{n}" }
     color "ff0000"
   end
@@ -235,7 +178,6 @@ FactoryGirl.define do
   factory :rating, class: Applyance::Rating do
     reviewer
     application
-    spot
     sequence(:rating) { |n| n }
   end
 

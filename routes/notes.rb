@@ -12,7 +12,7 @@ module Applyance
 
         def to_reviewers(application)
           lambda do |account|
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
+            application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
           end
         end
       end

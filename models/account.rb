@@ -6,7 +6,6 @@ module Applyance
 
     many_to_many :roles, :class => :'Applyance::Role'
     many_to_one :avatar, :class => :'Applyance::Attachment'
-    one_to_many :admins, :class => :'Applyance::Admin'
     one_to_many :reviewers, :class => :'Applyance::Reviewer'
     one_to_many :applicants, :class => :'Applyance::Applicant'
 

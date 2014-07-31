@@ -19,7 +19,6 @@ describe Applyance::Application do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:blueprints].delete
     app.db[:definitions].delete
@@ -27,7 +26,6 @@ describe Applyance::Application do
     app.db[:fields].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:spots].delete
     app.db[:applications].delete
   end
@@ -40,13 +38,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'units', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -116,10 +114,10 @@ describe Applyance::Application do
 
   # Remove application
   describe "Delete #application" do
-    context "logged in as admin" do
+    context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
         delete "/applications/#{application.id}"
       end
 
@@ -140,7 +138,7 @@ describe Applyance::Application do
       let(:label) { create(:label) }
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
         put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -166,7 +164,7 @@ describe Applyance::Application do
     context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
         get "/spots/#{application.spots.first.id}/applications"
       end
 
@@ -184,12 +182,12 @@ describe Applyance::Application do
   end
 
   # Retrieve unit applications
-  describe "GET #unit/applications" do
+  describe "GET #entity/applications" do
     context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.unit.reviewers.first.account.api_key}"
-        get "/units/#{application.spots.first.unit.id}/applications"
+        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
+        get "/entities/#{application.spots.first.entity.id}/applications"
       end
 
       it_behaves_like "a retrieved object"
@@ -198,7 +196,7 @@ describe Applyance::Application do
     context "not logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        get "/units/#{application.spots.first.unit.id}/applications"
+        get "/entities/#{application.spots.first.entity.id}/applications"
       end
 
       it_behaves_like "an unauthorized account"

@@ -8,6 +8,7 @@ require 'active_support/inflector'
 require 'bcrypt'
 require 'rabl'
 require 'sidekiq'
+require 'geocoder'
 
 require 'mandrill'
 require 'aws-sdk'

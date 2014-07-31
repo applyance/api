@@ -14,12 +14,38 @@ Sequel.migration do
       DateTime :updated_at
     end
 
+    # Create addresses
+    create_table(:addresses) do
+      primary_key :id
+
+      String :address_1
+      String :address_2
+      String :city
+      String :state
+      String :postal_code
+      String :country
+
+      DateTime :created_at
+      DateTime :updated_at
+    end
+
     # Create coordinates
     create_table(:coordinates) do
       primary_key :id
 
       Float :lat
       Float :lng
+
+      DateTime :created_at
+      DateTime :updated_at
+    end
+
+    # Create locations
+    create_table(:locations) do
+      primary_key :id
+
+      foreign_key :coordinate_id, :coordinates, :on_delete => :set_null
+      foreign_key :address_id, :addresses, :on_delete => :set_null
 
       DateTime :created_at
       DateTime :updated_at
@@ -80,53 +106,26 @@ Sequel.migration do
       foreign_key :role_id, :roles, :on_delete => :cascade
     end
 
+    # Create applicants
+    create_table(:applicants) do
+      primary_key :id
+
+      foreign_key :account_id, :accounts, :on_delete => :cascade, :unique => true
+      foreign_key :location_id, :locations, :on_delete => :set_null
+
+      DateTime :created_at
+      DateTime :updated_at
+    end
+
     # Create entities
     create_table(:entities) do
       primary_key :id
 
       foreign_key :domain_id, :domains, :null => true, :on_delete => :set_null
+      foreign_key :parent_id, :entities, :null => true, :on_delete => :cascade
+
       foreign_key :logo_id, :attachments
-      String :name, :null => false
-
-      DateTime :created_at
-      DateTime :updated_at
-    end
-
-    # Create admins
-    create_table(:admins) do
-      primary_key :id
-
-      foreign_key :entity_id, :entities, :on_delete => :cascade
-      foreign_key :account_id, :accounts, :on_delete => :cascade
-
-      DateTime :created_at
-      DateTime :updated_at
-
-      index [:entity_id, :account_id], :unique => true
-    end
-
-    # Create admin invites
-    create_table(:admin_invites) do
-      primary_key :id
-
-      foreign_key :entity_id, :entities, :on_delete => :cascade
-
-      String :email, :null => false
-      String :claim_digest, :null => false, :index => { :unique => true }
-      String :status, :null => false, :default => "open"
-
-      DateTime :created_at
-      DateTime :updated_at
-
-      index [:entity_id, :email], :unique => true
-    end
-
-    # Create units
-    create_table(:units) do
-      primary_key :id
-
-      foreign_key :entity_id, :entities, :on_delete => :cascade
-      foreign_key :logo_id, :attachments
+      foreign_key :location_id, :locations
       String :name, :null => false
 
       DateTime :created_at
@@ -137,40 +136,39 @@ Sequel.migration do
     create_table(:reviewers) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
       foreign_key :account_id, :accounts, :on_delete => :cascade
 
-      String :access_level, :null => false
-      TrueClass :is_entity_admin, :null => false, :default => false
+      String :scope, :null => false, :default => "limited"
 
       DateTime :created_at
       DateTime :updated_at
 
-      index [:unit_id, :account_id], :unique => true
+      index [:entity_id, :account_id], :unique => true
     end
 
     # Create reviewer invites
     create_table(:reviewer_invites) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
 
       String :email, :null => false
-      String :access_level, :null => false
       String :claim_digest, :null => false, :index => { :unique => true }
+      String :scope, :null => false, :default => "limited"
       String :status, :null => false, :default => "open"
 
       DateTime :created_at
       DateTime :updated_at
 
-      index [:unit_id, :email], :unique => true
+      index [:entity_id, :email], :unique => true
     end
 
     # Create spots
     create_table(:spots) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
       String :name, :null => false
       String :detail, :text => true
       String :status, :null => false, :default => "active"
@@ -183,7 +181,7 @@ Sequel.migration do
     create_table(:templates) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
       String :subject, :null => false
       String :message, :text => true
 
@@ -201,7 +199,7 @@ Sequel.migration do
     create_table(:pipelines) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
       String :name, :null => false
 
       DateTime :created_at
@@ -226,7 +224,7 @@ Sequel.migration do
     create_table(:labels) do
       primary_key :id
 
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
       String :name, :null => false
       String :color, :null => false
 
@@ -250,8 +248,7 @@ Sequel.migration do
     create_table(:applications) do
       primary_key :id
 
-      foreign_key :submitter_id, :accounts, :on_delete => :set_null
-      foreign_key :submitted_from_id, :coordinates, :on_delete => :set_null
+      foreign_key :applicant_id, :applicants, :on_delete => :set_null
       foreign_key :stage_id, :stages, :null => true, :on_delete => :set_null
 
       String :digest, :null => false, :index => { :unique => true }
@@ -266,12 +263,6 @@ Sequel.migration do
     create_table(:applications_spots) do
       foreign_key :application_id, :applications, :on_delete => :cascade
       foreign_key :spot_id, :spots, :on_delete => :cascade
-    end
-
-    # Create application units
-    create_table(:applications_units) do
-      foreign_key :application_id, :applications, :on_delete => :cascade
-      foreign_key :unit_id, :units, :on_delete => :cascade
     end
 
     # Create application entities
@@ -353,7 +344,6 @@ Sequel.migration do
 
       foreign_key :application_id, :applications, :on_delete => :cascade
       foreign_key :reviewer_id, :reviewers, :on_delete => :cascade
-      foreign_key :spot_id, :spots, :on_delete => :cascade
 
       Integer :rating, :null => false
 
@@ -383,10 +373,10 @@ Sequel.migration do
       foreign_key :domain_id, :domains, :on_delete => :cascade
     end
 
-    # Unit definitions
-    create_table(:definitions_units) do
+    # Entity definitions
+    create_table(:definitions_entities) do
       foreign_key :definition_id, :definitions, :on_delete => :cascade, :unique => true
-      foreign_key :unit_id, :units, :on_delete => :cascade
+      foreign_key :entity_id, :entities, :on_delete => :cascade
     end
 
     # Create blueprints
@@ -408,12 +398,6 @@ Sequel.migration do
       foreign_key :spot_id, :spots, :on_delete => :cascade
     end
 
-    # Unit blueprints
-    create_table(:blueprints_units) do
-      foreign_key :blueprint_id, :blueprints, :on_delete => :cascade, :unique => true
-      foreign_key :unit_id, :units, :on_delete => :cascade
-    end
-
     # Entity blueprints
     create_table(:blueprints_entities) do
       foreign_key :blueprint_id, :blueprints, :on_delete => :cascade, :unique => true
@@ -424,7 +408,7 @@ Sequel.migration do
     create_table(:datums) do
       primary_key :id
 
-      foreign_key :account_id, :accounts, :on_delete => :cascade
+      foreign_key :applicant_id, :applicants, :on_delete => :cascade
       foreign_key :definition_id, :definitions, :on_delete => :cascade
       String :detail, :null => false, :text => true
 

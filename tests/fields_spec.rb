@@ -19,13 +19,11 @@ describe Applyance::Field do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:blueprints].delete
     app.db[:definitions].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:spots].delete
     app.db[:fields].delete
   end

@@ -19,15 +19,11 @@ Can manage *roles*, *domains*, and *definitions*. Oversees *entities*.
 
 Accounts who submit an *application*.
 
-**Admin**
-
-Accounts who manage *entities*.
-
 **Reviewer**
 
-Accounts who manage *units* and review *applications*.
+Accounts who review applications.
 
-All *admins* will automaticaly be *reviewers* of their subunits.
+All *reviewers* will automatically be *reviewers* of their subentities recursively.
 
 ## Role [/roles/{id}]
 + Parameters
@@ -191,7 +187,7 @@ The `Authorization` header in the response will return the `api_key` for future 
                         }
                     ]
                 },
-                "admins": [
+                "reviewers": [
                     {
                         "id": 1612,
                         "created_at": "2014-07-22 14:11:56 -0500",
@@ -200,12 +196,16 @@ The `Authorization` header in the response will return the `api_key` for future 
                             "id": 3292,
                             "name": "The Iron Yard",
                             "domain_id": 3366,
+                            "location_id": 1,
+                            "logo": {
+                                "id": 1,
+                                ...
+                            },
                             "created_at": "2014-07-22 14:11:56 -0500",
                             "updated_at": null
                         }
                     }
-                ],
-                "reviewers": []
+                ]
             }
 
 ### Authenticate [POST]
@@ -243,7 +243,7 @@ Endpoint that always gives the contextual information for the current user, prov
                         }
                     ]
                 },
-                "admins": [
+                "reviewers": [
                     {
                         "id": 1612,
                         "created_at": "2014-07-22 14:11:56 -0500",
@@ -252,12 +252,16 @@ Endpoint that always gives the contextual information for the current user, prov
                             "id": 3292,
                             "name": "The Iron Yard",
                             "domain_id": 3366,
+                            "location_id": 1,
+                            "logo": {
+                                "id": 1,
+                                ...
+                            },
                             "created_at": "2014-07-22 14:11:56 -0500",
                             "updated_at": null
                         }
                     }
-                ],
-                "reviewers": []
+                ]
             }
 
 ### Me [GET]
@@ -295,7 +299,7 @@ A single Account object with all its details.
                 "roles": [
                     {
                         "id": 1,
-                        "name": "admin"
+                        "name": "reviewer"
                     }
                 ],
                 "created_at": "2012-03-22T16:56:48-05:00",
@@ -419,6 +423,8 @@ Once the upload is successful, you'll get a 201 OK response, and we'll give you 
 # Group Entities
 Entities within Applyance represent the institutions that are managing applications (schools, small businesses, etc).
 
+Entities are made to support hierarchy configurations.
+
 ## Entity [/entities/{id}]
 A single Entity object with all its details. Note that entities are created when a reviewer registers.
 
@@ -446,6 +452,23 @@ A single Entity object with all its details. Note that entities are created when
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 },
+                "location": {
+                    "id": 1,
+                    "address": {
+                        "id": 1,
+                        "address_1": "Street...",
+                        "address_2": "Street 2...",
+                        "state": "AL",
+                        "city": "Birmingham",
+                        "postal_code": "35126",
+                        "country": "US"
+                    },
+                    "coordinate": {
+                        "id": 1,
+                        "lat": 35,
+                        "lng": -40
+                    }
+                },
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -472,8 +495,11 @@ A single Entity object with all its details. Note that entities are created when
                 "name": "The Frothy Monkey",
                 "domain_id": 1, // Optional
                 "logo": {
-                  "name": "logo.png",
-                  "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                },
+                "location": {
+                    "address": "123 Main Street, Birmingham, AL 35126"
                 }
             }
 
@@ -511,6 +537,7 @@ A single Entity object with all its details. Note that entities are created when
                         "created_at": "2012-03-22T16:56:48-05:00",
                         "updated_at": "2012-03-22T16:56:48-05:00"
                     },
+                    "location_id": 1,
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -542,8 +569,11 @@ A single Entity object with all its details. Note that entities are created when
                 "name": "Frothy Monkey",
                 "domain_id": 1, // Optional
                 "logo": {
-                  "name": "logo.png",
-                  "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                    "name": "logo.png",
+                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
+                },
+                "location": {
+                    "address": "123 Main Street, Birmingham, AL 35126"
                 }
             }
 
@@ -569,10 +599,15 @@ A single Entity object with all its details. Note that entities are created when
 
     [Entities][]
 
-# Group Admins
-Admins manage `Entity` objects.
+# Group Reviewers
+Reviewers manage `Entity` objects.
 
-## Admin [/admins/{id}]
+Reviewers have a property called `scope`. Scope represents the permission level a reviewer has on an `Entity`:
+
+- `admin` - Manage entities. Manage reviewers. Review applications.
+- `limited` - Review applications.
+
+## Reviewer [/reviewers/{id}]
 + Parameters
 
     + id (required, number, `1`)
@@ -583,7 +618,7 @@ Admins manage `Entity` objects.
 
             {
                 "id": 1,
-                "access_level": "owner",
+                "scope": "admin",
                 "account": {
                     "id": 1,
                     "name": "Johnny Rocket",
@@ -594,7 +629,7 @@ Admins manage `Entity` objects.
                     "roles": [
                         {
                             "id": 1,
-                            "name": "admin"
+                            "name": "reviewer"
                         }
                     ]
                 },
@@ -609,7 +644,7 @@ Admins manage `Entity` objects.
             }
 
 ### Retrieve [GET]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -619,10 +654,10 @@ Admins manage `Entity` objects.
 
 + Response 200
 
-    [Admin][]
+    [Reviewer][]
 
 ### Update [PUT]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -633,17 +668,17 @@ Admins manage `Entity` objects.
     + Body
 
             {
-                "access_level": "limited"
+                "scope": "limited"
             }
 
 + Response 200
 
-    [Admin][]
+    [Reviewer][]
 
 ### Remove [DELETE]
-This does not delete the account. Just the admin from the entity.
+This does not delete the account. It just removes the reviewer from the entity.
 
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -653,7 +688,7 @@ This does not delete the account. Just the admin from the entity.
 
 + Response 204
 
-## Admins [/entities/{id}/admins]
+## Reviewers [/entities/{id}/reviewers]
 + Parameters
 
     + id (required, number, `1`) ... Entity ID
@@ -665,16 +700,29 @@ This does not delete the account. Just the admin from the entity.
             [
                 {
                     "id": 1,
-                    "access_level": "owner",
+                    "scope": "owner",
                     "entity_id": 1,
-                    "account_id": 1,
+                    "account": {
+                        "id": 1,
+                        "name": "Johnny Rocket",
+                        "email": "johnny@gmail.com",
+                        "is_verified": false,
+                        "created_at": "2012-03-22T16:56:48-05:00",
+                        "updated_at": "2012-03-22T16:56:48-05:00",
+                        "roles": [
+                            {
+                                "id": 1,
+                                "name": "reviewer"
+                            }
+                        ]
+                    },
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
             ]
 
 ### List [GET]
-*Must be an entity admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -684,12 +732,12 @@ This does not delete the account. Just the admin from the entity.
 
 + Response 200 (application/json)
 
-    [Admins][]
+    [Reviewers][]
 
 ### Create [POST]
-Creates an admin for the entity.
+Creates a reviewer with admin scope for the entity.
 
-Sets *access_level* to *owner*.
+Sets *scope* to *admin* automatically.
 
 + Request (application/json)
 
@@ -703,12 +751,12 @@ Sets *access_level* to *owner*.
 
 + Response 201 (application/json)
 
-    [Admin][]
+    [Reviewer][]
 
-# Group Admin Invites
-Invite an admin to an entity. Admin invites can be sent by other admins in the entity.
+# Group Reviewer Invites
+Invite a reviewer to an entity. Reviewer invites can be sent by other admin-scoped reviewers in the entity.
 
-## Admin Invite [/admins/invites/{id}]
+## Reviewer Invite [/reviewers/invites/{id}]
 Possible status values:
 
 - `open` - Has not yet been claimed.
@@ -716,7 +764,7 @@ Possible status values:
 
 + Parameters
 
-    + id (required, number, `1`) ... Admin Invite ID
+    + id (required, number, `1`) ... Reviewer Invite ID
 
 + Model (application/json)
 
@@ -724,7 +772,7 @@ Possible status values:
 
             {
                 "id": 1,
-                "access_level": "limited",
+                "scope": "limited",
                 "entity": {
                     "id": 1,
                     "name": "Entity Name",
@@ -738,7 +786,7 @@ Possible status values:
             }
 
 ### Get Invite [GET]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -748,9 +796,9 @@ Possible status values:
 
 + Response 200 (application/json)
 
-    [Admin Invite][]
+    [Reviewer Invite][]
 
-## Admin Invites [/entities/{id}/admins/invites]
+## Reviewer Invites [/entities/{id}/reviewers/invites]
 + Parameters
 
     + id (required, number, `1`) ... Entity ID
@@ -763,7 +811,7 @@ Possible status values:
                 {
                     "id": 1,
                     "entity_id": 1,
-                    "access_level": "limited",
+                    "scope": "limited",
                     "email": "johnny@gmail.com",
                     "status": "claimed",
                     "created_at": "2012-03-22T16:56:48-05:00",
@@ -772,7 +820,7 @@ Possible status values:
             ]
 
 ### Create Invite [POST]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -784,382 +832,7 @@ Possible status values:
 
             {
                 "email": "johnny@gmail.com",
-                "access_level": "limited"
-            }
-
-+ Response 201 (application/json)
-
-    [Admin Invite][]
-
-### List Invites [GET]
-*Must be an admin.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Admin Invites][]
-
-## Admin Invite - Claim [/admins/invites/claim]
-
-### Claim [POST]
-Claims the invitation by sending the `claim_digest` that was received in the invite email.
-
-+ Request (application/json)
-
-    + Body
-
-            {
-                "claim_digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
-                "name": "Stephen",
-                "password": "secret"
-            }
-
-+ Response 200 (application/json)
-
-    [Admin][]
-
-# Group Units
-Units are subsystems of entities. Usually they would represent locations or campuses.
-
-## Unit [/units/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-
-+ Model (application/json)
-
-    + Body
-
-            {
-                "id": 1,
-                "name": "Atlanta, GA",
-                "entity": {
-                    "id": 1,
-                    "name": "Entity",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                "logo": {
-                    "id": 1,
-                    "name": "test.gif",
-                    "content_type": "image/gif",
-                    "byte_size": 12345,
-                    "url": "http://applyance.com/avatars/image.gif",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-+ Request (application/json)
-
-+ Response 200 (application/json)
-
-    [Unit][]
-
-### Update [PUT]
-*Must be an admin.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Charleston, SC",
-                "logo": {
-                    "name": "logo.png",
-                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
-                }
-            }
-
-+ Response 200 (application/json)
-
-    [Unit][]
-
-### Remove [DELETE]
-*Must be an admin.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204 (application/json)
-
-## Units [/entities/{id}/units]
-+ Parameters
-
-    + id (required, number, `1`) ... Entity ID
-
-+ Model (application/json)
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "name": "Atlanta, GA",
-                    "entity_id": 1,
-                    "logo": {
-                        "id": 1,
-                        "name": "test.gif",
-                        "content_type": "image/gif",
-                        "byte_size": 12345,
-                        "url": "http://applyance.com/avatars/image.gif",
-                        "created_at": "2012-03-22T16:56:48-05:00",
-                        "updated_at": "2012-03-22T16:56:48-05:00"
-                    },
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### List [GET]
-+ Request (application/json)
-
-+ Response 200 (application/json)
-
-    [Units][]
-
-### Create [POST]
-*Must be an admin.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "name": "Atlanta, GA",
-                "logo": {
-                    "name": "logo.png",
-                    "token": "YW55IGNhcm5hbCBwbGVhc3VyZS4=" // Attachment token
-                }
-            }
-
-+ Response 201 (application/json)
-
-    [Unit][]
-
-# Group Reviewers
-Reviewers manage units and review applications.
-
-They can have one of three access levels:
-
-- `admin` - Can review applicants, invite other reviewers, remove reviewers, and view insights.
-- `full` - Can review applicants, invite other reviewers, remove reviewers, and view insights. Cannot remove admins.
-- `review` - Can review applicants.
-
-## Reviewer [/reviewers/{id}]
-+ Parameters
-
-    + id (required, number, `1`)
-
-+ Model
-
-    + Body
-
-            {
-                "id": 1,
-                "access_level": "full",
-                "account": {
-                    "id": 1,
-                    "name": "Johnny Rocket",
-                    "email": "johnny@gmail.com",
-                    "is_verified": false,
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00",
-                    "roles": [
-                        {
-                            "id": 1,
-                            "name": "admin"
-                        }
-                    ]
-                },
-                "unit": {
-                    "id": 1,
-                    "name": "Unit name",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Retrieve [GET]
-*Must be a full reviewer or owner.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200
-
-    [Reviewer][]
-
-### Update [PUT]
-*Must be a full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "access_level": "limited"
-            }
-
-+ Response 200
-
-    [Reviewer][]
-
-### Remove [DELETE]
-*Must be a full reviewer or owner.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 204
-
-## Reviewers - Unit [/units/{id}/reviewers]
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-
-+ Model
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "access_level": "full",
-                    "account_id": 1,
-                    "entity_id": 1
-                }
-            ]
-
-### List [GET]
-*Must be a full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Reviewers - Unit][]
-
-# Group Reviewer Invites
-Invite a reviewer to a unit. Reviewer invites can be sent by other `full` reviewers in the unit.
-
-Possible `status` values:
-
-- `open` - Has not yet been claimed.
-- `claimed` - Has been claimed.
-
-Possible `access_level` values:
-
-- `admin` - Represents an entity admin.
-- `full` - Full-access reviewer.
-- `limited` - Limited-access reviewer.
-
-## Reviewer Invite [/reviewers/invites/{id}]
-+ Parameters
-
-    + id (required, number, `1`) ... Reviewer Invite ID
-
-+ Model (application/json)
-
-    + Body
-
-            {
-                "id": 1,
-                "email": "johnny@gmail.com",
-                "access_level": "full",
-                "status": "open",
-                "unit": {
-                    "id": 1,
-                    "name": "Unit name",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                },
-                "created_at": "2012-03-22T16:56:48-05:00",
-                "updated_at": "2012-03-22T16:56:48-05:00"
-            }
-
-### Get Invite [GET]
-*Must be a full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Reviewer Invite][]
-
-## Reviewer Invites [/units/{id}/reviewers/invites]
-+ Parameters
-
-    + id (required, number, `1`) ... Unit ID
-
-+ Model (application/json)
-
-    + Body
-
-            [
-                {
-                    "id": 1,
-                    "email": "johnny@gmail.com",
-                    "access_level": "full",
-                    "status": "claimed",
-                    "created_at": "2012-03-22T16:56:48-05:00",
-                    "updated_at": "2012-03-22T16:56:48-05:00"
-                }
-            ]
-
-### Create Invite [POST]
-*Must be a full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "email": "johnny@gmail.com",
-                "access_level": "full"
+                "scope": "limited"
             }
 
 + Response 201 (application/json)
@@ -1167,7 +840,7 @@ Possible `access_level` values:
     [Reviewer Invite][]
 
 ### List Invites [GET]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1199,7 +872,7 @@ Claims the invitation by sending the `claim_digest` that was received in the inv
     [Reviewer][]
 
 # Group Spots
-Represents an opening in the unit.
+Represents an opening in an entity.
 
 (e.g. job for companies, cohort for schools)
 
@@ -1223,7 +896,7 @@ Spots can have the following `status`:
                 "name": "Cohort 4",
                 "detail": "Lorem ipsum ...",
                 "status": "open",
-                "unit_id": 1,
+                "entity_id": 1,
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
             }
@@ -1236,7 +909,7 @@ Spots can have the following `status`:
     [Spot][]
 
 ### Update [PUT]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1257,7 +930,7 @@ Spots can have the following `status`:
     [Spot][]
 
 ### Remove [DELETE]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1267,10 +940,10 @@ Spots can have the following `status`:
 
 + Response 204
 
-## Spots - Unit [/units/{id}/spots]
+## Spots [/entities/{id}/spots]
 + Parameters
 
-    + id (required, number, `1`) ... Unit ID
+    + id (required, number, `1`) ... Entity ID
 
 + Model
 
@@ -1282,7 +955,7 @@ Spots can have the following `status`:
                     "name": "Cohort 4",
                     "detail": "Lorem ipsum ...",
                     "status": "open",
-                    "unit_id": 1,
+                    "entity_id": 1,
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 }
@@ -1293,10 +966,10 @@ Spots can have the following `status`:
 
 + Response 200 (application/json)
 
-    [Spots - Unit][]
+    [Spots][]
 
 ### Create [POST]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1323,7 +996,7 @@ Through `Definition` objects, we can server standardized questions.
 
 Based on the `Definition` type, there could be more to the definition (e.g. storing multiple choice options). Extra information is stored as a helper object.
 
-`Definition` objects can belong to *domains*, *units*, or neither.
+`Definition` objects can belong to *domains*, *entities*, or neither.
 
 ## Definition [/definitions/{id}]
 + Parameters
@@ -1342,7 +1015,7 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
                 },
-                "unit": null,
+                "entity": null,
                 "label": "Question Title",
                 "type": "text",
                 "description": "Detail...",
@@ -1359,7 +1032,7 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
     [Definition][]
 
 ### Update [PUT]
-*Must be unit full reviewer (unit definition) or chief (domain definition).*
+*Must be entity admin reviewer (entity definition) or chief (domain definition).*
 
 + Request (application/json)
 
@@ -1381,7 +1054,7 @@ Based on the `Definition` type, there could be more to the definition (e.g. stor
     [Definition][]
 
 ### Remove [DELETE]
-*Must be unit full reviewer (unit definition) or chief (domain definition).*
+*Must be an entity admin reviewer (entity definition) or chief (domain definition).*
 
 + Request (application/json)
 
@@ -1554,7 +1227,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
     [Blueprint][]
 
 ### Update [PUT]
-*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1574,7 +1247,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
     [Blueprint][]
 
 ### Remove [DELETE]
-*Must be an admin (entity blueprint), full reviewer (unit and spot blueprint).*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1605,7 +1278,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
             ]
 
 ### List [GET]
-*Must be full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1618,46 +1291,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
     [Blueprints - Spot][]
 
 ### Create [POST]
-*Must be full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-    + Body
-
-            {
-                "definition_id": 1,
-                "position": 1,
-                "is_required": false
-            }
-
-+ Response 200 (application/json)
-
-    [Blueprints - Spot][]
-
-## Blueprints - Unit [/units/{id}/blueprints]
-+ Parameter
-
-    + id (required, number, `1`) ... Unit ID
-
-### List [GET]
-*Must be full reviewer.*
-
-+ Request (application/json)
-
-    + Header
-
-            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
-
-+ Response 200 (application/json)
-
-    [Blueprints - Spot][]
-
-### Create [POST]
-*Must be full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1683,7 +1317,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
     + id (required, number, `1`) ... Entity ID
 
 ### List [GET]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1696,7 +1330,7 @@ Blueprints lay out the `Definition` objects that applicants need to answer.
     [Blueprints - Spot][]
 
 ### Create [POST]
-*Must be an admin.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -1913,7 +1547,6 @@ Activity time is determined by the following:
                         "description": "Lorem ipsum ..."
                     }
                 ],
-                "units": [],
                 "entities": [],
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "fields": [
@@ -2031,7 +1664,6 @@ This method allows reviewers to update management properties of the application.
                             "description": "Lorem ipsum ..."
                         }
                     ],
-                    "units": [],
                     "entities": [],
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                     "submitted_from": {
@@ -2064,6 +1696,7 @@ Anyone can create an application.
                     }
                 },
                 "spot_ids": [1],
+                "entity_ids": [],
                 "fields": [
                     {
                       datum: {
@@ -2119,14 +1752,14 @@ List of applications for a spot.
 
     [Applications][]
 
-## Applications - Unit [/units/{id}/applications]
+## Applications - Entity [/entities/{id}/applications]
 List of applications for a unit.
 
 *Note that fields are not returned for application listings.*
 
 + Parameters
 
-    + id (required, number, `1`) ... Unit ID
+    + id (required, number, `1`) ... Entity ID
 
 ### List [GET]
 *Must be a reviewer to access.*
@@ -2239,7 +1872,7 @@ Fields may or may not be based on previous definitions. Previous definitions all
     [Field][]
 
 # Group Pipelines
-Pipelines are a method of organization for units.
+Pipelines are a method of organization for entities.
 
 ## Pipeline [/pipelines/{id}]
 + Parameters
@@ -2252,7 +1885,7 @@ Pipelines are a method of organization for units.
 
             {
                 "id": 1,
-                "unit_id": 1,
+                "entity_id": 1,
                 "name": "Subject",
                 "created_at": "2012-03-22T16:56:48-05:00",
                 "updated_at": "2012-03-22T16:56:48-05:00"
@@ -2272,7 +1905,7 @@ Pipelines are a method of organization for units.
     [Pipeline][]
 
 ### Update [PUT]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2291,14 +1924,20 @@ Pipelines are a method of organization for units.
     [Pipeline][]
 
 ### Remove [DELETE]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
+
++ Request (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
 + Response 204
 
-## Pipelines [/units/{id}/pipelines]
+## Pipelines [/entities/{id}/pipelines]
 + Parameters
 
-    + id (required, number, `1`) ... Unit ID
+    + id (required, number, `1`) ... Entity ID
 
 + Model
 
@@ -2307,7 +1946,7 @@ Pipelines are a method of organization for units.
             [
                 {
                     "id": 1,
-                    "unit_id": 1,
+                    "entity_id": 1,
                     "name": "Subject",
                     "created_at": "2012-03-22T16:56:48-05:00",
                     "updated_at": "2012-03-22T16:56:48-05:00"
@@ -2328,7 +1967,7 @@ Pipelines are a method of organization for units.
     [Pipelines][]
 
 ### Create [POST]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2383,7 +2022,7 @@ Stages are a method of organization within pipelines. They are sequential.
     [Stage][]
 
 ### Update [PUT]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2403,7 +2042,7 @@ Stages are a method of organization within pipelines. They are sequential.
     [Stage][]
 
 ### Remove [DELETE]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2450,7 +2089,7 @@ Stages are a method of organization within pipelines. They are sequential.
     [Stages][]
 
 ### Create [POST]
-*Must be a full reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2470,7 +2109,7 @@ Stages are a method of organization within pipelines. They are sequential.
     [Stage][]
 
 # Group Labels
-Labels are a method of organization for a unit. They are like tags and are assigned to applications.
+Labels are a method of organization for an entity. They are like tags and are assigned to applications.
 
 ## Label [/labels/{id}]
 + Parameters
@@ -2503,7 +2142,7 @@ Labels are a method of organization for a unit. They are like tags and are assig
     [Label][]
 
 ### Update [PUT]
-*Must be a full-access reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2523,7 +2162,7 @@ Labels are a method of organization for a unit. They are like tags and are assig
     [Label][]
 
 ### Remove [DELETE]
-*Must be a full-access reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2533,10 +2172,10 @@ Labels are a method of organization for a unit. They are like tags and are assig
 
 + Response 204
 
-## Labels [/units/{id}/labels]
+## Labels [/entities/{id}/labels]
 + Parameters
 
-    + id (required, number, `1`) ... Unit ID
+    + id (required, number, `1`) ... Entity ID
 
 + Model
 
@@ -2566,7 +2205,7 @@ Labels are a method of organization for a unit. They are like tags and are assig
     [Labels][]
 
 ### Create [POST]
-*Must be a full-access reviewer.*
+*Must be a reviewer with admin scope.*
 
 + Request (application/json)
 
@@ -2704,11 +2343,9 @@ Segments are saved application segments for reviewers based on filters selected.
     [Segment][]
 
 # Group Ratings
-Numeric rating for an application at a certain spot.
+Numeric rating for an application by a reviewer.
 
-Value can be between 1 and 5.
-
-Only 1 rating allowed per application per spot per reviewer.
+Rating can be between 1 and 5.
 
 ## Rating [/ratings/{id}]
 + Parameters
@@ -2722,7 +2359,6 @@ Only 1 rating allowed per application per spot per reviewer.
             {
                 "id": 1,
                 "application_id": 1,
-                "spot_id": 1,
                 "reviewer_id": 1,
                 "rating": 4,
                 "created_at": "2012-03-22T16:56:48-05:00",
@@ -2788,10 +2424,6 @@ Only 1 rating allowed per application per spot per reviewer.
                         "id": 1,
                         ...
                     },
-                    "spot": {
-                        "id": 1,
-                        ...
-                    },
                     "reviewer": {
                         "id": 1,
                         ...
@@ -2832,7 +2464,6 @@ Only 1 rating allowed per application per spot per reviewer.
     + Body
 
             {
-                "spot_id": 1,
                 "application_id": 2,
                 "rating": 3
             }
@@ -2985,7 +2616,7 @@ Threads are conversations that happen between a reviewer and an applicant.
 
             {
                 "id": 1,
-                "unit_id": 1,
+                "entity_id": 1,
                 "application_id": 1,
                 "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                 "subject": "New Thread",
@@ -3052,7 +2683,7 @@ Must be a thread owner to delete a thread.
             [
                 {
                     "id": 1,
-                    "unit_id": 1,
+                    "entity_id": 1,
                     "application_id": 1,
                     "digest": "YW55IGNhcm5hbCBwbGVhc3VyZS4=",
                     "subject": "New Thread",

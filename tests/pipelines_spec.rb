@@ -19,11 +19,9 @@ describe Applyance::Pipeline do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:pipelines].delete
   end
   after(:all) do
@@ -35,23 +33,23 @@ describe Applyance::Pipeline do
 
   shared_examples_for "a single pipeline" do
     it "returns the information for pipeline show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'unit', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'entity', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple pipelines" do
     it "returns the information for pipeline index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'unit_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'entity_id', 'created_at', 'updated_at')
     end
   end
 
   # Create pipelines
-  describe "POST #units/pipeline" do
+  describe "POST #entities/pipeline" do
     context "logged in as reviewer" do
-      let!(:unit) { create(:unit_with_reviewer) }
+      let!(:entity) { create(:entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/pipelines", Oj.dump({ name: "Pipeline" }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        post "/entities/#{entity.id}/pipelines", Oj.dump({ name: "Pipeline" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -61,9 +59,9 @@ describe Applyance::Pipeline do
       end
     end
     context "not logged in" do
-      let!(:unit) { create(:unit) }
+      let!(:entity) { create(:entity) }
       before(:each) do
-        post "/units/#{unit.id}/pipelines", Oj.dump({ name: "Pipeline" }), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{entity.id}/pipelines", Oj.dump({ name: "Pipeline" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -75,8 +73,8 @@ describe Applyance::Pipeline do
     context "logged in as chief" do
       let(:pipeline) { create(:pipeline) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{pipeline.unit.reviewers.first.account.api_key}"
-        get "/units/#{pipeline.unit.id}/pipelines"
+        header "Authorization", "ApplyanceLogin auth=#{pipeline.entity.reviewers.first.account.api_key}"
+        get "/entities/#{pipeline.entity.id}/pipelines"
       end
 
       it_behaves_like "a retrieved object"
@@ -88,7 +86,7 @@ describe Applyance::Pipeline do
     context "not logged in" do
       let(:pipeline) { create(:pipeline) }
       before(:each) do
-        get "/units/#{pipeline.unit.id}/pipelines"
+        get "/entities/#{pipeline.entity.id}/pipelines"
       end
 
       it_behaves_like "an unauthorized account"
@@ -100,7 +98,7 @@ describe Applyance::Pipeline do
     context "logged in as reviewer" do
       let(:pipeline) { create(:pipeline) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{pipeline.entity.reviewers.first.account.api_key}"
         get "/pipelines/#{pipeline.id}"
       end
 
@@ -122,7 +120,7 @@ describe Applyance::Pipeline do
     context "logged in as reviewer" do
       let(:pipeline) { create(:pipeline) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{pipeline.entity.reviewers.first.account.api_key}"
         put "/pipelines/#{pipeline.id}", Oj.dump({ name: "Pipeline 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -147,7 +145,7 @@ describe Applyance::Pipeline do
     context "logged in as reviewer" do
       let(:pipeline) { create(:pipeline) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{pipeline.entity.reviewers.first.account.api_key}"
         delete "/pipelines/#{pipeline.id}"
       end
 

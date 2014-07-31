@@ -14,6 +14,7 @@ gem 'bcrypt'
 gem 'rabl'
 gem 'oj'
 gem 'sidekiq'
+gem 'geocoder'
 
 # External libraries
 gem 'mandrill-api'

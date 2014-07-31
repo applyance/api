@@ -19,11 +19,9 @@ describe Applyance::Stage do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:pipelines].delete
     app.db[:stages].delete
   end
@@ -52,7 +50,7 @@ describe Applyance::Stage do
       let!(:stage) { create(:stage) }
       before(:each) do
         @old_position = stage.position
-        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.entity.reviewers.first.account.api_key}"
         post "/pipelines/#{stage.pipeline.id}/stages", Oj.dump({ name: "Stage", position: stage.position }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -80,7 +78,7 @@ describe Applyance::Stage do
     context "logged in as chief" do
       let(:stage) { create(:stage) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.entity.reviewers.first.account.api_key}"
         get "/pipelines/#{stage.pipeline.id}/stages"
       end
 
@@ -105,7 +103,7 @@ describe Applyance::Stage do
     context "logged in as reviewer" do
       let(:stage) { create(:stage) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.entity.reviewers.first.account.api_key}"
         get "/stages/#{stage.id}"
       end
 
@@ -127,7 +125,7 @@ describe Applyance::Stage do
     context "logged in as reviewer" do
       let(:stage) { create(:stage) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.entity.reviewers.first.account.api_key}"
         put "/stages/#{stage.id}", Oj.dump({ name: "Stage 2", position: 2 }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -153,7 +151,7 @@ describe Applyance::Stage do
     context "logged in as reviewer" do
       let(:stage) { create(:stage) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{stage.pipeline.entity.reviewers.first.account.api_key}"
         delete "/stages/#{stage.id}"
       end
 

@@ -1,18 +1,25 @@
 module Applyance
   class Reviewer < Sequel::Model
-    many_to_one :unit, :class => :'Applyance::Unit'
+
+    many_to_one :entity, :class => :'Applyance::Entity'
     many_to_one :account, :class => :'Applyance::Account'
-    one_to_many :segments, :class => :'Applyance::Segment'
+
     one_to_many :notes, :class => :'Applyance::Note'
     one_to_many :ratings, :class => :'Applyance::Rating'
+    one_to_many :segments, :class => :'Applyance::Segment'
 
-    def self.make_from_admin(unit, admin)
-      reviewer = self.find_or_create(
-        :unit_id => unit.id,
-        :account_id => admin.account_id
-      )
-      reviewer.update(:access_level => "admin")
-      reviewer
+    # Welcome the new reviewer by way of email
+    def send_welcome_email
+      return if Applyance::Server.test?
+      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      message = {
+        :subject => "Welcome to Applyance",
+        :from_name => "The Team at Applyance",
+        :text => "Hello #{self.account.name},\n\nWelcome to Applyance. We're on an ambitious mission to replace grueling applications with a delightful experience. We hope you greatly enjoy what you see and use.\n\nIf you have any feedback, please let us know.\n\nWhen you get the chance, please verify your account by visiting this link: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.account.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
+        :to => [ { :email => self.account.email, :name => self.account.name } ],
+        :from_email => "contact@applyance.co"
+      }
+      sending = m.messages.send(message)
     end
   end
 end

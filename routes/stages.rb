@@ -3,16 +3,16 @@ module Applyance
     module Stages
 
       module Protection
-        # General protection function for reviewers
-        def to_full_access_reviewers(unit)
+        # General protection function for admins
+        def to_admins(entity)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
+            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
           end
         end
 
-        def to_reviewers(unit)
+        def to_reviewers(entity)
           lambda do |account|
-            unit.reviewers.collect(&:account_id).include?(account.id)
+            entity.reviewers.collect(&:account_id).include?(account.id)
           end
         end
       end
@@ -25,7 +25,7 @@ module Applyance
         # Only reviewers can do this
         app.get '/pipelines/:id/stages', :provides => [:json] do
           @pipeline = Pipeline.first(:id => params[:id])
-          protected! app.to_reviewers(@pipeline.unit)
+          protected! app.to_reviewers(@pipeline.entity)
           @stages = @pipeline.stages
           rabl :'stages/index'
         end
@@ -34,7 +34,7 @@ module Applyance
         # Must be a full reviewer
         app.post '/pipelines/:id/stages', :provides => [:json] do
           @pipeline = Pipeline.first(:id => params[:id])
-          protected! app.to_full_access_reviewers(@pipeline.unit)
+          protected! app.to_admins(@pipeline.entity)
 
           @stage = Stage.new
           @stage.set(:pipeline_id => @pipeline.id)
@@ -48,7 +48,7 @@ module Applyance
         # Get stage by Id
         app.get '/stages/:id', :provides => [:json] do
           @stage = Stage.first(:id => params['id'])
-          protected! app.to_reviewers(@stage.pipeline.unit)
+          protected! app.to_reviewers(@stage.pipeline.entity)
 
           rabl :'stages/show'
         end
@@ -57,7 +57,7 @@ module Applyance
         # Must be a full reviewer
         app.put '/stages/:id', :provides => [:json] do
           @stage = Stage.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@stage.pipeline.unit)
+          protected! app.to_admins(@stage.pipeline.entity)
 
           @stage.update_fields(params, ['name', 'position'], :missing => :skip)
           rabl :'stages/show'
@@ -67,7 +67,7 @@ module Applyance
         # Must be a full reviewer
         app.delete '/stages/:id', :provides => [:json] do
           @stage = Stage.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@stage.pipeline.unit)
+          protected! app.to_admins(@stage.pipeline.entity)
 
           @stage.remove_all_applications
           @stage.destroy

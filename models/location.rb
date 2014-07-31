@@ -6,8 +6,31 @@ module Applyance
 
     def self.make(params)
       location = self.new
-      coordinate = Coordinate.make(params['coordinate'])
-      location.set(:coordinate_id => coordinate.id)
+
+      if params['coordinate']
+
+        # Create coordinate
+        coordinate = Coordinate.make(params['coordinate'])
+        location.set(:coordinate_id => coordinate.id)
+
+        # Create address
+        results = Geocoder.search("#{coordinate.lat}, #{coordinate.lng}")
+        address = Address.make_from_geocoded_result(results.first)
+        location.set(:address_id => address.id)
+
+      elsif params['address']
+
+        # Create address
+        address = Address.make(params['address'])
+        location.set(:address_id => address.id)
+
+        # Create coordinate
+        result = Geocoder.coordinates(address.to_s)
+        coordinate = Coordinate.create(:lat => result[0], :lng => result[1])
+        location.set(:coordinate_id => coordinate.id)
+
+      end
+
       location.save
       location
     end

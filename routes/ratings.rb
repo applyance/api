@@ -12,7 +12,7 @@ module Applyance
 
         def to_reviewers(application)
           lambda do |account|
-            application.spots.any? { |s| s.unit.reviewers.collect(&:account_id).include?(account.id) }
+            application.spots.any? { |s| s.entity.reviewers.collect(&:account_id).include?(account.id) }
           end
         end
       end
@@ -46,7 +46,7 @@ module Applyance
 
           @rating = Rating.new
           @rating.set(:reviewer_id => @reviewer.id)
-          @rating.set_fields(params, ['rating', 'application_id', 'spot_id'], :missing => :skip)
+          @rating.set_fields(params, ['rating', 'application_id'], :missing => :skip)
           @rating.save
 
           status 201

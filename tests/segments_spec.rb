@@ -19,11 +19,9 @@ describe Applyance::Segment do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:pipelines].delete
     app.db[:labels].delete
     app.db[:segments].delete

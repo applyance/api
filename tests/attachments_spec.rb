@@ -21,7 +21,6 @@ describe Applyance::Attachment do
     app.db[:accounts].delete
     app.db[:entities].delete
     app.db[:domains].delete
-    app.db[:admins].delete
     app.db[:attachments].delete
   end
   after(:all) do

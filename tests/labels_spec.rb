@@ -19,11 +19,9 @@ describe Applyance::Label do
   after(:each) do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
-    app.db[:admins].delete
     app.db[:entities].delete
     app.db[:domains].delete
     app.db[:reviewers].delete
-    app.db[:units].delete
     app.db[:pipelines].delete
     app.db[:labels].delete
   end
@@ -36,23 +34,23 @@ describe Applyance::Label do
 
   shared_examples_for "a single label" do
     it "returns the information for label show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'color', 'unit', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'color', 'entity', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple labels" do
     it "returns the information for label index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'color', 'unit_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'color', 'entity_id', 'created_at', 'updated_at')
     end
   end
 
   # Create labels
-  describe "POST #units/label" do
+  describe "POST #entities/label" do
     context "logged in as reviewer" do
-      let!(:unit) { create(:unit_with_reviewer) }
+      let!(:entity) { create(:entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{unit.reviewers.first.account.api_key}"
-        post "/units/#{unit.id}/labels", Oj.dump({ name: "Label", color: "990000" }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        post "/entities/#{entity.id}/labels", Oj.dump({ name: "Label", color: "990000" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -62,9 +60,9 @@ describe Applyance::Label do
       end
     end
     context "not logged in" do
-      let!(:unit) { create(:unit) }
+      let!(:entity) { create(:entity) }
       before(:each) do
-        post "/units/#{unit.id}/labels", Oj.dump({ name: "Label" }), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{entity.id}/labels", Oj.dump({ name: "Label" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -76,8 +74,8 @@ describe Applyance::Label do
     context "logged in as chief" do
       let(:label) { create(:label) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{label.unit.reviewers.first.account.api_key}"
-        get "/units/#{label.unit.id}/labels"
+        header "Authorization", "ApplyanceLogin auth=#{label.entity.reviewers.first.account.api_key}"
+        get "/entities/#{label.entity.id}/labels"
       end
 
       it_behaves_like "a retrieved object"
@@ -89,7 +87,7 @@ describe Applyance::Label do
     context "not logged in" do
       let(:label) { create(:label) }
       before(:each) do
-        get "/units/#{label.unit.id}/labels"
+        get "/entities/#{label.entity.id}/labels"
       end
 
       it_behaves_like "an unauthorized account"
@@ -101,7 +99,7 @@ describe Applyance::Label do
     context "logged in as reviewer" do
       let(:label) { create(:label) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{label.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{label.entity.reviewers.first.account.api_key}"
         get "/labels/#{label.id}"
       end
 
@@ -123,7 +121,7 @@ describe Applyance::Label do
     context "logged in as reviewer" do
       let(:label) { create(:label) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{label.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{label.entity.reviewers.first.account.api_key}"
         put "/labels/#{label.id}", Oj.dump({ name: "Label 2" }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -148,7 +146,7 @@ describe Applyance::Label do
     context "logged in as reviewer" do
       let(:label) { create(:label) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{label.unit.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{label.entity.reviewers.first.account.api_key}"
         delete "/labels/#{label.id}"
       end
 

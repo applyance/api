@@ -21,7 +21,7 @@ describe Applyance::Account do
     app.db[:accounts].delete
     app.db[:domains].delete
     app.db[:entities].delete
-    app.db[:admins].delete
+    app.db[:reviewers].delete
   end
   after(:all) do
   end
@@ -42,22 +42,22 @@ describe Applyance::Account do
 
   shared_examples_for "a single me" do
     it "returns the information for me show" do
-      expect(json.keys).to contain_exactly('account', 'admins', 'reviewers')
+      expect(json.keys).to contain_exactly('account', 'reviewers')
     end
   end
 
   # Authenticate into account
   describe "POST #accounts/auth" do
     context "not logged in" do
-      let(:admin) { create(:admin) }
+      let(:reviewer) { create(:reviewer) }
       before(:each) do
-        post "/accounts/auth", Oj.dump({ email: "#{admin.account.email}", password: "test" }), { "CONTENT_TYPE" => "application/json" }
+        post "/accounts/auth", Oj.dump({ email: "#{reviewer.account.email}", password: "test" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
       it_behaves_like "a single me"
       it "contains authorization header" do
-        expect(last_response.headers['Authorization']).to eq("ApplyanceLogin auth=#{admin.account.api_key}")
+        expect(last_response.headers['Authorization']).to eq("ApplyanceLogin auth=#{reviewer.account.api_key}")
       end
     end
   end
@@ -65,7 +65,7 @@ describe Applyance::Account do
   # Get me
   describe "GET #accounts/me" do
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         get "/accounts/me"
@@ -104,8 +104,8 @@ describe Applyance::Account do
         expect(json['email']).to eq(account.email)
       end
     end
-    context "logged in as admin" do
-      let(:account) { create(:admin_account) }
+    context "logged in as reviewer" do
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         put "/accounts/#{account.id}", Oj.dump({ name: "Steve 2" }), { "CONTENT_TYPE" => "application/json" }
@@ -128,7 +128,7 @@ describe Applyance::Account do
 
   describe "PUT #account/password" do
     context "no old password" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         put "/accounts/#{account.id}", Oj.dump({ new_password: "testing" }), { "CONTENT_TYPE" => "application/json" }
@@ -137,7 +137,7 @@ describe Applyance::Account do
       it_behaves_like "an invalid request"
     end
     context "with password" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         put "/accounts/#{account.id}", Oj.dump({ password: "test", new_password: "testing" }), { "CONTENT_TYPE" => "application/json" }
@@ -155,7 +155,7 @@ describe Applyance::Account do
 
   describe "PUT #account/email" do
     context "no old password" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         put "/accounts/#{account.id}", Oj.dump({ email: "new@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
@@ -164,7 +164,7 @@ describe Applyance::Account do
       it_behaves_like "an invalid request"
     end
     context "with password" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         put "/accounts/#{account.id}", Oj.dump({ password: "test", email: "new2@gmail.com" }), { "CONTENT_TYPE" => "application/json" }
@@ -182,7 +182,7 @@ describe Applyance::Account do
   # Remove account
   describe "Delete #account" do
     context "logged in as chief" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         delete "/accounts/#{account.id}"
@@ -191,8 +191,8 @@ describe Applyance::Account do
       it_behaves_like "a deleted object"
       it_behaves_like "an empty response"
     end
-    context "logged in as admin" do
-      let(:account) { create(:admin_account) }
+    context "logged in as reviewer" do
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         account_auth
         delete "/accounts/#{account.id}"
@@ -202,7 +202,7 @@ describe Applyance::Account do
       it_behaves_like "an empty response"
     end
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) { delete "/accounts/#{account.id}" }
 
       it_behaves_like "an unauthorized account"
@@ -212,7 +212,7 @@ describe Applyance::Account do
   # Reset Password
   describe "POST #account/password/reset" do
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) { post "/accounts/passwords/reset", Oj.dump({ email: account.email }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a retrieved object"
@@ -227,7 +227,7 @@ describe Applyance::Account do
   # Set Password
   describe "POST #account/password/set" do
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) do
         post "/accounts/passwords/reset", Oj.dump({ email: account.email }), { "CONTENT_TYPE" => "application/json" }
         account.reload
@@ -246,7 +246,7 @@ describe Applyance::Account do
   # Verify email
   describe "POST #accounts/verify" do
     context "not logged in" do
-      let(:account) { create(:admin_account) }
+      let(:account) { create(:reviewer_account) }
       before(:each) { post "/accounts/verify", Oj.dump({ verify_digest: account.verify_digest }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "a retrieved object"

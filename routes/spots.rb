@@ -4,10 +4,10 @@ module Applyance
 
       module Protection
 
-        # Protection to full access reviewers
-        def to_full_access_reviewers(unit)
+        # Protection to admins
+        def to_admins(entity)
           lambda do |account|
-            unit.reviewers_dataset.where(:access_level => ["admin", "full"]).collect(&:account_id).include?(account.id)
+            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
           end
         end
 
@@ -18,20 +18,20 @@ module Applyance
         app.extend(Applyance::Routing::Spots::Protection)
 
         # List spots
-        app.get '/units/:id/spots', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          @spots = @unit.spots
+        app.get '/entities/:id/spots', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          @spots = @entity.spots
           rabl :'spots/index'
         end
 
         # Create a new unit
         # Must be a full access reviewer
-        app.post '/units/:id/spots', :provides => [:json] do
-          @unit = Unit.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@unit)
+        app.post '/entities/:id/spots', :provides => [:json] do
+          @entity = Entity.first(:id => params['id'])
+          protected! app.to_admins(@entity)
 
           @spot = Spot.new
-          @spot.set(:unit_id => @unit.id)
+          @spot.set(:entity_id => @entity.id)
           @spot.set_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           @spot.save
 
@@ -46,23 +46,24 @@ module Applyance
         end
 
         # Update a spot by Id
-        # Must be a full access reviewer
+        # Must be an admin
         app.put '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@spot.unit)
+          protected! app.to_admins(@spot.entity)
 
           @spot.update_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           rabl :'spots/show'
         end
 
-        # Delete a entity by Id
-        # Must be a full access reviewer
+        # Delete a spot by Id
+        # Must be an admin
         app.delete '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
-          protected! app.to_full_access_reviewers(@spot.unit)
+          protected! app.to_admins(@spot.entity)
 
-          @spot.ratings_dataset.destroy
           @spot.remove_all_blueprints
+          @spot.remove_all_applications
+
           @spot.destroy
 
           204

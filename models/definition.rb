@@ -8,7 +8,7 @@ module Applyance
     one_to_many :datums, :class => :'Applyance::Datum'
     one_to_many :blueprints, :class => :'Applyance::Blueprint'
     one_through_one :domain, :class => :'Applyance::Domain'
-    one_through_one :unit, :class => :'Applyance::Unit'
+    one_through_one :entity, :class => :'Applyance::Entity'
 
     def before_validation
       super
@@ -37,11 +37,11 @@ module Applyance
           :helper => field[:definition][:helper]
         )
 
-        # Add definitions to unit
-        units = spots.map { |s| s.unit }
-        units.uniq { |u| u.id }.each do |unit|
-          unit.add_definition(definition)
-          unit.save
+        # Add definitions to entity
+        entities = spots.map { |s| s.entity }
+        entities.uniq { |e| e.id }.each do |entity|
+          entity.add_definition(definition)
+          entity.save
         end
 
       end

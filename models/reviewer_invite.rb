@@ -3,26 +3,21 @@ module Applyance
 
     include Applyance::Lib::Tokens
 
-    many_to_one :unit, :class => :'Applyance::Unit'
+    many_to_one :entity, :class => :'Applyance::Entity'
 
     def validate
       super
-      validates_presence [:email, :access_level]
-      validates_unique([:email, :unit_id])
+      validates_presence [:email, :scope]
+      validates_unique([:email, :entity_id])
     end
 
-    def after_create
-      super
-      # TODO: Send email to new reviewer
-    end
-
-    def self.make(unit, params)
-      reviewer_invite = self.new
-      reviewer_invite.set_fields(params, ['email', 'access_level'], :missing => :skip)
-      reviewer_invite.set(:unit_id => unit.id)
-      reviewer_invite.set_token(:claim_digest)
-      reviewer_invite.save
-      reviewer_invite
+    def self.make(entity, params)
+      invite = self.new
+      invite.set_fields(params, ['email', 'scope'], :missing => :skip)
+      invite.set(:entity_id => entity.id)
+      invite.set_token(:claim_digest)
+      invite.save
+      invite
     end
 
     def claim(params)
@@ -34,10 +29,9 @@ module Applyance
 
       # Create reviewer
       reviewer = Reviewer.find_or_create(
-        :unit_id => self.unit_id,
-        :account_id => account.id
-      )
-      reviewer.update(:access_level => self.access_level)
+        :entity_id => self.entity_id,
+        :account_id => account.id)
+      reviewer.update(:scope => self.scope)
 
       reviewer
     end
@@ -49,7 +43,7 @@ module Applyance
       message = {
         :subject => "Claim Your Invite",
         :from_name => "The Team at Applyance",
-        :text => "Hello,\n\nYou've been invited to be a reviewer at #{self.unit.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/reviewers/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
+        :text => "Hello,\n\nYou've been invited to manage #{self.entity.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/reviewers/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.email } ],
         :from_email => "contact@applyance.co"
       }

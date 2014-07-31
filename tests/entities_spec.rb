@@ -31,25 +31,61 @@ describe Applyance::Entity do
 
   shared_examples_for "a single entity" do
     it "returns the information for entity show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'logo', 'domain', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'logo', 'domain', 'location', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple entities" do
     it "returns the information for entity index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'logo', 'domain_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'logo', 'domain_id', 'location_id', 'created_at', 'updated_at')
     end
   end
 
   # Create entities
   describe "POST #entities" do
     context "not logged in" do
-      before(:each) { post "/entities", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
+      before(:each) do
+        entity = {
+          name: "The Iron Yard",
+          location: {
+            address: "5990 Willow Ridge Road, Pinson, AL 35126"
+          }
+        }
+        post "/entities", Oj.dump(entity), { "CONTENT_TYPE" => "application/json" }
+      end
 
       it_behaves_like "a created object"
       it_behaves_like "a single entity"
       it "returns the right value" do
         expect(json['name']).to eq('The Iron Yard')
+        expect(json['location']['address']['address_1']).to eq('5990 Willow Ridge Road')
+      end
+    end
+  end
+
+  # Create entities
+  describe "POST #entities/entities" do
+    context "not logged in" do
+      let(:entity) { create(:entity) }
+      before(:each) do
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        new_entity = {
+          name: "The Iron Yard 2",
+          location: {
+            coordinate: {
+              lat: 36.0506082,
+              lng: -86.7063188
+            }
+          }
+        }
+        post "/entities/#{entity.id}/entities", Oj.dump(new_entity), { "CONTENT_TYPE" => "application/json" }
+      end
+
+      it_behaves_like "a created object"
+      it_behaves_like "a single entity"
+      it "returns the right value" do
+        expect(json['name']).to eq('The Iron Yard 2')
+        expect(json['location']['coordinate']['lat']).to eq(36.0506082)
       end
     end
   end
@@ -115,9 +151,9 @@ describe Applyance::Entity do
   # Update entity
   describe "PUT #entity" do
     context "logged in as admin" do
-      let(:entity) { create(:entity_with_admin) }
+      let(:entity) { create(:entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{entity.admins.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
         put "/entities/#{entity.id}", { name: "Retail 2" }
       end
 
@@ -138,9 +174,9 @@ describe Applyance::Entity do
   # Remove entity
   describe "Delete #entity" do
     context "logged in as admin" do
-      let(:entity) { create(:entity_with_admin) }
+      let(:entity) { create(:entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{entity.admins.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
         delete "/entities/#{entity.id}"
       end
 

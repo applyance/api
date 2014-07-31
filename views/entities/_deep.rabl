@@ -7,3 +7,7 @@ end
 child :logo => :logo do
   extends 'attachments/_shallow'
 end
+
+child :location => :location do
+  extends 'locations/_deep'
+end
