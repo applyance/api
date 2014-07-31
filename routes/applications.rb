@@ -54,6 +54,8 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
           puts "------------------1"
           puts @entity.inspect
+          puts "------"
+          puts @entity.reviewers.inspect
           protected! app.to_reviewers(@entity)
 
           puts "------------------2"
