@@ -15,17 +15,22 @@ module Applyance
         # Create reviewer for entity
         app.post '/entities/:id/reviewers', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-
           if @entity.nil?
             raise BadRequestError.new({ :detail => "Must be a valid entity." })
           end
 
           account = Account.make("reviewer", params)
-          @reviewer = Reviewer.find_or_create(
+          reviewer = Reviewer.first(:entity_id => @entity.id, :account_id => account.id)
+
+          if reviewer
+            raise BadRequestError.new({ :detail => "You are already a reviewer at this entity." })
+          end
+
+          @reviewer = Reviewer.create(
             :entity_id => @entity.id,
-            :account_id => account.id
+            :account_id => account.id,
+            :scope => "admin"
           )
-          @reviewer.update(:scope => "admin")
 
           @reviewer.send_welcome_email
 
