@@ -86,6 +86,9 @@ describe Applyance::Entity do
       it "returns the right value" do
         expect(json['name']).to eq('The Iron Yard 2')
         expect(json['location']['coordinate']['lat']).to eq(36.0506082)
+
+        saved_entity = Applyance::Entity.first(:name => "The Iron Yard 2")
+        expect(saved_entity.reviewers.first.account_id).to eq(entity.reviewers.first.account_id)
       end
     end
   end

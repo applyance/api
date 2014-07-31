@@ -27,5 +27,21 @@ module Applyance
       validates_presence :name
     end
 
+    def after_create
+      super
+
+      # After creation of a new entity, grab all the parent reviewers
+      # and assign them to this entity
+      return if self.parent.nil?
+      
+      self.parent.reviewers.each do |reviewer|
+        Reviewer.create(
+          :entity_id => self.id,
+          :account_id => reviewer.account_id,
+          :scope => reviewer.scope
+        )
+      end
+    end
+
   end
 end
