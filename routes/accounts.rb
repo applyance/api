@@ -73,7 +73,8 @@ module Applyance
             raise BadRequestError({ detail: "Invalid reset token." })
           end
           @account.set_password(params)
-          200
+          response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
+          rabl :'accounts/show'
         end
 
         # Verify email address

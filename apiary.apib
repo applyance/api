@@ -375,6 +375,10 @@ Sets the account password by supplying the reset digest and new password.
 
 + Response 200 (application/json)
 
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
+
     [Account][]
 
 ## Verification [/accounts/verify]
@@ -390,6 +394,10 @@ Verifies the account by supplying the verify digest that was sent to the user by
             }
 
 + Response 200 (application/json)
+
+    + Header
+
+            Authorization: ApplyanceLogin auth=YW55IGNhcm5hbCBwbGVhc3VyZS4=
 
     [Account][]
 
