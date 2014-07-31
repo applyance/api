@@ -72,7 +72,7 @@ module Applyance
       message = {
         :subject => "Reset Password",
         :from_name => "The Team at Applyance",
-        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/reset?code=#{self.account.reset_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
+        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/set?code=#{self.account.reset_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.email, :name => self.name } ],
         :from_email => "contact@applyance.co"
       }
