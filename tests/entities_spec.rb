@@ -37,7 +37,7 @@ describe Applyance::Entity do
 
   shared_examples_for "multiple entities" do
     it "returns the information for entity index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'logo', 'domain_id', 'location_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'logo', 'domain_id', 'location', 'created_at', 'updated_at')
     end
   end
 
