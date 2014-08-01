@@ -11,3 +11,7 @@ end
 child :location => :location do
   extends 'locations/_deep'
 end
+
+child :parent => :parent do
+  extends 'entities/_shallow'
+end
