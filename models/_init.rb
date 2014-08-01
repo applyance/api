@@ -18,6 +18,7 @@ module Applyance
         Sequel::Model.plugin(:timestamps)
         Sequel::Model.plugin(:dirty)
         Sequel::Model.plugin(:validation_helpers)
+        Sequel::Model.plugin(:after_initialize)
 
         # Require models, can't go at the top because it requires a
         # Sequel connection

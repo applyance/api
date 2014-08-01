@@ -96,6 +96,7 @@ FactoryGirl.define do
   factory :definition, class: Applyance::Definition do
     sequence(:label) { |n| "Definition #{n}" }
     description "Description..."
+    is_sensitive false
     type "text"
   end
 

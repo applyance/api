@@ -111,18 +111,18 @@ describe Applyance::Datum do
   # Create datum
   describe "POST #applicants/datums" do
     context "logged in as admin" do
-      let(:definition) { create(:definition) }
+      let(:definition) { create(:definition, :is_sensitive => true) }
       let(:applicant) { create(:applicant) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{applicant.account.api_key}"
-        post "/applicants/#{applicant.id}/datums", Oj.dump({ definition_id: definition.id, detail: "Detail..." }), { "CONTENT_TYPE" => "application/json" }
+        post "/applicants/#{applicant.id}/datums", Oj.dump({ definition_id: definition.id, detail: { value: "Detail..." } }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
       it_behaves_like "a single datum"
       it "returns the right value" do
         expect(json['definition']['id']).to eq(definition.id)
-        expect(json['detail']).to eq('Detail...')
+        expect(json['detail']['value']).to eq('Detail...')
       end
     end
     context "not logged in" do
