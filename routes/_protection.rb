@@ -38,7 +38,7 @@ module Applyance
       def to_application_reviewers_or_self(application)
         lambda do |account|
           return true if account.id == application.applicant.account_id
-          to_reviewers_of_application(application).(account)
+          to_application_reviewers(application).(account)
         end
       end
 
