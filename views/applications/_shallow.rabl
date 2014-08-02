@@ -16,6 +16,10 @@ child :stage => :stage do
   extends 'stages/_shallow'
 end
 
+child :ratings => :ratings do
+  extends 'ratings/_shallow'
+end
+
 node(:label_ids) do |application|
   application.labels.collect(&:id)
 end

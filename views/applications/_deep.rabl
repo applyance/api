@@ -20,6 +20,10 @@ child :labels => :labels do
   extends 'labels/_shallow'
 end
 
+child :ratings => :ratings do
+  extends 'ratings/_shallow'
+end
+
 child :reviewers => :reviewers do
   extends 'reviewers/_shallow'
 end
