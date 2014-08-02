@@ -1,7 +1,7 @@
 attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 
 child :applicant => :applicant do
-  extends 'applicants/_shallow'
+  extends 'applicants/_deep'
 end
 
 child :spots => :spots do
