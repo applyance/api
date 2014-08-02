@@ -8,6 +8,7 @@ module Applyance
     many_to_one :avatar, :class => :'Applyance::Attachment'
     one_to_many :reviewers, :class => :'Applyance::Reviewer'
     one_to_many :applicants, :class => :'Applyance::Applicant'
+    one_to_many :ratings, :class => :'Applyance::Rating'
 
     def validate
       super

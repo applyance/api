@@ -4,6 +4,6 @@ child :application => :application do
   extends 'applications/_shallow'
 end
 
-child :reviewer => :reviewer do
-  extends 'reviewers/_shallow'
+child :account => :account do
+  extends 'accounts/_shallow'
 end

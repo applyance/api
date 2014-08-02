@@ -5,7 +5,6 @@ module Applyance
     many_to_one :account, :class => :'Applyance::Account'
 
     one_to_many :notes, :class => :'Applyance::Note'
-    one_to_many :ratings, :class => :'Applyance::Rating'
     one_to_many :segments, :class => :'Applyance::Segment'
 
     def after_create

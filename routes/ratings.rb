@@ -16,19 +16,18 @@ module Applyance
 
         # Create a new rating
         # Must be a reviewer
-        app.post '/reviewers/:id/ratings', :provides => [:json] do
-          @reviewer = Reviewer.first(:id => params[:id])
+        app.post '/accounts/:id/ratings', :provides => [:json] do
+          @account = Account.first(:id => params[:id])
           @application = Application.first(:id => params[:application_id])
-
           if @application.nil?
             raise BadRequestError.new({ :detail => "Proper application ID must be provided." })
           end
 
           protected! app.to_application_reviewers(@application)
-          protected! app.to_account(@reviewer.account)
+          protected! app.to_account(@account)
 
           @rating = Rating.new
-          @rating.set(:reviewer_id => @reviewer.id)
+          @rating.set(:account_id => @account.id)
           @rating.set_fields(params, ['rating', 'application_id'], :missing => :skip)
           @rating.save
 
@@ -48,7 +47,7 @@ module Applyance
         # Must be a reviewer
         app.put '/ratings/:id', :provides => [:json] do
           @rating = Rating.first(:id => params['id'])
-          protected! app.to_account(@rating.reviewer.account)
+          protected! app.to_account(@rating.account)
 
           @rating.update_fields(params, ['rating'], :missing => :skip)
           rabl :'ratings/show'
@@ -58,7 +57,7 @@ module Applyance
         # Must be the owner
         app.delete '/ratings/:id', :provides => [:json] do
           @rating = Rating.first(:id => params['id'])
-          protected! app.to_account(@rating.reviewer.account)
+          protected! app.to_account(@rating.account)
 
           @rating.destroy
 

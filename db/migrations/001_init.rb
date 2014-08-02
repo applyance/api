@@ -113,6 +113,8 @@ Sequel.migration do
       foreign_key :account_id, :accounts, :on_delete => :cascade, :unique => true
       foreign_key :location_id, :locations, :on_delete => :set_null
 
+      String :phone_number
+
       DateTime :created_at
       DateTime :updated_at
     end
@@ -343,12 +345,14 @@ Sequel.migration do
       primary_key :id
 
       foreign_key :application_id, :applications, :on_delete => :cascade
-      foreign_key :reviewer_id, :reviewers, :on_delete => :cascade
+      foreign_key :account_id, :accounts, :on_delete => :cascade
 
       Integer :rating, :null => false
 
       DateTime :created_at
       DateTime :updated_at
+
+      index [:application_id, :account_id], :unique => true
     end
 
     # Create definitions

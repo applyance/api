@@ -67,7 +67,7 @@ FactoryGirl.define do
   end
 
   factory :reviewer, class: Applyance::Reviewer do
-    association :account, factory: :chief_account
+    association :account, factory: :reviewer_account
     entity
     scope "admin"
 
@@ -140,7 +140,7 @@ FactoryGirl.define do
     last_activity_at { DateTime.now }
 
     after(:create) do |application|
-      application.add_spot(create(:spot))
+      application.add_entity(create(:entity))
       application.add_field(create(:field, :datum => create(:datum, :applicant => application.applicant)))
     end
   end
@@ -177,7 +177,7 @@ FactoryGirl.define do
   end
 
   factory :rating, class: Applyance::Rating do
-    reviewer
+    account
     application
     sequence(:rating) { |n| n }
   end

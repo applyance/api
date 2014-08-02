@@ -6,7 +6,7 @@ module Applyance
 
     many_to_one :applicant, :class => :'Applyance::Applicant'
     many_to_one :stage, :class => :'Applyance::Stage'
-    
+
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :threads, :class => :'Applyance::Thread'
     one_to_many :notes, :class => :'Applyance::Note'
@@ -58,6 +58,10 @@ module Applyance
         'password' => temp_password
       })
       applicant = Applicant.find_or_create(:account_id => account.id)
+
+      unless params['applicant']['phone_number'].nil?
+        applicant.update(:phone_number => params['applicant']['phone_number'])
+      end
 
       # Create applicant location
       unless params['applicant']['location'].nil?
