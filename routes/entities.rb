@@ -76,7 +76,11 @@ module Applyance
 
         # Get entity by Id
         app.get '/entities/:id', :provides => [:json] do
-          @entity = Entity.where(:id => params[:id]).or(:slug => params[:id]).first
+          if params[:id].to_s == params[:id].to_i.to_s
+            @entity = Entity.first(:id => params[:id])
+          else
+            @entity = Entity.first(:slug => params[:id])
+          end
           if @entity.nil?
             error 404
           end
