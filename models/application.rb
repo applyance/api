@@ -57,7 +57,11 @@ module Applyance
         'email' => params['applicant']['email'],
         'password' => temp_password
       })
-      applicant = Applicant.find_or_create(:account_id => account.id)
+      applicant = Applicant.first(:account_id => account.id)
+      if applicant.nil?
+        applicant = Applicant.create(:account_id => account.id)
+        applicant.send_welcome_email(temp_password)
+      end
 
       unless params['applicant']['phone_number'].nil?
         applicant.update(:phone_number => params['applicant']['phone_number'])

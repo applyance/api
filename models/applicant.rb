@@ -7,11 +7,6 @@ module Applyance
     one_to_many :applications, :class => :'Applyance::Application'
     one_to_many :datums, :class => :'Applyance::Datum'
 
-    def after_create
-      super
-      self.send_welcome_email
-    end
-
     # Welcome the new reviewer by way of email
     def send_welcome_email(temp_password)
       return if Applyance::Server.test?
