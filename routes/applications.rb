@@ -74,7 +74,7 @@ module Applyance
         # Must be an admin
         app.delete '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
-          protected! app.to_entity_admins(@application)
+          protected! app.to_application_reviewers(@application)
 
           @application.remove_all_spots
           @application.remove_all_entities

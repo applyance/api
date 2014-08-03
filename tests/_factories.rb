@@ -143,6 +143,14 @@ FactoryGirl.define do
       application.add_entity(create(:entity))
       application.add_field(create(:field, :datum => create(:datum, :applicant => application.applicant)))
     end
+
+    trait :with_spot do
+      after(:create) do |application|
+        application.add_spot(create(:spot))
+      end
+    end
+
+    factory :application_with_spot, traits: [:with_spot]
   end
 
   factory :field, class: Applyance::Field do

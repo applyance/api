@@ -38,13 +38,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'ratings', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'ratings', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -117,7 +117,7 @@ describe Applyance::Application do
     context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
         delete "/applications/#{application.id}"
       end
 
@@ -138,7 +138,7 @@ describe Applyance::Application do
       let(:label) { create(:label) }
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
         put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -162,7 +162,7 @@ describe Applyance::Application do
   # Retrieve applications
   describe "GET #spot/applications" do
     context "logged in as reviewer" do
-      let(:application) { create(:application) }
+      let(:application) { create(:application_with_spot) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
         get "/spots/#{application.spots.first.id}/applications"
@@ -172,7 +172,7 @@ describe Applyance::Application do
       it_behaves_like "multiple applications"
     end
     context "not logged in" do
-      let(:application) { create(:application) }
+      let(:application) { create(:application_with_spot) }
       before(:each) do
         get "/spots/#{application.spots.first.id}/applications"
       end
@@ -186,8 +186,8 @@ describe Applyance::Application do
     context "logged in as reviewer" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.spots.first.entity.reviewers.first.account.api_key}"
-        get "/entities/#{application.spots.first.entity.id}/applications"
+        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
+        get "/entities/#{application.entities.first.id}/applications"
       end
 
       it_behaves_like "a retrieved object"
@@ -196,7 +196,7 @@ describe Applyance::Application do
     context "not logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        get "/entities/#{application.spots.first.entity.id}/applications"
+        get "/entities/#{application.entities.first.id}/applications"
       end
 
       it_behaves_like "an unauthorized account"

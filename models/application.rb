@@ -104,8 +104,6 @@ module Applyance
 
       application.update(:submitted_at => DateTime.now)
 
-      # TODO: Send applicant welcome email
-
       application
     end
 
