@@ -122,10 +122,8 @@ module Applyance
       if field[:datum][:id]
         datum = Datum.first(:id => field[:datum][:id])
       else
-        datum = Datum.new
-        datum.applicant = self.applicant
 
-        # Figure out the definition
+        # Try to coerce a definition first
         if field[:datum][:definition]
           definition = Definition.make_from_field_for_spots(field[:datum], self.spots)
         elsif field[:datum][:definition_id]
@@ -133,7 +131,23 @@ module Applyance
         else
           raise BadRequestError.new({ :detail => "Must supply a definition for all fields." })
         end
-        datum.definition = definition
+
+        # If not contextual, see if a datum exists for this definition already
+        if definition.is_contextual
+          datum = Datum.new
+          datum.applicant = self.applicant
+          datum.definition = definition
+        else
+          datum = Datum.first(
+            :definition_id => definition.id,
+            :applicant_id => self.applicant.id
+          )
+          if datum.nil?
+            datum = Datum.new
+            datum.applicant = self.applicant
+            datum.definition = definition
+          end
+        end
       end
 
       datum.detail = field[:datum][:detail]
