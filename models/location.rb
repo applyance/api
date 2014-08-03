@@ -28,8 +28,10 @@ module Applyance
 
         # Create coordinate
         result = Geocoder.coordinates(address.to_s)
-        coordinate = Coordinate.create(:lat => result[0], :lng => result[1])
-        location.set(:coordinate_id => coordinate.id)
+        if result
+          coordinate = Coordinate.create(:lat => result[0], :lng => result[1])
+          location.set(:coordinate_id => coordinate.id)
+        end
 
       end
 

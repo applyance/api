@@ -70,7 +70,7 @@ module Applyance
       # Create applicant location
       unless params['applicant']['location'].nil?
         location = Location.make(params['applicant']['location'])
-        applicant.set('location_id' => location.id)
+        applicant.set(:location_id => location.id)
       end
 
       # Save so we can add assocations
