@@ -361,7 +361,8 @@ Sequel.migration do
     create_table(:definitions) do
       primary_key :id
 
-      String :name, :null => false, :index => { :unique => true }
+      String :slug, :null => false, :index => { :unique => true }
+      String :name, :null => false
       String :label, :null => false
       String :description, :text => true
       String :type, :null => false

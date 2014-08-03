@@ -51,7 +51,7 @@ describe Applyance::Application do
   # Create application
   describe "POST #applications" do
     context "not logged in" do
-      let(:definition_obj) { create(:definition, :label => "Question 1")}
+      let(:definition_obj) { create(:definition, :label => "Question Label 1")}
       let(:datum_obj) { create(:datum) }
       let(:blueprint) { create(:blueprint_with_spot) }
 
@@ -76,7 +76,8 @@ describe Applyance::Application do
                   value: "Answer..."
                 },
                 definition: {
-                  label: "Question 1",
+                  name: "Question 1",
+                  label: "Question Label 1",
                   description: "Description...",
                   type: "text"
                 }

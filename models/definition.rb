@@ -12,25 +12,26 @@ module Applyance
 
     def before_validation
       super
-      self.name = self.class.to_slug(self.label)
+      self.slug = self.class.to_slug(self.label)
     end
 
     def validate
       super
-      validates_presence [:label, :type]
+      validates_presence [:label, :type, :name]
     end
 
     # Create a definition from a submitted field
     def self.make_from_field_for_spots(field, spots)
 
       # See if a definition exists for that label
-      name = to_slug(field[:definition][:label])
-      definition = Definition.first(:name => name)
+      slug = to_slug(field[:definition][:label])
+      definition = Definition.first(:slug => slug)
 
       if definition.nil?
 
         # Create definition
         definition = Definition.create(
+          :name => field[:definition][:name],
           :label => field[:definition][:label],
           :description => field[:definition][:description],
           :type => field[:definition][:type],
