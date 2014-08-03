@@ -3,6 +3,7 @@ module Applyance
 
     include Applyance::Lib::Attachments
     include Applyance::Lib::Locations
+    extend Applyance::Lib::Strings
 
     many_to_one :domain, :class => :'Applyance::Domain'
     many_to_one :logo, :class => :'Applyance::Attachment'
@@ -25,6 +26,16 @@ module Applyance
     def validate
       super
       validates_presence :name
+      validates_unique :slug
+    end
+
+    def before_validation
+      super
+
+      # Create slug
+      self._slug = self.class.to_slug(self.name, '')
+      entity_count = self.class.where(:'_slug' => self._slug).exclude(:id => self.id).count
+      self.slug = (entity_count == 0) ? self._slug : "#{self._slug}-#{entity_count + 1}"
     end
 
     def after_create
@@ -33,7 +44,7 @@ module Applyance
       # After creation of a new entity, grab all the parent reviewers
       # and assign them to this entity
       return if self.parent.nil?
-      
+
       self.parent.reviewers.each do |reviewer|
         Reviewer.create(
           :entity_id => self.id,

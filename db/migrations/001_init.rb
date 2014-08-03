@@ -129,6 +129,8 @@ Sequel.migration do
       foreign_key :logo_id, :attachments
       foreign_key :location_id, :locations
       String :name, :null => false
+      String :slug, :null => false, :unique => true
+      String :'_slug', :null => false
 
       DateTime :created_at
       DateTime :updated_at
