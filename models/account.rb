@@ -153,5 +153,21 @@ module Applyance
       true
     end
 
+    # Used for welcoming new applicants
+    def send_applicant_welcome_email()
+      # Send the reset email
+      return if Applyance::Server.test?
+
+      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      message = {
+        :subject => "Reset Password",
+        :from_name => "The Team at Applyance",
+        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/set?code=#{self.reset_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
+        :to => [ { :email => self.email, :name => self.name } ],
+        :from_email => "contact@applyance.co"
+      }
+      sending = m.messages.send(message)
+    end
+
   end
 end

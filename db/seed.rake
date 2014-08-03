@@ -73,7 +73,11 @@ namespace :db do
     )
     Applyance::Definition.create(
       :label => 'Are you legally allowed to work in the United States?',
-      :type => 'boolean'
+      :description => 'This helps us determine your eligibility.',
+      :type => 'choice',
+      :helper => {
+        :choices => ["Yes", "No"]
+      }
     )
     Applyance::Definition.create(
       :label => 'Please explain how you would be an asset to {{ entity.name }}.',
