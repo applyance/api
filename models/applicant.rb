@@ -14,7 +14,7 @@ module Applyance
       message = {
         :subject => "Welcome to Applyance",
         :from_name => "The Team at Applyance",
-        :text => "Hello #{self.account.name},\n\nWelcome to Applyance. We're on an ambitious mission to replace grueling applications with a delightful experience. We hope you enjoy applying with us.\n\nIf you have any feedback, please let us know.\n\nYour temporary password is: #{temp_password}.\n\nWhen you get a chance, please verify your account by visiting this link: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.account.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
+        :text => "Hello #{self.account.name},\n\nWelcome to Applyance. We're on an ambitious mission to replace grueling applications with a delightful experience. We hope you enjoy applying with us.\n\nYour temporary password is: #{temp_password}\n\nWhen you get a chance, please verify your account by visiting this link: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.account.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.account.email, :name => self.account.name } ],
         :from_email => "contact@applyance.co"
       }
