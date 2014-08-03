@@ -52,14 +52,18 @@ module Applyance
 
       # Create applicant (account)
       temp_password = application.friendly_token
-      account = Account.make("applicant", {
-        'name' => params['applicant']['name'],
-        'email' => params['applicant']['email'],
-        'password' => temp_password
-      })
-      applicant = Applicant.first(:account_id => account.id)
-      if applicant.nil?
-        applicant = Applicant.create(:account_id => account.id)
+      account = Account.first(:email => params[:email])
+      account_found = !!account
+      unless account_found
+        account = Account.make("applicant", {
+          'name' => params['applicant']['name'],
+          'email' => params['applicant']['email'],
+          'password' => temp_password
+        })
+      end
+
+      applicant = Applicant.find_or_create(:account_id => account.id)
+      unless account_found
         applicant.send_welcome_email(temp_password)
       end
 
@@ -70,7 +74,7 @@ module Applyance
       # Create applicant location
       unless params['applicant']['location'].nil?
         location = Location.make(params['applicant']['location'])
-        applicant.set(:location_id => location.id)
+        applicant.update(:location_id => location.id)
       end
 
       # Save so we can add assocations
