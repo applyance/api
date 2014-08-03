@@ -5,5 +5,5 @@ child :account => :account do
 end
 
 child :location => :location do
-  extends 'locations/_shallow'
+  extends 'locations/_deep'
 end

@@ -16,7 +16,7 @@ node do
   child @applicant => :applicant do
     attributes :id, :phone_number, :created_at, :updated_at
     child :location => :location do
-      extends 'locations/_shallow'
+      extends 'locations/_deep'
     end
   end
 

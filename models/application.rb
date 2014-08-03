@@ -52,7 +52,7 @@ module Applyance
 
       # Create applicant (account)
       temp_password = application.friendly_token
-      account = Account.first(:email => params[:email])
+      account = Account.first(:email => params['applicant']['email'])
       account_found = !!account
       unless account_found
         account = Account.make("applicant", {
