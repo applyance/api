@@ -15,3 +15,7 @@ end
 child :parent => :parent do
   extends 'entities/_shallow'
 end
+
+child :reviewers => :reviewers do
+  extends 'reviewers/_shallow'
+end
