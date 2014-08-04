@@ -43,9 +43,9 @@ module Applyance
 
           if params['blueprints']
             @blueprints = []
-            params['blueprints'].each do |blueprint|
+            params['blueprints'].each do |blueprint_param|
               blueprint = Blueprint.new
-              blueprint.set_fields(blueprint, ['definition_id', 'position', 'is_required'], :missing => :skip)
+              blueprint.set_fields(blueprint_param, ['definition_id', 'position', 'is_required'], :missing => :skip)
               blueprint.save
               @entity.add_blueprint(blueprint)
               @blueprints << blueprint
