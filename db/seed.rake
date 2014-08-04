@@ -33,12 +33,6 @@ namespace :db do
     Applyance::Definition.create(
       :name => 'Social Security Number',
       :label => 'Social Security Number',
-      :type => 'text',
-      :is_sensitive => true
-    )
-    Applyance::Definition.create(
-      :name => 'Phone Number',
-      :label => 'Phone Number',
       :type => 'text'
     )
     Applyance::Definition.create(
@@ -47,54 +41,52 @@ namespace :db do
       :type => 'text'
     )
     Applyance::Definition.create(
-      :name => 'Current Address',
-      :label => 'Current Address',
-      :type => 'special'
-    )
-    Applyance::Definition.create(
-      :name => 'Previous Address',
-      :label => 'Previous Address',
-      :type => 'special'
-    )
-    Applyance::Definition.create(
-      :name => 'References',
-      :label => 'References',
-      :type => 'special'
-    )
-    Applyance::Definition.create(
-      :name => 'Education History',
-      :label => 'Education History',
-      :type => 'special'
-    )
-    Applyance::Definition.create(
-      :name => 'Employment History',
-      :label => 'Employment History',
-      :type => 'special'
-    )
-    Applyance::Definition.create(
-      :name => 'Criminal Activity',
-      :label => 'Criminal Activity',
-      :type => 'special'
+      :name => 'Online Presence',
+      :label => 'Do you have a personal website, blog, or facebook?',
+      :type => 'textarea'
     )
     Applyance::Definition.create(
       :name => 'Hours of Availability',
-      :label => 'Hours of Availability',
-      :type => 'special'
+      :label => 'What are your hours of availability?',
+      :type => 'textarea'
     )
     Applyance::Definition.create(
-      :name => 'Able to work in the US',
-      :label => 'Are you legally allowed to work in the United States?',
-      :description => 'This helps us determine your eligibility.',
+      :name => 'Previous Work at this Institution',
+      :label => 'Have you ever worked for our institution before? If so, when? Who was your supervisor? Why did you leave and why do you want to come back?',
+      :type => 'textarea'
+      :is_contextual => true
+    )
+    Applyance::Definition.create(
+      :name => 'Knowledge of Employees',
+      :label => 'Do you know any of our current or former employees? If so, who?',
+      :type => 'textarea',
+      :is_contextual => true
+    )
+    Applyance::Definition.create(
+      :name => 'Previous Three Jobs',
+      :label => 'What are the last three previous jobs you have had?',
+      :description => 'Include business name, position title, location, phone number, start and end date, job duties, and name of supervisor.',
+      :type => 'textarea'
+    )
+    Applyance::Definition.create(
+      :name => 'Why should we hire you?',
+      :label => 'Why should we hire you?',
+      :type => 'textarea',
+      :is_contextual => true
+    )
+    Applyance::Definition.create(
+      :name => 'Education History',
+      :label => 'What is your education history?',
+      :description => 'Include instituation name, years of attendance, and degree.',
+      :type => 'textarea'
+    )
+    Applyance::Definition.create(
+      :name => 'Work Eligibility in the U.S.',
+      :label => 'Are you eligible to work in the United States?',
       :type => 'choice',
       :helper => {
         :choices => ["Yes", "No"]
       }
-    )
-    Applyance::Definition.create(
-      :name => 'How would they be an asset?',
-      :label => 'Please explain how you would be an asset to {{ entity.name }}.',
-      :type => 'textarea',
-      :is_contextual => true
     )
   end
 
