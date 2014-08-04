@@ -42,17 +42,25 @@ module Applyance
           protected! app.to_entity_admins(@entity)
 
           if params['blueprints']
+            @blueprints = []
             params['blueprints'].each do |blueprint|
-              @blueprint = Blueprint.new
-              @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
-              @blueprint.save
-              @entity.add_blueprint(@blueprint)
+              blueprint = Blueprint.new
+              blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
+              blueprint.save
+              @entity.add_blueprint(blueprint)
+              @blueprints << blueprint
             end
+
+            status 201
+            rabl :'blueprints/index'
           else
             @blueprint = Blueprint.new
             @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
             @blueprint.save
             @entity.add_blueprint(@blueprint)
+
+            status 201
+            rabl :'blueprints/show'
           end
 
           status 201
