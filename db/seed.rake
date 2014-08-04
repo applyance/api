@@ -53,7 +53,7 @@ namespace :db do
     Applyance::Definition.create(
       :name => 'Previous Work at this Institution',
       :label => 'Have you ever worked for our institution before? If so, when? Who was your supervisor? Why did you leave and why do you want to come back?',
-      :type => 'textarea'
+      :type => 'textarea',
       :is_contextual => true
     )
     Applyance::Definition.create(
