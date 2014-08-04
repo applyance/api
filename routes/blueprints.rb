@@ -41,10 +41,19 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
 
-          @blueprint = Blueprint.new
-          @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
-          @blueprint.save
-          @entity.add_blueprint(@blueprint)
+          if params['blueprints']
+            params['blueprints'].each do |blueprint|
+              @blueprint = Blueprint.new
+              @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
+              @blueprint.save
+              @entity.add_blueprint(@blueprint)
+            end
+          else
+            @blueprint = Blueprint.new
+            @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
+            @blueprint.save
+            @entity.add_blueprint(@blueprint)
+          end
 
           status 201
           rabl :'blueprints/show'
