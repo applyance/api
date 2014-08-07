@@ -7,7 +7,7 @@ module Applyance
         # List spots
         app.get '/entities/:id/spots', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
-          @spots = @entity.spots
+          @spots = @entity.spots_dataset.exclude(:status => "deleted")
           rabl :'spots/index'
         end
 
