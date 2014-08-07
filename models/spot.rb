@@ -13,7 +13,7 @@ module Applyance
       validates_presence :name
     end
 
-    def before_validation
+    def after_save
       super
 
       # Create slug
