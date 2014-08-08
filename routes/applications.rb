@@ -19,6 +19,7 @@ module Applyance
           protected! app.to_entity_reviewers(@entity)
 
           @applications = @entity.applications
+          @entity.entities.each { |e| @applications.concat(e.applications) }
           @entity.spots.each { |s| @applications.concat(s.applications) }
           @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
 
