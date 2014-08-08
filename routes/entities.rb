@@ -16,7 +16,6 @@ module Applyance
         # Only reviewers can do this
         app.get '/entities/:id/entities', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
-          protected! app.to_entity_reviewers(@entity)
           @entities = @entity.entities
           rabl :'entities/index'
         end
