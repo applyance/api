@@ -48,7 +48,7 @@ module Applyance
         # Update reviewer by Id
         app.put '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_entity_reviewers(@reviewer)
+          protected! app.to_entity_admins(@reviewer)
           @reviewer.update_fields(params, ['scope'], :missing => :skip)
           rabl :'reviewers/show'
         end
@@ -56,7 +56,7 @@ module Applyance
         # Delete an reviewer by Id
         app.delete '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_entity_reviewers(@reviewer.entity)
+          protected! app.to_entity_admins(@reviewer.entity)
 
           if @reviewer.entity.reviewers.length == 1
             raise BadRequestError.new({ :detail => "Cannot remove last reviewer from entity." })

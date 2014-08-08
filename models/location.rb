@@ -24,8 +24,8 @@ module Applyance
 
         # Create address
         address = Address.make(params['address'])
-        return unless address
-        
+        return nil if address.nil?
+
         location.set(:address_id => address.id)
 
         # Create coordinate

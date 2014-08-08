@@ -6,9 +6,11 @@ module Applyance
         return if params.nil?
 
         location = Location.make(params)
+        return nil if location.nil?
+
         self.send("#{property.to_s}_id=", location.id)
         self.save
-        
+
         location
       end
 

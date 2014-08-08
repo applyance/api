@@ -62,10 +62,7 @@ describe Applyance::Application do
             name: "Stephen Watkins",
             email: "stjowa@gmail.com",
             location: {
-              coordinate: {
-                lat: 30.5,
-                lng: -40.2
-              }
+              address: "Testing this"
             }
           },
           spot_ids: [blueprint.spot.id],
@@ -110,6 +107,9 @@ describe Applyance::Application do
 
       it_behaves_like "a created object"
       it_behaves_like "a single application"
+      it "returns the right value" do
+        expect(json['applicant']['location']).to eq(nil)
+      end
     end
   end
 
