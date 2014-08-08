@@ -8,14 +8,16 @@ module Applyance
       super
 
       # Go through child entities and spots, deleting the same blueprints if they exist
-      self.entity.entities.each do |entity|
-        entity.blueprints_dataset.where(:definition_id => self.definition_id).delete
-        entity.spots.each do |spot|
+      if self.entity
+        self.entity.entities.each do |entity|
+          entity.blueprints_dataset.where(:definition_id => self.definition_id).delete
+          entity.spots.each do |spot|
+            spot.blueprints_dataset.where(:definition_id => self.definition_id).delete
+          end
+        end
+        self.entity.spots.each do |entity|
           spot.blueprints_dataset.where(:definition_id => self.definition_id).delete
         end
-      end
-      self.entity.spots.each do |entity|
-        spot.blueprints_dataset.where(:definition_id => self.definition_id).delete
       end
     end
   end
