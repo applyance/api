@@ -58,6 +58,7 @@ module Applyance
             @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
             @blueprint.save
             @entity.add_blueprint(@blueprint)
+            @blueprint.ensure_unique_in_chain
 
             status 201
             rabl :'blueprints/show'

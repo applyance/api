@@ -4,10 +4,8 @@ module Applyance
     one_through_one :spot, :class => :'Applyance::Spot'
     one_through_one :entity, :class => :'Applyance::Entity'
 
-    def after_create
-      super
-
-      # Go through child entities and spots, deleting the same blueprints if they exist
+    # Go through child entities and spots, deleting the same blueprints if they exist
+    def ensure_unique_in_chain
       if self.entity
         self.entity.entities.each do |entity|
           entity.blueprints_dataset.where(:definition_id => self.definition_id).delete
@@ -20,5 +18,6 @@ module Applyance
         end
       end
     end
+
   end
 end

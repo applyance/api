@@ -31,13 +31,13 @@ describe Applyance::Blueprint do
 
   shared_examples_for "a single blueprint" do
     it "returns the information for blueprint show" do
-      expect(json.keys).to contain_exactly('id', 'definition', 'position', 'is_required', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'definition', 'spot', 'entity', 'position', 'is_required', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple blueprints" do
     it "returns the information for blueprint index" do
-      expect(json.first.keys).to contain_exactly('id', 'definition', 'position', 'is_required', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'definition', 'position', 'spot', 'entity', 'is_required', 'created_at', 'updated_at')
     end
   end
 
