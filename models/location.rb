@@ -24,13 +24,15 @@ module Applyance
 
         # Create address
         address = Address.make(params['address'])
-        location.set(:address_id => address.id)
+        if address
+          location.set(:address_id => address.id)
 
-        # Create coordinate
-        result = Geocoder.coordinates(address.to_s)
-        if result
-          coordinate = Coordinate.create(:lat => result[0], :lng => result[1])
-          location.set(:coordinate_id => coordinate.id)
+          # Create coordinate
+          result = Geocoder.coordinates(address.to_s)
+          if result
+            coordinate = Coordinate.create(:lat => result[0], :lng => result[1])
+            location.set(:coordinate_id => coordinate.id)
+          end
         end
 
       end

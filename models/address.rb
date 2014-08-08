@@ -5,6 +5,7 @@ module Applyance
 
     def self.make(address)
       results = Geocoder.search(address)
+      return nil unless results.first
       self.make_from_geocoded_result(results.first)
     end
 
