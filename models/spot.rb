@@ -18,9 +18,10 @@ module Applyance
 
       # Create slug
       # Needs to be unique within the entity, that is all
-      self._slug = self.class.to_slug(self.name, '')
-      spot_count = self.class.where(:entity_id => self.entity_id, :'_slug' => self._slug).exclude(:id => self.id).count
-      self.slug = (spot_count == 0) ? self._slug : "#{self._slug}-#{spot_count + 1}"
+      _slug = self.class.to_slug(self.name, '')
+      spot_count = self.class.where(:entity_id => self.entity_id, :'_slug' => _slug).exclude(:id => self.id).count
+      slug = (spot_count == 0) ? _slug : "#{_slug}-#{spot_count + 1}"
+      self.this.update(:slug => slug, :'_slug' => _slug)
     end
 
   end
