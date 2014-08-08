@@ -15,7 +15,7 @@ module Applyance
             spot.blueprints_dataset.where(:definition_id => self.definition_id).delete
           end
         end
-        self.entity.spots.each do |entity|
+        self.entity.spots.each do |spot|
           spot.blueprints_dataset.where(:definition_id => self.definition_id).delete
         end
       end
