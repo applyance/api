@@ -31,13 +31,13 @@ describe Applyance::Entity do
 
   shared_examples_for "a single entity" do
     it "returns the information for entity show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'parent', 'logo', 'domain', 'location', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'parent', 'logo', 'domain', 'location', 'reviewers', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple entities" do
     it "returns the information for entity index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'logo', 'parent_id', 'domain_id', 'location', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'logo', 'parent', 'domain_id', 'location', 'created_at', 'updated_at')
     end
   end
 
@@ -157,13 +157,16 @@ describe Applyance::Entity do
       let(:entity) { create(:entity) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
-        put "/entities/#{entity.id}", { name: "Retail 2" }
+        put "/entities/#{entity.id}", Oj.dump({ name: "Retail 2", location: { address: "5990 Willow Ridge Road\nPinson, AL 35126" } }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a retrieved object"
       it_behaves_like "a single entity"
       it "returns the right value" do
         expect(json['name']).to eq('Retail 2')
+      end
+      it "returns the right value" do
+        expect(json['location']['address']['address_1']).to eq("5990 Willow Ridge Road")
       end
     end
     context "not logged in" do
