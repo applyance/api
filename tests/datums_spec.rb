@@ -32,13 +32,13 @@ describe Applyance::Datum do
 
   shared_examples_for "a single datum" do
     it "returns the information for datum show" do
-      expect(json.keys).to contain_exactly('id', 'applicant', 'definition', 'attachments', 'detail', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'citizen', 'definition', 'attachments', 'detail', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple datums" do
     it "returns the information for datum index" do
-      expect(json.first.keys).to contain_exactly('id', 'applicant_id', 'definition', 'attachments', 'detail', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'citizen_id', 'definition', 'attachments', 'detail', 'created_at', 'updated_at')
     end
   end
 
@@ -47,7 +47,7 @@ describe Applyance::Datum do
     context "logged in as admin" do
       let(:datum) { create(:datum) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{datum.applicant.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{datum.citizen.account.api_key}"
         put "/datums/#{datum.id}", Oj.dump({ detail: "Datum Change" }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -70,7 +70,7 @@ describe Applyance::Datum do
     context "logged in as admin" do
       let(:datum) { create(:datum) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{datum.applicant.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{datum.citizen.account.api_key}"
         delete "/datums/#{datum.id}"
       end
 
@@ -99,8 +99,8 @@ describe Applyance::Datum do
     context "not logged in" do
       let(:datum) { create(:datum) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{datum.applicant.account.api_key}"
-        get "/applicants/#{datum.applicant.id}/datums"
+        header "Authorization", "ApplyanceLogin auth=#{datum.citizen.account.api_key}"
+        get "/citizens/#{datum.citizen.id}/datums"
       end
 
       it_behaves_like "a retrieved object"
@@ -109,13 +109,13 @@ describe Applyance::Datum do
   end
 
   # Create datum
-  describe "POST #applicants/datums" do
+  describe "POST #citizens/datums" do
     context "logged in as admin" do
       let(:definition) { create(:definition, :is_sensitive => true) }
-      let(:applicant) { create(:applicant) }
+      let(:citizen) { create(:citizen) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{applicant.account.api_key}"
-        post "/applicants/#{applicant.id}/datums", Oj.dump({ definition_id: definition.id, detail: { value: "Detail..." } }), { "CONTENT_TYPE" => "application/json" }
+        header "Authorization", "ApplyanceLogin auth=#{citizen.account.api_key}"
+        post "/citizens/#{citizen.id}/datums", Oj.dump({ definition_id: definition.id, detail: { value: "Detail..." } }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -127,9 +127,9 @@ describe Applyance::Datum do
     end
     context "not logged in" do
       let(:definition) { create(:definition) }
-      let(:applicant) { create(:applicant) }
+      let(:citizen) { create(:citizen) }
       before(:each) do
-        post "/applicants/#{applicant.id}/datums", Oj.dump({ definition_id: definition.id, detail: "Detail..." }), { "CONTENT_TYPE" => "application/json" }
+        post "/citizens/#{citizen.id}/datums", Oj.dump({ definition_id: definition.id, detail: "Detail..." }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"

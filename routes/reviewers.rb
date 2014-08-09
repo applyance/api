@@ -48,7 +48,7 @@ module Applyance
         # Update reviewer by Id
         app.put '/reviewers/:id', :provides => [:json] do
           @reviewer = Reviewer.first(:id => params['id'])
-          protected! app.to_entity_admins(@reviewer)
+          protected! app.to_entity_admins(@reviewer.entity)
           @reviewer.update_fields(params, ['scope'], :missing => :skip)
           rabl :'reviewers/show'
         end

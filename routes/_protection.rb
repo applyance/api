@@ -37,7 +37,7 @@ module Applyance
       # Protection to reviewers or self
       def to_application_reviewers_or_self(application)
         lambda do |account|
-          return true if account.id == application.applicant.account_id
+          return true if account.id == application.citizen.account_id
           to_application_reviewers(application).(account)
         end
       end
@@ -45,8 +45,23 @@ module Applyance
       # Protection to full-access reviewers
       def to_field_reviewers_or_self(field)
         lambda do |account|
-          return true if field.datum.applicant.account_id == account.id
+          return true if field.datum.citizen.account_id == account.id
           field.application.spots.any? { |spot| spot.entity.reviewers.collect(&:account_id).include?(account.id) }
+        end
+      end
+
+      # Protection to citizen reviewers
+      def to_citizen_reviewers(citizen)
+        lambda do |account|
+          citizen.applications.any? { |a| to_application_reviewers(a).(account) }
+        end
+      end
+
+      # Protection to citizen reviewers or self
+      def to_citizen_reviewers_or_self(citizen)
+        lambda do |account|
+          return true if account.id == citizen.account_id
+          to_citizen_reviewers(citizen).(account)
         end
       end
 

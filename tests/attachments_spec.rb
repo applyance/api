@@ -29,7 +29,7 @@ describe Applyance::Attachment do
   # Create attachments
   describe "PUT #attachment" do
     context "logged in" do
-      let(:account) { create(:applicant_account) }
+      let(:account) { create(:citizen_account) }
       before(:each) do
         account_auth
         request = {

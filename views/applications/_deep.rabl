@@ -1,7 +1,7 @@
 attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 
-child :applicant => :applicant do
-  extends 'applicants/_deep'
+child :citizen => :citizen do
+  extends 'citizens/_deep'
 end
 
 child :spots => :spots do
@@ -10,18 +10,6 @@ end
 
 child :entities => :entities do
   extends 'entities/_shallow'
-end
-
-child :stage => :stage do
-  extends 'stages/_shallow'
-end
-
-child :labels => :labels do
-  extends 'labels/_shallow'
-end
-
-child :ratings => :ratings do
-  extends 'ratings/_shallow'
 end
 
 child :reviewers => :reviewers do

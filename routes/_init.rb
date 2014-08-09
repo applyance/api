@@ -4,6 +4,7 @@ require_relative 'attachments'
 require_relative 'domains'
 require_relative 'roles'
 require_relative 'accounts'
+require_relative 'citizens'
 require_relative 'entities'
 require_relative 'reviewers'
 require_relative 'reviewer_invites'
@@ -32,6 +33,7 @@ module Applyance
         app.register Applyance::Routing::Domains
         app.register Applyance::Routing::Roles
         app.register Applyance::Routing::Accounts
+        app.register Applyance::Routing::Citizens
         app.register Applyance::Routing::Entities
         app.register Applyance::Routing::Reviewers
         app.register Applyance::Routing::ReviewerInvites

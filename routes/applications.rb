@@ -39,7 +39,7 @@ module Applyance
         app.get '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
           if @application.nil?
-            raise BaidRequestError.new({ detail: "Application doesn't exist." })
+            raise BadRequestError.new({ detail: "Application doesn't exist." })
           end
           protected! app.to_application_reviewers_or_self(@application)
           rabl :'applications/show'
@@ -49,16 +49,6 @@ module Applyance
         app.put '/applications/:id', :provides => [:json] do
           @application = Application.first(:id => params['id'])
           protected! app.to_application_reviewers(@application)
-
-          @application.update_fields(params, ['stage_id'], :missing => :skip)
-
-          # Update labels
-          unless params['label_ids'].nil?
-            @application.remove_all_labels
-            params['label_ids'].each do |label_id|
-              @application.add_label(Label.first(:id => label_id))
-            end
-          end
 
           # Update reviewers
           unless params['reviewer_ids'].nil?
@@ -79,14 +69,12 @@ module Applyance
 
           @application.remove_all_spots
           @application.remove_all_entities
-          @application.remove_all_labels
           @application.remove_all_reviewers
 
           @application.activities_dataset.destroy
-          @application.threads_dataset.destroy
           @application.notes_dataset.destroy
-          @application.ratings_dataset.destroy
           @application.fields_dataset.destroy
+          
           @application.destroy
 
           204

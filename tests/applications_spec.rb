@@ -38,13 +38,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'applicant', 'digest', 'stage', 'reviewers', 'labels', 'ratings', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'citizen', 'digest', 'reviewers', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'applicant', 'digest', 'stage', 'reviewer_ids', 'label_ids', 'ratings', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'citizen', 'digest', 'reviewer_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -58,7 +58,7 @@ describe Applyance::Application do
       before(:each) do
 
         application_request = {
-          applicant: {
+          citizen: {
             name: "Stephen Watkins",
             email: "stjowa@gmail.com",
             location: {
@@ -108,7 +108,7 @@ describe Applyance::Application do
       it_behaves_like "a created object"
       it_behaves_like "a single application"
       it "returns the right value" do
-        expect(json['applicant']['location']).to eq(nil)
+        expect(json['citizen']['location']).to eq(nil)
       end
     end
   end
@@ -128,33 +128,6 @@ describe Applyance::Application do
     context "not logged in" do
       let(:application) { create(:application) }
       before(:each) { delete "/applications/#{application.id}" }
-
-      it_behaves_like "an unauthorized account"
-    end
-  end
-
-  # Update applications
-  describe "PUT #applications" do
-    context "logged in as reviewer" do
-      let(:label) { create(:label) }
-      let(:application) { create(:application) }
-      before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
-        put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
-      end
-
-      it_behaves_like "a retrieved object"
-      it_behaves_like "a single application"
-      it "returns the right value" do
-        expect(json['labels'].first['name']).to eq(label.name)
-      end
-    end
-    context "not logged in" do
-      let(:label) { create(:label) }
-      let(:application) { create(:application) }
-      before(:each) do
-        put "/applications/#{application.id}", Oj.dump({ :label_ids => [label.id] }), { "CONTENT_TYPE" => "application/json" }
-      end
 
       it_behaves_like "an unauthorized account"
     end
@@ -209,7 +182,7 @@ describe Applyance::Application do
     context "logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.applicant.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.citizen.account.api_key}"
         get "/applications/#{application.id}"
       end
 

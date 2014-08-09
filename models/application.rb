@@ -4,18 +4,13 @@ module Applyance
     include Applyance::Lib::Tokens
     include Applyance::Lib::Strings
 
-    many_to_one :applicant, :class => :'Applyance::Applicant'
-    many_to_one :stage, :class => :'Applyance::Stage'
+    many_to_one :citizen, :class => :'Applyance::Citizen'
 
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
-    one_to_many :threads, :class => :'Applyance::Thread'
     one_to_many :notes, :class => :'Applyance::Note'
-    one_to_many :ratings, :class => :'Applyance::Rating'
     one_to_many :fields, :class => :'Applyance::Field'
 
     many_to_many :reviewers, :class => :'Applyance::Reviewer'
-    many_to_many :labels, :class => :'Applyance::Label'
-
     many_to_many :spots, :class => :'Applyance::Spot'
     many_to_many :entities, :class => :'Applyance::Entity'
 
@@ -42,45 +37,45 @@ module Applyance
       if params['spot_ids'].nil? && params['entity_ids'].nil?
         raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
       end
-      if params['applicant'].nil?
-        raise BadRequestError.new({ :detail => "Applicant is required." })
+      if params['citizen'].nil?
+        raise BadRequestError.new({ :detail => "Citizen is required." })
       end
 
       # Initialize application
       application = self.new
       application.set_token(:digest)
 
-      # Create applicant (account)
+      # Create citizen (account)
       temp_password = application.friendly_token
-      account = Account.first(:email => params['applicant']['email'])
+      account = Account.first(:email => params['citizen']['email'])
       account_found = !!account
       unless account_found
-        account = Account.make("applicant", {
-          'name' => params['applicant']['name'],
-          'email' => params['applicant']['email'],
+        account = Account.make("citizen", {
+          'name' => params['citizen']['name'],
+          'email' => params['citizen']['email'],
           'password' => temp_password
         })
       end
 
-      applicant = Applicant.find_or_create(:account_id => account.id)
+      citizen = Citizen.find_or_create(:account_id => account.id)
       unless account_found
-        applicant.send_welcome_email(temp_password)
+        citizen.send_welcome_email(temp_password)
       end
 
-      unless params['applicant']['phone_number'].nil?
-        applicant.update(:phone_number => params['applicant']['phone_number'])
+      unless params['citizen']['phone_number'].nil?
+        citizen.update(:phone_number => params['citizen']['phone_number'])
       end
 
-      # Create applicant location
-      unless params['applicant']['location'].nil?
-        location = Location.make(params['applicant']['location'])
+      # Create citizen location
+      unless params['citizen']['location'].nil?
+        location = Location.make(params['citizen']['location'])
         if location
-          applicant.update(:location_id => location.id)
+          citizen.update(:location_id => location.id)
         end
       end
 
       # Save so we can add assocations
-      application.set(:applicant_id => applicant.id)
+      application.set(:citizen_id => citizen.id)
       application.save
 
       # Assign spots
@@ -137,16 +132,16 @@ module Applyance
         # If not contextual, see if a datum exists for this definition already
         if definition.is_contextual
           datum = Datum.new
-          datum.applicant = self.applicant
+          datum.citizen = self.citizen
           datum.definition = definition
         else
           datum = Datum.first(
             :definition_id => definition.id,
-            :applicant_id => self.applicant.id
+            :citizen_id => self.citizen.id
           )
           if datum.nil?
             datum = Datum.new
-            datum.applicant = self.applicant
+            datum.citizen = self.citizen
             datum.definition = definition
           end
         end

@@ -2,24 +2,7 @@ module Applyance
   module Routing
     module Stages
 
-      module Protection
-        # General protection function for admins
-        def to_admins(entity)
-          lambda do |account|
-            entity.reviewers_dataset.where(:scope => "admin").collect(&:account_id).include?(account.id)
-          end
-        end
-
-        def to_reviewers(entity)
-          lambda do |account|
-            entity.reviewers.collect(&:account_id).include?(account.id)
-          end
-        end
-      end
-
       def self.registered(app)
-
-        app.extend(Applyance::Routing::Stages::Protection)
 
         # List stages by pipeline
         # Only reviewers can do this
@@ -69,7 +52,7 @@ module Applyance
           @stage = Stage.first(:id => params['id'])
           protected! app.to_entity_admins(@stage.pipeline.entity)
 
-          @stage.remove_all_applications
+          @stage.remove_all_citizens
           @stage.destroy
 
           204

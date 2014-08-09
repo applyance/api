@@ -1,7 +1,7 @@
 attributes :id, :detail, :created_at, :updated_at
 
-child :applicant => :applicant do
-  extends 'applicants/_shallow'
+child :citizen => :citizen do
+  extends 'citizens/_shallow'
 end
 
 child :definition => :definition do

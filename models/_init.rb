@@ -30,7 +30,7 @@ module Applyance
         require_relative 'domain'
         require_relative 'role'
         require_relative 'account'
-        require_relative 'applicant'
+        require_relative 'citizen'
         require_relative 'entity'
         require_relative 'reviewer'
         require_relative 'reviewer_invite'

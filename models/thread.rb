@@ -3,7 +3,7 @@ module Applyance
 
     include Applyance::Lib::Tokens
 
-    many_to_one :application, :class => :'Applyance::Application'
+    many_to_one :citizen, :class => :'Applyance::Citizen'
     one_to_many :messages, :class => :'Applyance::Message'
 
     def before_validation

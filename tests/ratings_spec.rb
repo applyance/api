@@ -38,13 +38,13 @@ describe Applyance::Rating do
 
   shared_examples_for "a single rating" do
     it "returns the information for rating show" do
-      expect(json.keys).to contain_exactly('id', 'rating', 'application', 'account', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'rating', 'citizen', 'account', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple ratings" do
     it "returns the information for rating index" do
-      expect(json.first.keys).to contain_exactly('id', 'rating', 'application_id', 'account_id', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'rating', 'citizen_id', 'account', 'created_at', 'updated_at')
     end
   end
 
@@ -54,7 +54,7 @@ describe Applyance::Rating do
       let!(:application) { create(:application) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
-        post "/accounts/#{application.entities.first.reviewers.first.account.id}/ratings", Oj.dump({ rating: 3, application_id: application.id, entity_id: application.entities.first.id }), { "CONTENT_TYPE" => "application/json" }
+        post "/citizens/#{application.citizen.id}/ratings", Oj.dump({ rating: 3 }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -66,7 +66,7 @@ describe Applyance::Rating do
     context "not logged in" do
       let!(:application) { create(:application) }
       before(:each) do
-        post "/accounts/#{application.entities.first.reviewers.first.account.id}/ratings", Oj.dump({ rating: 3, application_id: application.id, entity_id: application.entities.first.id }), { "CONTENT_TYPE" => "application/json" }
+        post "/citizens/#{application.citizen.id}/ratings", Oj.dump({ rating: 3 }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "an unauthorized account"
@@ -76,10 +76,11 @@ describe Applyance::Rating do
   # Retrieve ratings
   describe "GET #ratings" do
     context "logged in as chief" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{rating.application.entities.first.reviewers.first.account.api_key}"
-        get "/applications/#{rating.application.id}/ratings"
+        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
+        get "/citizens/#{rating.citizen.id}/ratings"
       end
 
       it_behaves_like "a retrieved object"
@@ -89,9 +90,10 @@ describe Applyance::Rating do
       it_behaves_like "multiple ratings"
     end
     context "not logged in" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
-        get "/applications/#{rating.application.id}/ratings"
+        get "/citizens/#{rating.citizen.id}/ratings"
       end
 
       it_behaves_like "an unauthorized account"
@@ -101,9 +103,10 @@ describe Applyance::Rating do
   # Retrieve one rating
   describe "GET #rating" do
     context "logged in as reviewer" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{rating.application.entities.first.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.entities.first.reviewers.first.account.api_key}"
         get "/ratings/#{rating.id}"
       end
 
@@ -123,7 +126,8 @@ describe Applyance::Rating do
   # Update rating
   describe "PUT #rating" do
     context "logged in as reviewer" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{rating.account.api_key}"
         put "/ratings/#{rating.id}", Oj.dump({ rating: 4 }), { "CONTENT_TYPE" => "application/json" }
@@ -136,7 +140,8 @@ describe Applyance::Rating do
       end
     end
     context "not logged in" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
         put "/ratings/#{rating.id}", Oj.dump({ rating: 4 }), { "CONTENT_TYPE" => "application/json" }
       end
@@ -148,7 +153,8 @@ describe Applyance::Rating do
   # Remove rating
   describe "Delete #rating" do
     context "logged in as reviewer" do
-      let(:rating) { create(:rating) }
+      let(:application) { create(:application) }
+      let(:rating) { create(:rating, :citizen => application.citizen) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{rating.account.api_key}"
         delete "/ratings/#{rating.id}"

@@ -32,7 +32,7 @@ module Applyance
           protected! app.to_entity_admins(@entity)
 
           @definition = Definition.new
-          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @entity.add_definition(@definition)
@@ -49,7 +49,7 @@ module Applyance
           @domain = Domain.first(:id => params['id'])
 
           @definition = Definition.new
-          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @domain.add_definition(@definition)
@@ -64,7 +64,7 @@ module Applyance
           protected!
 
           @definition = Definition.new
-          @definition.set_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           status 201
@@ -84,7 +84,7 @@ module Applyance
           protected! if @definition.domain
           protected! app.to_entity_admins(@definition.entity) if @definition.entity
 
-          @definition.update_fields(params, ['label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.update_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
           rabl :'definitions/show'
         end
 

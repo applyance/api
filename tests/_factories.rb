@@ -31,8 +31,8 @@ FactoryGirl.define do
     trait :chief do
       after(:create) { |account| account.add_role(Applyance::Role.first(:name => "chief")) }
     end
-    trait :applicant do
-      after(:create) { |account| account.add_role(Applyance::Role.first(:name => "applicant")) }
+    trait :citizen do
+      after(:create) { |account| account.add_role(Applyance::Role.first(:name => "citizen")) }
     end
     trait :reviewer do
       after(:create) { |account| account.add_role(Applyance::Role.first(:name => "reviewer")) }
@@ -40,7 +40,7 @@ FactoryGirl.define do
 
     factory :chief_account, traits: [:chief]
     factory :reviewer_account, traits: [:reviewer]
-    factory :applicant_account, traits: [:applicant]
+    factory :citizen_account, traits: [:citizen]
 
   end
 
@@ -62,8 +62,8 @@ FactoryGirl.define do
     factory :entity_with_definition, traits: [:with_definition]
   end
 
-  factory :applicant, class: Applyance::Applicant do
-    association :account, factory: :applicant_account
+  factory :citizen, class: Applyance::Citizen do
+    association :account, factory: :citizen_account
   end
 
   factory :reviewer, class: Applyance::Reviewer do
@@ -124,7 +124,7 @@ FactoryGirl.define do
 
   factory :datum, class: Applyance::Datum do
     definition
-    applicant
+    citizen
     detail { { value: "Detail..." } }
   end
 
@@ -134,7 +134,7 @@ FactoryGirl.define do
   end
 
   factory :application, class: Applyance::Application do
-    applicant
+    citizen
 
     digest { SecureRandom.urlsafe_base64(nil, false) }
     submitted_at { DateTime.now }
@@ -142,7 +142,7 @@ FactoryGirl.define do
 
     after(:create) do |application|
       application.add_entity(create(:entity))
-      application.add_field(create(:field, :datum => create(:datum, :applicant => application.applicant)))
+      application.add_field(create(:field, :datum => create(:datum, :citizen => application.citizen)))
     end
 
     trait :with_spot do
@@ -187,7 +187,7 @@ FactoryGirl.define do
 
   factory :rating, class: Applyance::Rating do
     account
-    application
+    citizen
     sequence(:rating) { |n| n }
   end
 

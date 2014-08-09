@@ -4,31 +4,30 @@ module Applyance
 
       def self.registered(app)
 
-        # List ratings for applications
+        # List ratings for citizens
         # Only reviewers can do this
-        app.get '/applications/:id/ratings', :provides => [:json] do
-          @application = Application.first(:id => params[:id])
-          protected! app.to_application_reviewers(@application)
+        app.get '/citizens/:id/ratings', :provides => [:json] do
+          @citizen = Citizen.first(:id => params[:id])
+          @account = protected! app.to_citizen_reviewers(@citizen)
 
-          @ratings = @application.ratings
+          @ratings = @citizen.ratings
           rabl :'ratings/index'
         end
 
         # Create a new rating
         # Must be a reviewer
-        app.post '/accounts/:id/ratings', :provides => [:json] do
-          @account = Account.first(:id => params[:id])
-          @application = Application.first(:id => params[:application_id])
-          if @application.nil?
-            raise BadRequestError.new({ :detail => "Proper application ID must be provided." })
+        app.post '/citizens/:id/ratings', :provides => [:json] do
+          @citizen = Citizen.first(:id => params[:id])
+          if @citizen.nil?
+            raise BadRequestError.new({ :detail => "Proper citizen ID must be provided." })
           end
 
-          protected! app.to_application_reviewers(@application)
+          @account = protected! app.to_citizen_reviewers(@citizen)
           protected! app.to_account(@account)
 
           @rating = Rating.new
-          @rating.set(:account_id => @account.id)
-          @rating.set_fields(params, ['rating', 'application_id'], :missing => :skip)
+          @rating.set(:account_id => @account.id, :citizen_id => @citizen.id)
+          @rating.set_fields(params, ['rating'], :missing => :skip)
           @rating.save
 
           status 201
@@ -38,13 +37,13 @@ module Applyance
         # Get rating by Id
         app.get '/ratings/:id', :provides => [:json] do
           @rating = Rating.first(:id => params['id'])
-          protected! app.to_application_reviewers(@rating.application)
+          protected! app.to_citizen_reviewers(@rating.citizen)
 
           rabl :'ratings/show'
         end
 
         # Update a rating by Id
-        # Must be a reviewer
+        # Must be the original reviewer
         app.put '/ratings/:id', :provides => [:json] do
           @rating = Rating.first(:id => params['id'])
           protected! app.to_account(@rating.account)

@@ -10,7 +10,7 @@ module Applyance
 
           response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
           @reviewers = Reviewer.where(:account_id => @account.id)
-          @applicant = Applicant.first(:account_id => @account.id)
+          @citizen = Citizen.first(:account_id => @account.id)
 
           rabl :'accounts/me'
         end
@@ -19,7 +19,7 @@ module Applyance
         app.get '/accounts/me', :provides => [:json] do
           @account = protected!(lambda { |a| true })
           @reviewers = Reviewer.where(:account_id => @account.id)
-          @applicant = Applicant.first(:account_id => @account.id)
+          @citizen = Citizen.first(:account_id => @account.id)
 
           rabl :'accounts/me'
         end

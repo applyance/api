@@ -30,13 +30,13 @@ describe Applyance::Definition do
 
   shared_examples_for "a single definition" do
     it "returns the information for definition show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'domain', 'entity', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'entity', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple definitions" do
     it "returns the information for definition index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'label', 'description', 'type', 'helper', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'created_at', 'updated_at')
     end
   end
 
@@ -46,7 +46,7 @@ describe Applyance::Definition do
       let(:entity) { create(:entity) }
       before(:each) do
         header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
-        post "/entities/#{entity.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{entity.id}/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -58,7 +58,7 @@ describe Applyance::Definition do
     end
     context "not logged in" do
       let(:entity) { create(:entity) }
-      before(:each) { post "/entities/#{entity.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
+      before(:each) { post "/entities/#{entity.id}/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -71,7 +71,7 @@ describe Applyance::Definition do
       let(:domain) { create(:domain) }
       before(:each) do
         account_auth
-        post "/domains/#{domain.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
+        post "/domains/#{domain.id}/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -83,7 +83,7 @@ describe Applyance::Definition do
     end
     context "not logged in" do
       let(:domain) { create(:domain) }
-      before(:each) { post "/domains/#{domain.id}/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
+      before(:each) { post "/domains/#{domain.id}/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -95,7 +95,7 @@ describe Applyance::Definition do
       let(:account) { create(:chief_account) }
       before(:each) do
         account_auth
-        post "/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
+        post "/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
@@ -106,7 +106,7 @@ describe Applyance::Definition do
       end
     end
     context "not logged in" do
-      before(:each) { post "/definitions", Oj.dump({ label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
+      before(:each) { post "/definitions", Oj.dump({ name: "Question 1", label: "Question 1", description: "Detail...", type: "text" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end
@@ -190,7 +190,7 @@ describe Applyance::Definition do
     end
     context "not logged in" do
       let(:entity) { create(:entity_with_definition) }
-      before(:each) { put "/definitions/#{entity.definitions.first.id}", Oj.dump({ name: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
+      before(:each) { put "/definitions/#{entity.definitions.first.id}", Oj.dump({ label: "The Iron Yard" }), { "CONTENT_TYPE" => "application/json" } }
 
       it_behaves_like "an unauthorized account"
     end

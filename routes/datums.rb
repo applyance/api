@@ -4,23 +4,23 @@ module Applyance
 
       def self.registered(app)
 
-        # List datums for applicant
+        # List datums for citizen
         # Must be account owner
-        app.get '/applicants/:id/datums', :provides => [:json] do
-          @applicant = Applicant.first(:id => params['id'])
-          protected! app.to_account(@applicant.account)
-          @datums = @applicant.datums
+        app.get '/citizens/:id/datums', :provides => [:json] do
+          @citizen = Citizen.first(:id => params['id'])
+          protected! app.to_account(@citizen.account)
+          @datums = @citizen.datums
           rabl :'datums/index'
         end
 
-        # Create a new datum for an account
+        # Create a new datum for a citizen
         # Must be account owner
-        app.post '/applicants/:id/datums', :provides => [:json] do
-          @applicant = Applicant.first(:id => params['id'])
-          protected! app.to_account(@applicant.account)
+        app.post '/citizens/:id/datums', :provides => [:json] do
+          @citizen = Citizen.first(:id => params['id'])
+          protected! app.to_account(@citizen.account)
 
           @datum = Datum.new
-          @datum.set(:applicant_id => @applicant.id)
+          @datum.set(:citizen_id => @citizen.id)
           @datum.set_fields(params, ['definition_id', 'detail'], :missing => :skip)
           @datum.save
           @datum.attach(params['attachments'], :attachments)
@@ -39,7 +39,7 @@ module Applyance
         # Must be an account owner
         app.put '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
-          protected! app.to_account(@datum.applicant.account)
+          protected! app.to_account(@datum.citizen.account)
 
           @datum.update_fields(params, ['detail'], :missing => :skip)
           @datum.attach(params['attachments'], :attachments)
@@ -51,7 +51,7 @@ module Applyance
         app.delete '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
 
-          protected! app.to_account(@datum.applicant.account)
+          protected! app.to_account(@datum.citizen.account)
 
           @datum.fields_dataset.destroy
           @datum.attachments_dataset.destroy

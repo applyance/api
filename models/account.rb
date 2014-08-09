@@ -4,11 +4,13 @@ module Applyance
     include Applyance::Lib::Attachments
     include Applyance::Lib::Tokens
 
-    many_to_many :roles, :class => :'Applyance::Role'
     many_to_one :avatar, :class => :'Applyance::Attachment'
+
     one_to_many :reviewers, :class => :'Applyance::Reviewer'
-    one_to_many :applicants, :class => :'Applyance::Applicant'
+    one_to_many :citizens, :class => :'Applyance::Citizen'
     one_to_many :ratings, :class => :'Applyance::Rating'
+    
+    many_to_many :roles, :class => :'Applyance::Role'
 
     def validate
       super

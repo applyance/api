@@ -13,7 +13,7 @@ node do
     end
   end
 
-  child @applicant => :applicant do
+  child @citizen => :citizen do
     attributes :id, :phone_number, :created_at, :updated_at
     child :location => :location do
       extends 'locations/_deep'
