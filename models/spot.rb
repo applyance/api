@@ -24,5 +24,11 @@ module Applyance
       self.this.update(:slug => slug, :'_slug' => _slug)
     end
 
+    def get_citizens
+      citizens = []
+      self.applications.each { |a| citizens.concat(a.citizens) }
+      citizens.uniq { |c| c.id }.sort_by { |c| c.created_at }.reverse
+    end
+
   end
 end

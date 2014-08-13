@@ -51,7 +51,7 @@ describe Applyance::Field do
     context "not logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.citizen.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.citizens.first.account.api_key}"
         get "/applications/#{application.id}/fields"
       end
 
@@ -64,7 +64,7 @@ describe Applyance::Field do
   describe "GET #field" do
     let(:application) { create(:application) }
     before(:each) do
-      header "Authorization", "ApplyanceLogin auth=#{application.citizen.account.api_key}"
+      header "Authorization", "ApplyanceLogin auth=#{application.citizens.first.account.api_key}"
       get "/fields/#{application.fields.first.id}"
     end
 
@@ -78,7 +78,7 @@ describe Applyance::Field do
       let(:datum) { create(:datum) }
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.citizen.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.citizens.first.account.api_key}"
         post "/applications/#{application.id}/fields", Oj.dump({ datum_id: datum.id }), { "CONTENT_TYPE" => "application/json" }
       end
 
@@ -104,7 +104,7 @@ describe Applyance::Field do
     context "logged in as admin" do
       let(:field) { create(:field_with_application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{field.datum.citizen.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{field.datum.profile.account.api_key}"
         delete "/fields/#{field.id}"
       end
 

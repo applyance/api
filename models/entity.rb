@@ -13,6 +13,7 @@ module Applyance
     one_to_many :reviewers, :class => :'Applyance::Reviewer'
     one_to_many :reviewer_invites, :class => :'Applyance::ReviewerInvite'
     one_to_many :entities, :class => :'Applyance::Entity', :key => :parent_id
+    one_to_many :citizens, :class => :'Applyance::Citizen'
 
     one_to_many :spots, :class => :'Applyance::Spot'
     one_to_many :templates, :class => :'Applyance::Template'
@@ -52,6 +53,45 @@ module Applyance
           :scope => reviewer.scope
         )
       end
+    end
+
+    # Get the root entity
+    def root_entity
+      root = self
+      loop do
+        break if root.parent_id.nil?
+        root = root.parent
+      end
+      root
+    end
+
+    # Apply the specified function to all child entities
+    def apply_to_children(&block)
+      self.entities.each do |entity|
+        block.call(entity)
+        entity.apply_to_children(&block)
+      end
+    end
+
+    # Attach citizen to the root entity object
+    def make_citizen_from_account(account)
+      Citizen.find_or_create(
+        :account_id => account.id,
+        :entity_id => self.root_entity.id
+      )
+    end
+
+    # Retrieve citizens based on where they applied
+    def get_citizens
+      citizens = self._get_citizens
+      self.apply_to_children { |entity| citizens.concat(entity._get_citizens) }
+      citizens.uniq { |c| c.id }.sort_by { |c| c.created_at }.reverse
+    end
+
+    def _get_citizens
+      citizens = []
+      self.applications.each { |a| citizens.concat(a.citizens) }
+      citizens
     end
 
   end

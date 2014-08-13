@@ -4,8 +4,6 @@ module Applyance
     include Applyance::Lib::Tokens
     include Applyance::Lib::Strings
 
-    many_to_one :citizen, :class => :'Applyance::Citizen'
-
     one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :notes, :class => :'Applyance::Note'
     one_to_many :fields, :class => :'Applyance::Field'
@@ -13,6 +11,7 @@ module Applyance
     many_to_many :reviewers, :class => :'Applyance::Reviewer'
     many_to_many :spots, :class => :'Applyance::Spot'
     many_to_many :entities, :class => :'Applyance::Entity'
+    many_to_many :citizens, :class => :'Applyance::Citizen'
 
     dataset_module do
       def by_last_active
@@ -37,71 +36,77 @@ module Applyance
       if params['spot_ids'].nil? && params['entity_ids'].nil?
         raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
       end
-      if params['citizen'].nil?
-        raise BadRequestError.new({ :detail => "Citizen is required." })
+      if params['applicant'].nil?
+        raise BadRequestError.new({ :detail => "Applicant is required." })
       end
 
       # Initialize application
       application = self.new
       application.set_token(:digest)
 
-      # Create citizen (account)
+      # Create account and profile
       temp_password = application.friendly_token
-      account = Account.first(:email => params['citizen']['email'])
+      account = Account.first(:email => params['applicant']['email'])
       account_found = !!account
+      account = Account.make("citizen", {
+        'name' => params['applicant']['name'],
+        'email' => params['applicant']['email'],
+        'password' => temp_password
+      })
+
+      profile = Profile.find_or_create(:account_id => account.id)
       unless account_found
-        account = Account.make("citizen", {
-          'name' => params['citizen']['name'],
-          'email' => params['citizen']['email'],
-          'password' => temp_password
-        })
+        profile.send_welcome_email(temp_password)
       end
 
-      citizen = Citizen.find_or_create(:account_id => account.id)
-      unless account_found
-        citizen.send_welcome_email(temp_password)
+      unless params['applicant']['phone_number'].nil?
+        profile.update(:phone_number => params['applicant']['phone_number'])
       end
 
-      unless params['citizen']['phone_number'].nil?
-        citizen.update(:phone_number => params['citizen']['phone_number'])
-      end
-
-      # Create citizen location
-      unless params['citizen']['location'].nil?
-        location = Location.make(params['citizen']['location'])
+      # Create profile location
+      unless params['applicant']['location'].nil?
+        location = Location.make(params['applicant']['location'])
         if location
-          citizen.update(:location_id => location.id)
+          profile.update(:location_id => location.id)
         end
       end
 
-      # Save so we can add assocations
-      application.set(:citizen_id => citizen.id)
       application.save
 
-      # Assign spots
-      if params['spot_ids']
-        params['spot_ids'].each do |spot_id|
-          spot = Spot.first(:id => spot_id)
-          application.add_spot(spot)
-        end
-      end
+      # Assign spots and entities
+      application.link_spots_from_params(params)
+      application.link_entities_from_params(params)
 
-      # Assign entities
-      if params['entity_ids']
-        params['entity_ids'].each do |entity_id|
-          entity = Entity.first(:id => entity_id)
-          application.add_entity(entity)
-        end
-      end
+      # Create citizens
+      citizens = []
+      application.spots.each { |s| citizens << s.entity.make_citizen_from_account(account) }
+      application.entities.each { |e| citizens << e.make_citizen_from_account(account) }
+      citizens.uniq { |c| c.id }.each { |c| application.add_citizen(c) }
 
       # Add fields
-      params['fields'].each do |field|
-        application.add_field_from_datum(field)
-      end
+      params['fields'].each { |f| application.add_field_from_datum(f) }
 
       application.update(:submitted_at => DateTime.now)
 
       application
+    end
+
+    # Link the spot IDs in params to the application
+    def link_spots_from_params(params)
+      return unless params['spot_ids']
+      params['spot_ids'].uniq.each do |spot_id|
+        spot = Spot.first(:id => spot_id)
+        self.add_spot(spot)
+      end
+    end
+
+    # Link the entity IDs in params to the application
+    def link_entities_from_params(params)
+      return unless params['entity_ids']
+      params['entity_ids'].uniq.each do |entity_id|
+        entity = Entity.first(:id => entity_id)
+        self.add_entity(entity)
+      end
     end
 
     # Create a field from the given datum parameter
@@ -130,18 +135,19 @@ module Applyance
         end
 
         # If not contextual, see if a datum exists for this definition already
+        profile = Profile.first(:account_id => self.citizens.first.account_id)
         if definition.is_contextual
           datum = Datum.new
-          datum.citizen = self.citizen
+          datum.profile = profile
           datum.definition = definition
         else
           datum = Datum.first(
             :definition_id => definition.id,
-            :citizen_id => self.citizen.id
+            :profile_id => profile.id
           )
           if datum.nil?
             datum = Datum.new
-            datum.citizen = self.citizen
+            datum.profile = profile
             datum.definition = definition
           end
         end

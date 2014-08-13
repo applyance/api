@@ -7,20 +7,13 @@ module Applyance
         # Authenticate by email and password
         app.post '/accounts/auth', :provides => [:json] do
           @account = Account.authenticate(params)
-
           response.headers["Authorization"] = "ApplyanceLogin auth=#{@account.api_key}"
-          @reviewers = Reviewer.where(:account_id => @account.id)
-          @citizen = Citizen.first(:account_id => @account.id)
-
           rabl :'accounts/me'
         end
 
         # Return account data
         app.get '/accounts/me', :provides => [:json] do
           @account = protected!(lambda { |a| true })
-          @reviewers = Reviewer.where(:account_id => @account.id)
-          @citizen = Citizen.first(:account_id => @account.id)
-
           rabl :'accounts/me'
         end
 

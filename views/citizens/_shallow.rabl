@@ -1,4 +1,4 @@
-attributes :id, :location_id, :stage_id, :phone_number, :created_at, :updated_at
+attributes :id, :stage_id, :entity_id, :created_at, :updated_at
 
 child :account => :account do
   extends 'accounts/_shallow'
@@ -8,6 +8,10 @@ child :ratings => :ratings do
   extends 'ratings/_shallow'
 end
 
-node(:label_ids) do |citizen|
-  citizen.labels.collect(&:id)
+child :labels => :labels do
+  extends 'labels/_shallow'
+end
+
+child :applications => :applications do
+  attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 end

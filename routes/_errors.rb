@@ -51,7 +51,7 @@ module Applyance
           @status = 400
           @title = "Bad Request"
           @detail = "The request could not be understood by the server due to malformed syntax. The client should not repeat the request without modifications."
-          
+
           rabl :'error', :content_type => :json
         end
 
@@ -75,6 +75,9 @@ module Applyance
           @status = 500
           @title = "Internal Server Error"
           @detail = env['sinatra.error'].message
+          if Applyance::Server.test?
+            puts env['sinatra.error'].backtrace.join("\n")
+          end
 
           rabl :'error', :content_type => :json
         end

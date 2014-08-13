@@ -8,7 +8,7 @@ module Applyance
         # Only reviewers can do this
         app.get '/citizens/:id/ratings', :provides => [:json] do
           @citizen = Citizen.first(:id => params[:id])
-          @account = protected! app.to_citizen_reviewers(@citizen)
+          @account = protected! app.to_entity_reviewers(@citizen.entity)
 
           @ratings = @citizen.ratings
           rabl :'ratings/index'
@@ -22,7 +22,7 @@ module Applyance
             raise BadRequestError.new({ :detail => "Proper citizen ID must be provided." })
           end
 
-          @account = protected! app.to_citizen_reviewers(@citizen)
+          @account = protected! app.to_entity_reviewers(@citizen.entity)
           protected! app.to_account(@account)
 
           @rating = Rating.new
@@ -37,7 +37,7 @@ module Applyance
         # Get rating by Id
         app.get '/ratings/:id', :provides => [:json] do
           @rating = Rating.first(:id => params['id'])
-          protected! app.to_citizen_reviewers(@rating.citizen)
+          protected! app.to_entity_reviewers(@rating.citizen.entity)
 
           rabl :'ratings/show'
         end

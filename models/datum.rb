@@ -5,7 +5,7 @@ module Applyance
 
     plugin :serialization, :json, :detail
 
-    many_to_one :citizen, :class => :'Applyance::Citizen'
+    many_to_one :profile, :class => :'Applyance::Profile'
     many_to_one :definition, :class => :'Applyance::Definition'
     one_to_many :fields, :class => :'Applyance::Field'
     many_to_many :attachments, :class => :'Applyance::Attachment', :join_table => :attachments_datums

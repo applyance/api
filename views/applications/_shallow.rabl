@@ -1,6 +1,6 @@
 attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
 
-child :citizen => :citizen do
+child :citizens => :citizens do
   extends 'citizens/_shallow'
 end
 
@@ -14,8 +14,4 @@ end
 
 node(:reviewer_ids) do |application|
   application.reviewers.collect(&:id)
-end
-
-node(:ratings) do |application|
-  application.citizen.ratings
 end

@@ -6,14 +6,10 @@ module Applyance
 
     # Go through child entities and spots, deleting the same blueprints if they exist
     def ensure_unique_in_chain
-      self.entity.entities.each do |entity|
+      self.entity.spots.each { |s| remove_duplicate_blueprint(s) }
+      self.entity.apply_to_children do |entity|
         remove_duplicate_blueprint(entity)
-        entity.spots.each do |spot|
-          remove_duplicate_blueprint(spot)
-        end
-      end
-      self.entity.spots.each do |spot|
-        remove_duplicate_blueprint(spot)
+        entity.spots.each { |s| remove_duplicate_blueprint(s) }
       end
     end
 

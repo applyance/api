@@ -13,6 +13,15 @@ module Applyance
           rabl :'labels/index'
         end
 
+        # List labels by citizen
+        # Only reviewers can do this
+        app.get '/citizens/:id/labels', :provides => [:json] do
+          @citizen = Citizen.first(:id => params[:id])
+          protected! app.to_entity_reviewers(@citizen.entity)
+          @labels = @citizen.labels
+          rabl :'labels/index'
+        end
+
         # Create a new label
         # Must be an admin
         app.post '/entities/:id/labels', :provides => [:json] do

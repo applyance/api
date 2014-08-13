@@ -9,7 +9,7 @@ require_relative '_config'
 require_relative '_helpers'
 require_relative '_factories'
 
-describe Applyance::Label do
+describe Applyance::Citizen do
 
   include Rack::Test::Methods
   include Applyance::Test::Helpers
@@ -34,13 +34,13 @@ describe Applyance::Label do
 
   shared_examples_for "a single citizen" do
     it "returns the information for citizen show" do
-      expect(json.keys).to contain_exactly('id', 'account', 'location', 'stage', 'phone_number', 'ratings', 'labels', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'account', 'entity', 'stage', 'ratings', 'labels', 'applications', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple citizens" do
     it "returns the information for citizen index" do
-      expect(json.first.keys).to contain_exactly('id', 'account', 'location_id', 'stage_id', 'phone_number', 'ratings', 'label_ids', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'account', 'stage_id', 'entity_id', 'ratings', 'label_ids', 'applications', 'created_at', 'updated_at')
     end
   end
 

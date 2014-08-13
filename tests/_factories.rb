@@ -64,6 +64,12 @@ FactoryGirl.define do
 
   factory :citizen, class: Applyance::Citizen do
     association :account, factory: :citizen_account
+    entity
+  end
+
+  factory :profile, class: Applyance::Profile do
+    association :account, factory: :citizen_account
+    phone_number "555-555-5555"
   end
 
   factory :reviewer, class: Applyance::Reviewer do
@@ -124,7 +130,7 @@ FactoryGirl.define do
 
   factory :datum, class: Applyance::Datum do
     definition
-    citizen
+    profile
     detail { { value: "Detail..." } }
   end
 
@@ -134,15 +140,17 @@ FactoryGirl.define do
   end
 
   factory :application, class: Applyance::Application do
-    citizen
-
     digest { SecureRandom.urlsafe_base64(nil, false) }
     submitted_at { DateTime.now }
     last_activity_at { DateTime.now }
 
     after(:create) do |application|
-      application.add_entity(create(:entity))
-      application.add_field(create(:field, :datum => create(:datum, :citizen => application.citizen)))
+      entity = create(:entity)
+      profile = create(:profile)
+      citizen = create(:citizen, :account => profile.account, :entity => entity)
+      application.add_entity(entity)
+      application.add_citizen(citizen)
+      application.add_field(create(:field, :datum => create(:datum, :profile => profile)))
     end
 
     trait :with_spot do

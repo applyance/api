@@ -17,7 +17,7 @@ namespace :db do
     Rake::Task['environment'].invoke(env)
 
     Applyance::Server.db[:roles].insert(:name => "chief")
-    Applyance::Server.db[:roles].insert(:name => "applicant")
+    Applyance::Server.db[:roles].insert(:name => "citizen")
     Applyance::Server.db[:roles].insert(:name => "reviewer")
 
     # Domains

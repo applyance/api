@@ -42,7 +42,7 @@ describe Applyance::Account do
 
   shared_examples_for "a single me" do
     it "returns the information for me show" do
-      expect(json.keys).to contain_exactly('account', 'citizen', 'reviewers')
+      expect(json.keys).to contain_exactly('account', 'citizens', 'reviewers')
     end
   end
 

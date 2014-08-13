@@ -6,17 +6,17 @@ node do
     extends 'accounts/_shallow'
   end
 
-  child @reviewers => :reviewers do
+  child @account.reviewers => :reviewers do
     attributes :id, :scope, :created_at, :updated_at
     child :entity => :entity do
       extends 'entities/_shallow'
     end
   end
 
-  child @citizen => :citizen do
-    attributes :id, :phone_number, :created_at, :updated_at
-    child :location => :location do
-      extends 'locations/_deep'
+  child @account.citizens => :citizens do
+    attributes :id, :created_at, :updated_at
+    child :entity => :entity do
+      extends 'entities/_shallow'
     end
   end
 

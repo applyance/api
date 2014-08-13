@@ -4,6 +4,15 @@ module Applyance
 
       def self.registered(app)
 
+        # List applications for a citizen
+        app.get '/citizens/:id/applications', :provides => [:json] do
+          @citizen = Citizen.first(:id => params['id'])
+          protected! app.to_entity_reviewers(@citizen.entity)
+
+          @applications = @citizen.applications_dataset.by_last_active
+          rabl :'applications/index'
+        end
+
         # List applications for spot
         app.get '/spots/:id/applications', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
@@ -70,11 +79,12 @@ module Applyance
           @application.remove_all_spots
           @application.remove_all_entities
           @application.remove_all_reviewers
+          @application.remove_all_citizens
 
           @application.activities_dataset.destroy
           @application.notes_dataset.destroy
           @application.fields_dataset.destroy
-          
+
           @application.destroy
 
           204

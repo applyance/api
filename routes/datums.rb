@@ -4,23 +4,29 @@ module Applyance
 
       def self.registered(app)
 
-        # List datums for citizen
+        # List datums for profile
         # Must be account owner
-        app.get '/citizens/:id/datums', :provides => [:json] do
-          @citizen = Citizen.first(:id => params['id'])
-          protected! app.to_account(@citizen.account)
-          @datums = @citizen.datums
+        app.get '/profiles/:id/datums', :provides => [:json] do
+          @profile = Profile.first(:id => params['id'])
+          if @profile.nil?
+            raise BadRequestError.new({ detail: "Profile doesn't exist." })
+          end
+          protected! app.to_account_id(@profile.account_id)
+          @datums = @profile.datums
           rabl :'datums/index'
         end
 
-        # Create a new datum for a citizen
+        # Create a new datum for a profile
         # Must be account owner
-        app.post '/citizens/:id/datums', :provides => [:json] do
-          @citizen = Citizen.first(:id => params['id'])
-          protected! app.to_account(@citizen.account)
+        app.post '/profiles/:id/datums', :provides => [:json] do
+          @profile = Profile.first(:id => params['id'])
+          if @profile.nil?
+            raise BadRequestError.new({ detail: "Profile doesn't exist." })
+          end
+          protected! app.to_account_id(@profile.account_id)
 
           @datum = Datum.new
-          @datum.set(:citizen_id => @citizen.id)
+          @datum.set(:profile_id => @profile.id)
           @datum.set_fields(params, ['definition_id', 'detail'], :missing => :skip)
           @datum.save
           @datum.attach(params['attachments'], :attachments)
@@ -39,7 +45,7 @@ module Applyance
         # Must be an account owner
         app.put '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
-          protected! app.to_account(@datum.citizen.account)
+          protected! app.to_account_id(@datum.profile.account_id)
 
           @datum.update_fields(params, ['detail'], :missing => :skip)
           @datum.attach(params['attachments'], :attachments)
@@ -51,7 +57,7 @@ module Applyance
         app.delete '/datums/:id', :provides => [:json] do
           @datum = Datum.first(:id => params['id'])
 
-          protected! app.to_account(@datum.citizen.account)
+          protected! app.to_account_id(@datum.profile.account_id)
 
           @datum.fields_dataset.destroy
           @datum.attachments_dataset.destroy

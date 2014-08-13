@@ -4,6 +4,32 @@ module Applyance
 
       def self.registered(app)
 
+        # Get citizens of entity
+        # Must be a reviewer
+        app.get '/entities/:id/citizens' do
+          @entity = Entity.first(:id => params['id'])
+          if @entity.nil?
+            raise BadRequestError.new({ detail: "Entity doesn't exist." })
+          end
+          protected! app.to_entity_reviewers(@entity)
+
+          @citizens = @entity.get_citizens
+          rabl :'citizens/index'
+        end
+
+        # Get citizens of a spot
+        # Must be a reviewer
+        app.get '/spots/:id/citizens' do
+          @spot = Spot.first(:id => params['id'])
+          if @spot.nil?
+            raise BadRequestError.new({ detail: "Spot doesn't exist." })
+          end
+          protected! app.to_entity_reviewers(@spot.entity)
+
+          @citizens = @spot.get_citizens
+          rabl :'citizens/index'
+        end
+
         # Get citizen by Id
         # Must be a reviewer or citizen owner
         app.get '/citizens/:id', :provides => [:json] do
@@ -43,7 +69,6 @@ module Applyance
 
           @citizen.threads_dataset.destroy
           @citizen.ratings_dataset.destroy
-          @citizen.datums_dataset.destroy
           @citizen.applications_dataset.destroy
 
           @citizen.destroy

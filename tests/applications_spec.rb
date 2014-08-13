@@ -20,6 +20,8 @@ describe Applyance::Application do
     app.db[:accounts_roles].delete
     app.db[:accounts].delete
     app.db[:entities].delete
+    app.db[:citizens].delete
+    app.db[:profiles].delete
     app.db[:blueprints].delete
     app.db[:definitions].delete
     app.db[:datums].delete
@@ -38,13 +40,13 @@ describe Applyance::Application do
 
   shared_examples_for "a single application" do
     it "returns the information for application show" do
-      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'citizen', 'digest', 'reviewers', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'spots', 'entities', 'fields', 'citizens', 'digest', 'reviewers', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple applications" do
     it "returns the information for application index" do
-      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'citizen', 'digest', 'reviewer_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'spots', 'entities', 'citizens', 'digest', 'reviewer_ids', 'submitted_at', 'last_activity_at', 'created_at', 'updated_at')
     end
   end
 
@@ -58,7 +60,7 @@ describe Applyance::Application do
       before(:each) do
 
         application_request = {
-          citizen: {
+          applicant: {
             name: "Stephen Watkins",
             email: "stjowa@gmail.com",
             location: {
@@ -108,7 +110,9 @@ describe Applyance::Application do
       it_behaves_like "a created object"
       it_behaves_like "a single application"
       it "returns the right value" do
-        expect(json['citizen']['location']).to eq(nil)
+        expect(Applyance::Profile.first(:account_id => json['citizens'].first['account']['id']).location).to eq(nil)
+        expect(json['citizens'].first['account']['name']).to eq("Stephen Watkins")
+        expect(json['citizens'].length).to eq(1)
       end
     end
   end
@@ -182,7 +186,7 @@ describe Applyance::Application do
     context "logged in" do
       let(:application) { create(:application) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{application.citizen.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{application.citizens.first.account.api_key}"
         get "/applications/#{application.id}"
       end
 
