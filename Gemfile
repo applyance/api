@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+source 'https://code.stripe.com'
 
 # Framework
 gem 'rack-parser'
@@ -15,6 +16,7 @@ gem 'rabl'
 gem 'oj'
 gem 'sidekiq'
 gem 'geocoder'
+gem 'stripe'
 
 # External libraries
 gem 'mandrill-api'

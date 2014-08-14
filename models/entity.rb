@@ -5,6 +5,8 @@ module Applyance
     include Applyance::Lib::Locations
     extend Applyance::Lib::Strings
 
+    one_to_one :customer, :class => :'Applyance::EntityCustomer'
+
     many_to_one :domain, :class => :'Applyance::Domain'
     many_to_one :logo, :class => :'Applyance::Attachment'
     many_to_one :location, :class => :'Applyance::Location'
@@ -63,6 +65,11 @@ module Applyance
         root = root.parent
       end
       root
+    end
+
+    # Check if this entity is the root
+    def is_root?
+      self.parent_id.nil?
     end
 
     # Apply the specified function to all child entities

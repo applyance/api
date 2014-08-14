@@ -32,7 +32,7 @@ module Applyance
         # Create a new entity, sans domain
         app.post '/entities', :provides => [:json] do
           @entity = Entity.new
-          @entity.set_fields(params, ['name'], :missing => :skip)
+          @entity.set_fields(params, ['name', 'stripe_customer_id'], :missing => :skip)
           @entity.save
           @entity.attach(params['logo'], :logo)
           @entity.locate(params['location'])
@@ -47,7 +47,7 @@ module Applyance
 
           @entity = Entity.new
           @entity.set(:domain_id => @domain.id)
-          @entity.set_fields(params, ['name'], :missing => :skip)
+          @entity.set_fields(params, ['name', 'stripe_customer_id'], :missing => :skip)
           @entity.save
           @entity.attach(params['logo'], :logo)
           @entity.locate(params['location'])
@@ -64,7 +64,7 @@ module Applyance
 
           @entity = Entity.new
           @entity.set(:parent_id => @_entity.id)
-          @entity.set_fields(params, ['name'], :missing => :skip)
+          @entity.set_fields(params, ['name', 'stripe_customer_id'], :missing => :skip)
           @entity.save
           @entity.attach(params['logo'], :logo)
           @entity.locate(params['location'])
@@ -92,7 +92,7 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
 
-          @entity.update_fields(params, ['name'], :missing => :skip)
+          @entity.update_fields(params, ['name', 'stripe_customer_id'], :missing => :skip)
           @entity.attach(params['logo'], :logo)
           @entity.locate(params['location'])
 

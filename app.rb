@@ -9,6 +9,7 @@ require 'bcrypt'
 require 'rabl'
 require 'sidekiq'
 require 'geocoder'
+require 'stripe'
 
 require 'mandrill'
 require 'aws-sdk'

@@ -5,6 +5,7 @@ require_relative 'domains'
 require_relative 'roles'
 require_relative 'accounts'
 require_relative 'entities'
+require_relative 'entity_customers'
 require_relative 'citizens'
 require_relative 'profiles'
 require_relative 'reviewers'
@@ -35,6 +36,7 @@ module Applyance
         app.register Applyance::Routing::Roles
         app.register Applyance::Routing::Accounts
         app.register Applyance::Routing::Entities
+        app.register Applyance::Routing::EntityCustomers
         app.register Applyance::Routing::Citizens
         app.register Applyance::Routing::Profiles
         app.register Applyance::Routing::Reviewers

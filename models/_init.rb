@@ -31,6 +31,7 @@ module Applyance
         require_relative 'role'
         require_relative 'account'
         require_relative 'entity'
+        require_relative 'entity_customer'
         require_relative 'citizen'
         require_relative 'profile'
         require_relative 'reviewer'
