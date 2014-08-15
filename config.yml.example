@@ -7,3 +7,4 @@ development:
   aws_s3_secret_access_key: <secret>
   mandrill_api_key: <secret>
   client_url: http://localhost:4567
+  stripe_secret_key: sk_test_gLMiILQEHRkXOWgtmyTwBh5n
