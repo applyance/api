@@ -9,7 +9,7 @@ module Applyance
           :database => app.settings.database_name,
           :user => app.settings.database_user,
           :host => app.settings.database_host,
-          :loggers => [Logger.new($stdout)]
+          :loggers => [Logger.new('log/sql.log')]
         }
         if defined?(app.settings.database_password)
           settings[:password] = app.settings.database_password

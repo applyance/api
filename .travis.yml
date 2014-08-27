@@ -11,3 +11,5 @@ before_script:
 - bundle exec rake -f db/seed.rake db:seed_definitions[test]
 script:
 - bundle exec rspec tests
+after_success:
+- bundle exec cap development deploy
