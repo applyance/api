@@ -38,16 +38,24 @@ module Applyance
 
     # Allow reviewer to claim account
     def send_claim_email
-      return if Applyance::Server.test?
-      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+
+      template = {
+        :template => File.join('reviewer_invites', 'claim'),
+        :locals => {
+          :entity => self.entity,
+          :claim_digest => self.claim_digest
+        }
+      }
       message = {
         :subject => "Claim Your Invite",
-        :from_name => "The Team at Applyance",
-        :text => "Hello,\n\nYou've been invited to manage #{self.entity.name}. Please claim your account by visiting this link: #{Applyance::Server.settings.client_url}/reviewers/claim?code=#{self.claim_digest}.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.email } ],
-        :from_email => "contact@applyance.co"
+        :merge_vars => [{
+          "rcpt" => self.email,
+          "vars" => [{ "content" => "there", "name" => "name" }]
+        }]
       }
-      sending = m.messages.send(message)
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+
     end
 
   end

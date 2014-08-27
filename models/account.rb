@@ -68,18 +68,22 @@ module Applyance
     def reset_password
       self.update(:reset_digest => self.generate_token(:reset_digest))
 
-      # Send the reset email
-      return if Applyance::Server.test?
-
-      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      template = {
+        :template => File.join('accounts', 'reset_password'),
+        :locals => {
+          :reset_digest => self.reset_digest
+        }
+      }
       message = {
         :subject => "Reset Password",
-        :from_name => "The Team at Applyance",
-        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/set?code=#{self.reset_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.email, :name => self.name } ],
-        :from_email => "contact@applyance.co"
+        :merge_vars => [{
+          "rcpt" => self.email,
+          "vars" => [{ "content" => self.name, "name" => "name" }]
+        }]
       }
-      sending = m.messages.send(message)
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+
     end
 
     # Set password for the user
@@ -134,17 +138,22 @@ module Applyance
         :is_verified => false)
 
       # Send notification to verify new email address
-      unless Applyance::Server.test?
-        m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
-        message = {
-          :subject => "Verify Email",
-          :from_name => "The Team at Applyance",
-          :text => "Hello #{self.name},\n\nWe've recently updated your email address, per your request. Please verify this new email by visiting the following URL: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
-          :to => [ { :email => self.email, :name => self.name } ],
-          :from_email => "contact@applyance.co"
+
+      template = {
+        :template => File.join('accounts', 'change_email'),
+        :locals => {
+          :verify_digest => self.verify_digest
         }
-        sending = m.messages.send(message)
-      end
+      }
+      message = {
+        :subject => "Verify Email",
+        :to => [ { :email => self.email, :name => self.name } ],
+        :merge_vars => [{
+          "rcpt" => self.email,
+          "vars" => [{ "content" => self.name, "name" => "name" }]
+        }]
+      }
+      Applyance::Lib::Emails::Sender::send_template(template, message)
 
       params['email']
     end
@@ -153,22 +162,6 @@ module Applyance
     def verify_email(params)
       self.update(:is_verified => true)
       true
-    end
-
-    # Used for welcoming new applicants
-    def send_applicant_welcome_email()
-      # Send the reset email
-      return if Applyance::Server.test?
-
-      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
-      message = {
-        :subject => "Reset Password",
-        :from_name => "The Team at Applyance",
-        :text => "Hello #{self.name},\n\nWe have received a request to reset your password. Please visit the following URL to create a new password: #{Applyance::Server.settings.client_url}/accounts/passwords/set?code=#{self.reset_digest}\n\nIf you have received this in error, please ignore it.\n\nThanks,\n\nThe Team at Applyance",
-        :to => [ { :email => self.email, :name => self.name } ],
-        :from_email => "contact@applyance.co"
-      }
-      sending = m.messages.send(message)
     end
 
   end

@@ -2,6 +2,8 @@ require 'rack/parser'
 require 'sinatra/base'
 require 'sinatra/config_file'
 require 'sequel'
+require 'ostruct'
+require 'erb'
 
 require 'uri'
 require 'active_support/inflector'

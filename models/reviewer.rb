@@ -46,16 +46,48 @@ module Applyance
 
     # Welcome the new reviewer by way of email
     def send_welcome_email
-      return if Applyance::Server.test?
-      m = Mandrill::API.new(Applyance::Server.settings.mandrill_api_key)
+      template = {
+        :template => File.join('reviewers', 'welcome'),
+        :locals => {
+          :verify_digest => self.account.verify_digest
+        }
+      }
       message = {
         :subject => "Welcome to Applyance",
-        :from_name => "The Team at Applyance",
-        :text => "Hello #{self.account.name},\n\nWelcome to Applyance. We're on an ambitious mission to replace grueling applications with a delightful experience. We hope you greatly enjoy what you see and use.\n\nIf you have any feedback, please let us know.\n\nWhen you get the chance, please verify your account by visiting this link: #{Applyance::Server.settings.client_url}/accounts/verify?code=#{self.account.verify_digest}.\n\nThanks,\n\nThe Team at Applyance",
         :to => [ { :email => self.account.email, :name => self.account.name } ],
-        :from_email => "contact@applyance.co"
+        :merge_vars => [
+          {
+            "rcpt" => self.account.email,
+            "vars" => [{ "content" => self.account.name, "name" => "name" }]
+          }
+        ]
       }
-      sending = m.messages.send(message)
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+    end
+
+    # Notify reviewer that an application was received
+    def send_application_received_email(application)
+
+      citizen = self.entity.citizen_for_application(application)
+
+      template = {
+        :template => File.join('reviewers', 'application_received'),
+        :locals => {
+          :reviewer => self,
+          :application => application,
+          :citizen => citizen
+        }
+      }
+      message = {
+        :subject => "New Application",
+        :to => [ { :email => self.account.email, :name => self.account.name } ],
+        :merge_vars => [{
+          "rcpt" => self.account.email,
+          "vars" => [{ "content" => self.account.name, "name" => "name" }]
+        }]
+      }
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+
     end
 
   end

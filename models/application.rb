@@ -29,49 +29,18 @@ module Applyance
     # Create the application from given request parameters
     def self.make(params)
 
-      # Error checking
-      if params['fields'].nil?
-        raise BadRequestError.new({ :detail => "Applications need at least one field." })
-      end
-      if params['spot_ids'].nil? && params['entity_ids'].nil?
-        raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
-      end
-      if params['applicant'].nil?
-        raise BadRequestError.new({ :detail => "Applicant is required." })
-      end
+      self.ensure_valid_params(params)
 
       # Initialize application
       application = self.new
       application.set_token(:digest)
+      application.save
 
       # Create account and profile
+      account_exists = !!Account.first(:email => params['applicant']['email'])
       temp_password = application.friendly_token
-      account = Account.first(:email => params['applicant']['email'])
-      account_found = !!account
-      account = Account.make("citizen", {
-        'name' => params['applicant']['name'],
-        'email' => params['applicant']['email'],
-        'password' => temp_password
-      })
-
-      profile = Profile.find_or_create(:account_id => account.id)
-      unless account_found
-        profile.send_welcome_email(temp_password)
-      end
-
-      unless params['applicant']['phone_number'].nil?
-        profile.update(:phone_number => params['applicant']['phone_number'])
-      end
-
-      # Create profile location
-      unless params['applicant']['location'].nil?
-        location = Location.make(params['applicant']['location'])
-        if location
-          profile.update(:location_id => location.id)
-        end
-      end
-
-      application.save
+      account = application.create_applicant_account(params, temp_password)
+      profile = application.create_applicant_profile(params, account, temp_password, !account_exists)
 
       # Assign spots and entities
       application.link_spots_from_params(params)
@@ -86,9 +55,58 @@ module Applyance
       # Add fields
       params['fields'].each { |f| application.add_field_from_datum(f) }
 
+      # Finalize the application
       application.update(:submitted_at => DateTime.now)
 
+      # Send email to reviewers (administrators)
+      application.notify_reviewers
+
       application
+    end
+
+    # Make sure the params are valid
+    def self.ensure_valid_params(params)
+      if params['fields'].nil?
+        raise BadRequestError.new({ :detail => "Applications need at least one field." })
+      end
+      if params['spot_ids'].nil? && params['entity_ids'].nil?
+        raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
+      end
+      if params['applicant'].nil?
+        raise BadRequestError.new({ :detail => "Applicant is required." })
+      end
+    end
+
+    # Creates the applicant account
+    def create_applicant_account(params, temp_password)
+      account = Account.make("citizen", {
+        'name' => params['applicant']['name'],
+        'email' => params['applicant']['email'],
+        'password' => temp_password
+      })
+      account
+    end
+
+    # Creates the applicant profile
+    def create_applicant_profile(params, account, temp_password, send_email = true)
+      profile = Profile.find_or_create(:account_id => account.id)
+
+      if params['applicant']['phone_number']
+        profile.update(:phone_number => params['applicant']['phone_number'])
+      end
+
+      # Create profile location
+      unless params['applicant']['location'].nil?
+        location = Location.make(params['applicant']['location'])
+        profile.update(:location_id => location.id) if location
+      end
+
+      # Send the profile if an account is new
+      if send_email
+        profile.send_welcome_email(temp_password)
+      end
+
+      profile
     end
 
     # Link the spot IDs in params to the application
@@ -107,6 +125,14 @@ module Applyance
         entity = Entity.first(:id => entity_id)
         self.add_entity(entity)
       end
+    end
+
+    # Send a notification to all reviewers that a new application was received
+    def notify_reviewers
+      reviewer_ids = []
+      self.entities.each { |e| reviewer_ids.concat(e.reviewers_dataset.where(:scope => "admin").collect(&:id)) }
+      reviewers = Reviewer.where(:id => reviewer_ids).all.uniq { |r| r.account_id }
+      reviewers.each { |r| r.send_application_received_email(self) }
     end
 
     # Create a field from the given datum parameter
@@ -160,5 +186,11 @@ module Applyance
       self.add_field(field_obj)
 
     end
+
+    # Helper method to get the citizen of this application for an entity
+    def citizen_for_entity(entity)
+      self.citizens.detect { |c| c.entity_id == entity.root_entity.id }
+    end
+
   end
 end

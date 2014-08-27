@@ -101,5 +101,17 @@ module Applyance
       citizens
     end
 
+    # Send an email to entity administrators that an application was received
+    def send_application_received_email(application)
+      self.reviewers_dataset.where(:scope => "admin").each do |reviewer|
+        reviewer.send_application_received_email(application)
+      end
+    end
+
+    # Helper method to get the citizen for this entity for an application
+    def citizen_for_application(application)
+      application.citizen_for_entity(self)
+    end
+
   end
 end
