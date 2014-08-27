@@ -4,14 +4,17 @@ module Applyance
       def self.registered(app)
 
         # Connect to Database
-        db = Sequel.connect(
+        settings = {
           :adapter => 'postgres',
           :database => app.settings.database_name,
           :user => app.settings.database_user,
-          :password => app.settings.database_password,
           :host => app.settings.database_host,
           :loggers => [Logger.new($stdout)]
-        )
+        }
+        if defined?(app.settings.database_password)
+          settings[:password] = app.settings.database_password
+        end
+        db = Sequel.connect(settings)
         app.set :db, db
 
         # Load plugins

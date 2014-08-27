@@ -1,0 +1,12 @@
+language: ruby
+rvm:
+- 2.0.0
+before_install:
+- openssl aes-256-cbc -K $encrypted_b4493fdfcca6_key -iv $encrypted_b4493fdfcca6_iv
+  -in config.yml.enc -out config.yml -d
+before_script:
+- cp config/database.yml.travis config/database.yml
+- psql -c 'create database applyancetest;' -U postgres
+- bundle exec rake -f db/migrate.rake db:load_schema[test]
+script:
+- bundle exec rspec tests

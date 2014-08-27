@@ -11,6 +11,15 @@ task :environment, [:env] => 'bundler:setup' do |cmd, args|
 end
 
 namespace :db do
+  desc "Load Schema"
+  task :load_schema, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
+    require 'sequel/extensions/migration'
+    Sequel::Migrator.apply(Applyance::Server.db, "db/schema")
+  end
+
   desc "Run database migrations"
   task :migrate, :env do |cmd, args|
     env = args[:env] || "development"

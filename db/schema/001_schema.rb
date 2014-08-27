@@ -16,7 +16,6 @@ Sequel.migration do
       primary_key :id
       String :digest, :text=>true, :null=>false
       DateTime :submitted_at
-      DateTime :last_activity_at
       DateTime :created_at
       DateTime :updated_at
       
@@ -107,15 +106,6 @@ Sequel.migration do
       index [:verify_digest], :name=>:accounts_verify_digest_key, :unique=>true
     end
     
-    create_table(:application_activities) do
-      primary_key :id
-      foreign_key :application_id, :applications, :key=>[:id], :on_delete=>:cascade
-      String :detail, :text=>true
-      DateTime :activity_at
-      String :object_type, :text=>true
-      Integer :object_id
-    end
-    
     create_table(:blueprints, :ignore_index_errors=>true) do
       primary_key :id
       foreign_key :definition_id, :definitions, :key=>[:id]
@@ -199,6 +189,19 @@ Sequel.migration do
       foreign_key :entity_id, :entities, :key=>[:id], :on_delete=>:cascade
       
       index [:definition_id], :name=>:definitions_entities_definition_id_key, :unique=>true
+    end
+    
+    create_table(:entity_customers, :ignore_index_errors=>true) do
+      primary_key :id
+      foreign_key :entity_id, :entities, :key=>[:id], :on_delete=>:cascade
+      String :stripe_id, :text=>true
+      String :last4, :text=>true
+      String :exp_month, :text=>true
+      String :exp_year, :text=>true
+      DateTime :created_at
+      DateTime :updated_at
+      
+      index [:entity_id], :name=>:entity_customers_entity_id_key, :unique=>true
     end
     
     create_table(:labels) do
@@ -328,17 +331,31 @@ Sequel.migration do
       index [:pipeline_id, :position], :unique=>true
     end
     
-    create_table(:citizens) do
+    create_table(:citizens, :ignore_index_errors=>true) do
       primary_key :id
+      foreign_key :account_id, :accounts, :key=>[:id], :on_delete=>:cascade
       DateTime :created_at
       DateTime :updated_at
       foreign_key :stage_id, :stages, :key=>[:id], :on_delete=>:set_null
-      foreign_key :account_id, :accounts, :key=>[:id], :on_delete=>:cascade
       foreign_key :entity_id, :entities, :key=>[:id], :on_delete=>:cascade
+      DateTime :last_activity_at
+      
+      index [:entity_id, :account_id], :unique=>true
     end
     
-    create_table(:applications_citizens) do
+    create_table(:applications_citizens, :ignore_index_errors=>true) do
       foreign_key :application_id, :applications, :key=>[:id], :on_delete=>:cascade
+      foreign_key :citizen_id, :citizens, :key=>[:id], :on_delete=>:cascade
+      
+      index [:application_id, :citizen_id], :unique=>true
+    end
+    
+    create_table(:citizen_activities) do
+      primary_key :id
+      String :detail, :text=>true
+      DateTime :activity_at
+      String :object_type, :text=>true
+      Integer :object_id
       foreign_key :citizen_id, :citizens, :key=>[:id], :on_delete=>:cascade
     end
     
