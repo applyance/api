@@ -3,9 +3,11 @@ rvm:
 - 2.0.0
 before_install:
 - openssl aes-256-cbc -K $encrypted_b4493fdfcca6_key -iv $encrypted_b4493fdfcca6_iv
-  -in config.yml.enc -out config.yml -d
+  -in config/config.development.yml.enc -out config/config.yml -d
 before_script:
 - psql -c 'create database applyancetest;' -U postgres
-- bundle exec rake -f db/migrate.rake db:load_schema[test]
+- bundle exec rake -f db/migrate.rake db:migrate[test]
+- bundle exec rake -f db/seed.rake db:seed[test]
+- bundle exec rake -f db/seed.rake db:seed_definitions[test]
 script:
 - bundle exec rspec tests
