@@ -9,7 +9,7 @@ module Applyance
           @citizen = Citizen.first(:id => params['id'])
           protected! app.to_entity_reviewers(@citizen.entity)
 
-          @applications = @citizen.applications_dataset.by_last_active
+          @applications = @citizen.applications_dataset
           rabl :'applications/index'
         end
 
@@ -18,7 +18,7 @@ module Applyance
           @spot = Spot.first(:id => params['id'])
           protected! app.to_entity_reviewers(@spot.entity)
 
-          @applications = @spot.applications_dataset.by_last_active
+          @applications = @spot.applications_dataset
           rabl :'applications/index'
         end
 
@@ -30,7 +30,7 @@ module Applyance
           @applications = @entity.applications
           @entity.entities.each { |e| @applications.concat(e.applications) }
           @entity.spots.each { |s| @applications.concat(s.applications) }
-          @applications = @applications.uniq { |a| a.id }.sort_by { |a| a.last_activity_at }.reverse
+          @applications = @applications.uniq { |a| a.id }
 
           rabl :'applications/index'
         end
@@ -81,7 +81,6 @@ module Applyance
           @application.remove_all_reviewers
           @application.remove_all_citizens
 
-          @application.activities_dataset.destroy
           @application.notes_dataset.destroy
           @application.fields_dataset.destroy
 

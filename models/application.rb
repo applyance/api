@@ -4,7 +4,6 @@ module Applyance
     include Applyance::Lib::Tokens
     include Applyance::Lib::Strings
 
-    one_to_many :activities, :class => :'Applyance::ApplicationActivity'
     one_to_many :notes, :class => :'Applyance::Note'
     one_to_many :fields, :class => :'Applyance::Field'
 
@@ -13,17 +12,11 @@ module Applyance
     many_to_many :entities, :class => :'Applyance::Entity'
     many_to_many :citizens, :class => :'Applyance::Citizen'
 
-    dataset_module do
-      def by_last_active
-        reverse_order(:last_activity_at)
-      end
-    end
-
     def after_create
       super
 
-      # Create submission activity
-      ApplicationActivity.make_for_submission(self)
+      # Create submission activity for citizens
+      CitizenActivity.make_for_application_submission(self)
     end
 
     # Create the application from given request parameters

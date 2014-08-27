@@ -31,13 +31,13 @@ describe Applyance::Entity do
 
   shared_examples_for "a single entity" do
     it "returns the information for entity show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'stripe_customer_id', 'parent', 'logo', 'domain', 'location', 'reviewers', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'parent', 'logo', 'domain', 'location', 'reviewers', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple entities" do
     it "returns the information for entity index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'stripe_customer_id', 'logo', 'parent', 'domain_id', 'location', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'logo', 'parent', 'domain_id', 'location', 'created_at', 'updated_at')
     end
   end
 

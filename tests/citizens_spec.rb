@@ -34,13 +34,13 @@ describe Applyance::Citizen do
 
   shared_examples_for "a single citizen" do
     it "returns the information for citizen show" do
-      expect(json.keys).to contain_exactly('id', 'account', 'entity', 'stage', 'ratings', 'labels', 'applications', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'last_activity_at', 'account', 'entity', 'stage', 'ratings', 'labels', 'applications', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple citizens" do
     it "returns the information for citizen index" do
-      expect(json.first.keys).to contain_exactly('id', 'account', 'stage_id', 'entity_id', 'ratings', 'label_ids', 'applications', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'last_activity_at', 'account', 'stage_id', 'entity_id', 'ratings', 'label_ids', 'applications', 'created_at', 'updated_at')
     end
   end
 

@@ -4,6 +4,6 @@ child :entity => :entity do
   extends 'entities/_shallow'
 end
 
-node(:application_count) do |spot|
-  spot.applications.count
+node(:citizen_count) do |spot|
+  spot.get_citizens.count
 end

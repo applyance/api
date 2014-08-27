@@ -27,7 +27,7 @@ module Applyance
     def get_citizens
       citizens = []
       self.applications.each { |a| citizens.concat(a.citizens) }
-      citizens.uniq { |c| c.id }.sort_by { |c| c.created_at }.reverse
+      citizens.uniq { |c| c.id }.sort_by { |c| c.last_activity_at }.reverse
     end
 
   end

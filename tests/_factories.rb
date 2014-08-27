@@ -65,6 +65,7 @@ FactoryGirl.define do
   factory :citizen, class: Applyance::Citizen do
     association :account, factory: :citizen_account
     entity
+    last_activity_at { DateTime.now }
   end
 
   factory :profile, class: Applyance::Profile do
@@ -142,7 +143,6 @@ FactoryGirl.define do
   factory :application, class: Applyance::Application do
     digest { SecureRandom.urlsafe_base64(nil, false) }
     submitted_at { DateTime.now }
-    last_activity_at { DateTime.now }
 
     after(:create) do |application|
       entity = create(:entity)

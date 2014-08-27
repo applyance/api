@@ -33,13 +33,13 @@ describe Applyance::Spot do
 
   shared_examples_for "a single spot" do
     it "returns the information for spot show" do
-      expect(json.keys).to contain_exactly('id', 'entity', 'name', 'slug', 'application_count', 'detail', 'status', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'entity', 'name', 'slug', 'citizen_count', 'detail', 'status', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple spots" do
     it "returns the information for spot index" do
-      expect(json.first.keys).to contain_exactly('id', 'entity_id', 'name', 'slug', 'application_count', 'detail', 'status', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'entity_id', 'name', 'slug', 'citizen_count', 'detail', 'status', 'created_at', 'updated_at')
     end
   end
 

@@ -1,4 +1,4 @@
-attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
+attributes :id, :digest, :submitted_at, :created_at, :updated_at
 
 child :citizens => :citizens do
   extends 'citizens/_deep'

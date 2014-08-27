@@ -1,4 +1,4 @@
-attributes :id, :stage_id, :entity_id, :created_at, :updated_at
+attributes :id, :last_activity_at, :stage_id, :entity_id, :created_at, :updated_at
 
 child :account => :account do
   extends 'accounts/_shallow'

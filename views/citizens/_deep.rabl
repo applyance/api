@@ -1,4 +1,4 @@
-attributes :id, :created_at, :updated_at
+attributes :id, :last_activity_at, :created_at, :updated_at
 
 child :account => :account do
   extends 'accounts/_shallow'
@@ -22,7 +22,7 @@ end
 
 child :applications => :applications do
   attributes :id, :digest, :submitted_at, :last_activity_at, :created_at, :updated_at
-  
+
   child :spots => :spots do
     extends 'spots/_shallow'
   end

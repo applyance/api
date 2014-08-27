@@ -92,7 +92,7 @@ module Applyance
     def get_citizens
       citizens = self._get_citizens
       self.apply_to_children { |entity| citizens.concat(entity._get_citizens) }
-      citizens.uniq { |c| c.id }.sort_by { |c| c.created_at }.reverse
+      citizens.uniq { |c| c.id }.sort_by { |c| c.last_activity_at }.reverse
     end
 
     def _get_citizens

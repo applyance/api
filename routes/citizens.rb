@@ -67,6 +67,7 @@ module Applyance
 
           @citizen.remove_all_labels
 
+          @citizen.activities_dataset.destroy
           @citizen.threads_dataset.destroy
           @citizen.ratings_dataset.destroy
           @citizen.applications_dataset.destroy
