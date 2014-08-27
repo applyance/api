@@ -60,7 +60,11 @@ namespace :deploy do
 
 	desc 'Migrate database'
 	task :migrate do
-		execute :bundle, :exec, :rake, '-f', 'db/migrate.rake', 'db:migrate'
+		on roles(:app), in: :sequence, wait: 5 do
+			within current_path do
+				execute :bundle, :exec, :rake, '-f', 'db/migrate.rake', 'db:migrate'
+			end
+		end
 	end
 
 	before :starting, :use_travis
