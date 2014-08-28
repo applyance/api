@@ -43,7 +43,9 @@ namespace :thin do
 	task :stop do
 		on roles(:app) do
 			if test("[ -f #{fetch(:thin_pid)} ]")
-				execute :bundle, "exec thin stop -O --tag '#{fetch(:application)} #{fetch(:stage)}' -C config/thin/#{fetch(:stage)}.yml"
+				within current_path do
+					execute :bundle, "exec thin stop -O --tag '#{fetch(:application)} #{fetch(:stage)}' -C config/thin/#{fetch(:stage)}.yml"
+				end
 			end
 		end
 	end
