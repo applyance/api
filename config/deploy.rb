@@ -4,6 +4,7 @@ set :application, 'Applyance API'
 set :scm, :git
 set :linked_dirs, %w{bin log tmp/pids}
 set :keep_releases, 5
+set :thin_pid, ->{ "#{current_path}/tmp/pids/thin.pid" }
 
 namespace :travis do
 
@@ -36,27 +37,45 @@ namespace :travis do
 
 end
 
-namespace :deploy do
+namespace :thin do
 
-	desc 'Use Travis'
-	task :use_travis do
-		set :scm, :travis
+	desc 'Stop Thin'
+	task :stop do
+		on roles(:app) do
+			if test("[ -f #{fetch(:thin_pid)} ]")
+				execute :bundle, "exec thin stop -O --tag '#{fetch(:application)} #{fetch(:stage)}' -C config/thin/#{fetch(:stage)}.yml"
+			end
+		end
 	end
 
-  desc 'Restart application'
-  task :restart do
-    on roles(:app), in: :sequence, wait: 5 do
-			if test "[ -f #{current_path}/tmp/pids/thin.pid ]"
-				within current_path do
-					execute :bundle, :exec, "thin restart --port 3001 --environment #{fetch(:stage)} --daemonize"
-				end
-		  else
-				within current_path do
-					execute :bundle, :exec, "thin start --port 3001 --environment #{fetch(:stage)} --daemonize"
-				end
+	desc 'Start Unicorn'
+	task :start do
+		on roles(:app) do
+			within current_path do
+				execute :bundle, "exec thin start -O --tag '#{fetch(:application)} #{fetch(:stage)}' -C config/thin/#{fetch(:stage)}.yml"
 			end
-    end
-  end
+		end
+	end
+
+	desc 'Reload Thin without killing master process'
+	task :reload do
+		on roles(:app) do
+			if test("[ -f #{fetch(:thin_pid)} ]")
+				execute :kill, '-s USR2', capture(:cat, fetch(:thin_pid))
+			else
+				error 'Thin process not running'
+			end
+		end
+	end
+
+	desc 'Restart Thin'
+	task :restart
+	before :restart, :stop
+	before :restart, :start
+
+end
+
+namespace :db do
 
 	desc 'Migrate database'
 	task :migrate do
@@ -67,8 +86,17 @@ namespace :deploy do
 		end
 	end
 
+end
+
+namespace :deploy do
+
+	desc 'Use Travis'
+	task :use_travis do
+		set :scm, :travis
+	end
+
 	before :starting, :use_travis
-	after :publishing, :migrate
-	after :publishing, :restart
+	after :published, "db:migrate"
+	after :finished, "thin:restart"
 
 end

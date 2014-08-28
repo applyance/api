@@ -1,0 +1,9 @@
+port: 3001
+user: deploy
+pid: tmp/pids/thin.pid
+timeout: 30
+wait: 30
+log: log/thin.log
+environment: production
+daemonize: true
+max_persistent_conns: 512
