@@ -62,7 +62,7 @@ namespace :deploy do
 	task :migrate do
 		on roles(:app), in: :sequence, wait: 5 do
 			within current_path do
-				execute :bundle, :exec, :rake, '-f', 'db/migrate.rake', 'db:migrate'
+				execute :bundle, :exec, :rake, '-f', 'db/migrate.rake', "db:migrate[#{fetch(:stage)}]"
 			end
 		end
 	end
