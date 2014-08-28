@@ -2,7 +2,7 @@ language: ruby
 rvm:
 - 2.0.0
 before_install:
-- openssl aes-256-cbc -K $encrypted_b4493fdfcca6_key -iv $encrypted_b4493fdfcca6_iv -in config/config.development.yml.enc -out config/config.yml -d
+- openssl aes-256-cbc -k "$chicken_sandwiches" -in config/config.development.yml.enc -out config/config.yml -d
 before_script:
 - psql -c 'create database applyancetest;' -U postgres
 - bundle exec rake -f db/migrate.rake db:migrate[test]
@@ -12,3 +12,6 @@ script:
 - bundle exec rspec tests
 after_success:
 - bundle exec cap development deploy
+env:
+  global:
+    secure: Txxm5Opt6Z185vBy48CQfeSPlH86fg5ZVolqL/w7XMSAp4zZ/0y/L4xuM3GEmmdeAJus89F64y5Cu9eIC5g2QMfKOkmN8cahavxudOmwpCYVz78IVMRfQrXlLqQSHLylkw12UbNPoUJYlYvOzLCG6ucRlBD1L6BzpV18IgXgLsA=
