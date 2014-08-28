@@ -2,8 +2,7 @@ language: ruby
 rvm:
 - 2.0.0
 before_install:
-- openssl aes-256-cbc -K $encrypted_b4493fdfcca6_key -iv $encrypted_b4493fdfcca6_iv
-  -in config/config.development.yml.enc -out config/config.yml -d
+- openssl aes-256-cbc -K $encrypted_b4493fdfcca6_key -iv $encrypted_b4493fdfcca6_iv -in config/config.development.yml.enc -out config/config.yml -d
 before_script:
 - psql -c 'create database applyancetest;' -U postgres
 - bundle exec rake -f db/migrate.rake db:migrate[test]
