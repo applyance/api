@@ -28,4 +28,5 @@ build/
 .DS_Store
 
 ## Config files for server
-config.yml
+config/config.yml
+config/config.production.yml
