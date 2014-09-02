@@ -14,14 +14,14 @@ module Applyance
         app.get '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
-          @definitions = @entity.definitions.by_first_created
+          @definitions = @entity.definitions_dataset.by_first_created
           rabl :'definitions/index'
         end
 
         # List definitions for domain
         app.get '/domains/:id/definitions', :provides => [:json] do
           @domain = Domain.first(:id => params['id'])
-          @definitions = @domain.definitions.by_first_created
+          @definitions = @domain.definitions_dataset.by_first_created
           rabl :'definitions/index'
         end
 
