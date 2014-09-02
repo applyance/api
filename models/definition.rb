@@ -10,6 +10,15 @@ module Applyance
     one_through_one :domain, :class => :'Applyance::Domain'
     one_through_one :entity, :class => :'Applyance::Entity'
 
+    dataset_module do
+      def by_first_created
+        order(:created_at)
+      end
+      def by_latest_created
+        reverse_order(:created_at)
+      end
+    end
+
     def before_validation
       super
       self.slug = self.class.to_slug(self.label)
@@ -18,6 +27,7 @@ module Applyance
     def validate
       super
       validates_presence [:label, :type, :name]
+      validates_unique :slug
     end
 
     # Create a definition from a submitted field
