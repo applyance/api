@@ -31,6 +31,10 @@ module Applyance
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
 
+          unless @entity.definitions.count < 5
+            raise BadRequestError.new({ detail: "Entities can only have 5 definitions." })
+          end
+
           @definition = Definition.new
           @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
           @definition.save

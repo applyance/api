@@ -18,6 +18,7 @@ module Applyance
     def validate
       super
       validates_presence [:label, :type, :name]
+      validates_unique :slug
     end
 
     # Create a definition from a submitted field
