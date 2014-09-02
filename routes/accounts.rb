@@ -4,6 +4,14 @@ module Applyance
 
       def self.registered(app)
 
+        # Return all accounts
+        # (for administrative purposes)
+        app.get '/accounts', :provides => [:json] do
+          protected!
+          @accounts = Account.all
+          rabl :'accounts/index'
+        end
+
         # Authenticate by email and password
         app.post '/accounts/auth', :provides => [:json] do
           @account = Account.authenticate(params)

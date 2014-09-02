@@ -5,7 +5,7 @@ module Applyance
       def self.registered(app)
 
         app.get '/definitions', :provides => [:json] do
-          @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id))
+          @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id)).by_first_created
           rabl :'definitions/index'
         end
 
@@ -14,14 +14,14 @@ module Applyance
         app.get '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
-          @definitions = @entity.definitions
+          @definitions = @entity.definitions.by_first_created
           rabl :'definitions/index'
         end
 
         # List definitions for domain
         app.get '/domains/:id/definitions', :provides => [:json] do
           @domain = Domain.first(:id => params['id'])
-          @definitions = @domain.definitions
+          @definitions = @domain.definitions.by_first_created
           rabl :'definitions/index'
         end
 
