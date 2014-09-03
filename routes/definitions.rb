@@ -4,6 +4,7 @@ module Applyance
 
       def self.registered(app)
 
+        # List all public definitions
         app.get '/definitions', :provides => [:json] do
           @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id)).by_first_created
           rabl :'definitions/index'
@@ -88,7 +89,18 @@ module Applyance
           protected! if @definition.domain
           protected! app.to_entity_admins(@definition.entity) if @definition.entity
 
+          if params['domain_id']
+            if @definition.domain
+              @definition.domain.remove_definition(@definition)
+            end
+            unless params['domain_id'] == -1
+              @domain = Domain.first(:id => params['domain_id'])
+              @domain.add_definition(@definition)
+            end
+          end
+
           @definition.update_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
+
           rabl :'definitions/show'
         end
 
