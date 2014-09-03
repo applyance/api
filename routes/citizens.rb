@@ -4,6 +4,14 @@ module Applyance
 
       def self.registered(app)
 
+        # Return all citizens
+        # (for administrative purposes)
+        app.get '/citizens' do
+          protected!
+          @citizens = Citizen.all
+          rabl :'citizens/index'
+        end
+
         # Get citizens of entity
         # Must be a reviewer
         app.get '/entities/:id/citizens' do

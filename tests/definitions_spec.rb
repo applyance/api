@@ -36,7 +36,7 @@ describe Applyance::Definition do
 
   shared_examples_for "multiple definitions" do
     it "returns the information for definition index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'created_at', 'updated_at')
     end
   end
 

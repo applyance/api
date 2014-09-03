@@ -8,7 +8,7 @@ module Applyance
         # (for administrative purposes)
         app.get '/accounts', :provides => [:json] do
           protected!
-          @accounts = Account.all
+          @accounts = Account.reverse_order(:created_at).all
           rabl :'accounts/index'
         end
 
