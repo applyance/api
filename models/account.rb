@@ -26,7 +26,7 @@ module Applyance
 
     # Make the account with the specified role
     def self.make(role, params)
-      account = self.first(:email => params['email'])
+      account = self.first(Sequel.ilike(:email, params['email']))
       if account
         account.add_role(Role.first(:name => role)) unless account.has_role?(role)
         return account
@@ -49,7 +49,7 @@ module Applyance
 
     # Authorize via email and password
     def self.authenticate(params)
-      account = self.first(:email => params['email'])
+      account = self.first(Sequel.ilike(:email, params['email']))
 
       # Check for an existing account
       if account.nil?
