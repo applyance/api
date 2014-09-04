@@ -5,7 +5,7 @@ end
 
 desc "Properly merges the dev branch into master."
 task :prepare_master_for_deploy do
-  branch = %x[git rev-parse --abbrev-ref HEAD]
+  branch = %x[git rev-parse --abbrev-ref HEAD].strip
   unless branch == "master"
     abort "Not on master branch. Can't proceed. Switch to the master branch to run this command."
   end
