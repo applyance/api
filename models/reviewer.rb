@@ -93,6 +93,13 @@ module Applyance
     # Subscribe this user to mailchimp
     def subscribe_to_mailchimp
 
+      first_name = self.account.name
+      last_name = ""
+      if self.account.name.split.count > 1
+        first_name = self.account.name.split[0..-2].join(' ')
+        last_name = self.account.name.split.last
+      end
+
       api_key = Applyance::Server.settings.mailchimp_api_key
       list_id = Applyance::Server.settings.mailchimp_subscriber_list_id
       email = { "email" => self.account.email }
@@ -103,8 +110,12 @@ module Applyance
             "groups" => ["Reviewer"]
           }
         ],
-        "COMPANY" => self.entity.root_entity.name
+        "COMPANY" => self.entity.root_entity.name,
+        "FNAME" => first_name,
+        "LNAME" => last_name
       }
+
+      puts "Subscribing to mailchimp [#{merge_vars}]."
 
       return unless Applyance::Server.production?
 

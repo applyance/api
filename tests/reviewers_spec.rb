@@ -44,7 +44,7 @@ describe Applyance::Reviewer do
       let(:entity) { create(:entity) }
       before(:each) do
         reviewer = {
-          "name" => "Stephen Watkins",
+          "name" => "Stephen Joseph Watkins",
           "email" => "stjowa@gmail.com",
           "password" => "whaddup"
         }
@@ -54,7 +54,7 @@ describe Applyance::Reviewer do
       it_behaves_like "a created object"
       it_behaves_like "a single reviewer"
       it "returns the right value" do
-        expect(json['account']['name']).to eq('Stephen Watkins')
+        expect(json['account']['name']).to eq('Stephen Joseph Watkins')
         expect(json['account']['email']).to eq('stjowa@gmail.com')
       end
     end
