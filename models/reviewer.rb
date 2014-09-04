@@ -90,5 +90,37 @@ module Applyance
 
     end
 
+    # Subscribe this user to mailchimp
+    def subscribe_to_mailchimp
+
+      api_key = Applyance::Server.settings.mailchimp_api_key
+      list_id = Applyance::Server.settings.mailchimp_subscriber_list_id
+      email = { "email" => self.account.email }
+      merge_vars = {
+        "groupings" => [
+          {
+            "name" => "Role",
+            "groups" => ["Reviewer"]
+          }
+        ],
+        "COMPANY" => self.entity.root_entity.name
+      }
+
+      return unless Applyance::Server.production?
+
+      mailchimp = Mailchimp::API.new(api_key)
+      mailchimp.lists.subscribe(
+        list_id,
+        email,
+        merge_vars,
+        'html', # email type
+        false, # double optin
+        true, # update existing
+        true, # replace interests
+        false # send welcome
+      )
+
+    end
+
   end
 end

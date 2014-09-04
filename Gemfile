@@ -17,6 +17,7 @@ gem 'oj'
 gem 'sidekiq'
 gem 'geocoder'
 gem 'stripe'
+gem 'mailchimp-api', require: 'mailchimp'
 
 # External libraries
 gem 'mandrill-api'

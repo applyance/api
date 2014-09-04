@@ -25,3 +25,13 @@ task :prepare_master_for_deploy do
 
   puts "All done. If all is well, push commits to origin to initiate build and deployment."
 end
+
+desc "Encrypt the configuration."
+task :encrypt_config do
+  key = ''
+  STDOUT.puts "What is the encryption key?"
+  key = STDIN.gets.chomp
+
+  sh "openssl aes-256-cbc -k \"#{key}\" -in config/config.yml -out config/config.development.yml.enc"
+  sh "openssl aes-256-cbc -k \"#{key}\" -in config/config.production.yml -out config/config.production.yml.enc"
+end
