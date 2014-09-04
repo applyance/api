@@ -33,6 +33,7 @@ module Applyance
           )
 
           @reviewer.send_welcome_email
+          @reviewer.subscribe_to_mailchimp
 
           status 201
           rabl :'reviewers/show'

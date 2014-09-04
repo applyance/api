@@ -38,6 +38,28 @@ describe Applyance::Reviewer do
     end
   end
 
+  # Create reviewer for entity
+  describe "POST #entity/:id/reviewers" do
+    context "not logged in" do
+      let(:entity) { create(:entity) }
+      before(:each) do
+        reviewer = {
+          "name" => "Stephen Watkins",
+          "email" => "stjowa@gmail.com",
+          "password" => "whaddup"
+        }
+        post "/entities/#{entity.id}/reviewers", Oj.dump(reviewer), { "CONTENT_TYPE" => "application/json" }
+      end
+
+      it_behaves_like "a created object"
+      it_behaves_like "a single reviewer"
+      it "returns the right value" do
+        expect(json['account']['name']).to eq('Stephen Watkins')
+        expect(json['account']['email']).to eq('stjowa@gmail.com')
+      end
+    end
+  end
+
   # Retrieve reviewers for entity
   describe "GET #reviewers" do
     context "logged in" do

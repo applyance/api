@@ -45,6 +45,9 @@ GEM
       celluloid (>= 0.15.2)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
+    mailchimp-api (2.0.5)
+      excon (>= 0.16.0)
+      json (>= 1.7.7)
     mandrill-api (1.0.52)
       excon (>= 0.16.0, < 1.0)
       json (>= 1.7.7, < 2.0)
@@ -139,6 +142,7 @@ DEPENDENCIES
   capistrano-thin
   factory_girl
   geocoder
+  mailchimp-api
   mandrill-api
   oj
   pg
