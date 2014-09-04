@@ -108,17 +108,21 @@ module Applyance
 
       return unless Applyance::Server.production?
 
-      mailchimp = Mailchimp::API.new(api_key)
-      mailchimp.lists.subscribe(
-        list_id,
-        email,
-        merge_vars,
-        'html', # email type
-        false, # double optin
-        true, # update existing
-        true, # replace interests
-        false # send welcome
-      )
+      begin
+        mailchimp = Mailchimp::API.new(api_key)
+        mailchimp.lists.subscribe(
+          list_id,
+          email,
+          merge_vars,
+          'html', # email type
+          false, # double optin
+          true, # update existing
+          true, # replace interests
+          false # send welcome
+        )
+      rescue => e
+        puts "There was an error subscribing to mailchimp. Continuing anyway."
+      end
 
     end
 
