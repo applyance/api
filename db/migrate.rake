@@ -26,7 +26,11 @@ namespace :db do
     Rake::Task['environment'].invoke(env)
 
     require 'sequel/extensions/migration'
-    Sequel::Migrator.apply(Applyance::Server.db, "db/migrations")
+    Sequel::Migrator.run(Applyance::Server.db, "db/migrations",
+      :allow_missing_migration_files => true,
+      :target => nil,
+      :current => nil
+    )
   end
 
   desc "Rollback the database"
@@ -36,7 +40,11 @@ namespace :db do
 
     require 'sequel/extensions/migration'
     version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
-    Sequel::Migrator.apply(Applyance::Server.db, "db/migrations", version - 1)
+    Sequel::Migrator.run(Applyance::Server.db, "db/migrations",
+      :allow_missing_migration_files => true,
+      :target => version - 1,
+      :current => nil
+    )
   end
 
   desc "Nuke the database (drop all tables)"

@@ -1,6 +1,7 @@
 module Applyance
   module Lib
     module Strings
+
       def to_slug(str, delim = '-')
         value = str.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, '').to_s
         value.gsub!(/[']+/, '')
@@ -10,6 +11,7 @@ module Applyance
         value.gsub!(' ', delim)
         value
       end
+
     end
   end
 end

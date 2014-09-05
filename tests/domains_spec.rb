@@ -38,13 +38,13 @@ describe Applyance::Domain do
 
   shared_examples_for "a single domain" do
     it "returns the information for domain show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple domains" do
     it "returns the information for domain index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'created_at', 'updated_at')
     end
   end
 

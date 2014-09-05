@@ -58,6 +58,7 @@ describe Applyance::Entity do
       it_behaves_like "a single entity"
       it "returns the right value" do
         expect(json['name']).to eq('The Iron Yard')
+        expect(json['slug']).to eq('theironyard')
         expect(json['location']['address']['address_1']).to eq('5990 Willow Ridge Road')
       end
     end
