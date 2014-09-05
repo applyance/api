@@ -2,7 +2,7 @@ language: ruby
 rvm:
 - 2.0.0
 before_script:
-- bundle exec rake travis:decrypt
+- bundle exec rake travis:decrypt_config
 - psql -c 'create database applyancetest;' -U postgres
 - bundle exec rake -f db/migrate.rake db:migrate[test]
 - bundle exec rake -f db/seed.rake db:seed[test]
