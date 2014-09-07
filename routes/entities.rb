@@ -8,7 +8,7 @@ module Applyance
         # Only Chiefs can do this B)
         app.get '/entities', :provides => [:json] do
           protected!
-          @entities = Entity.where(:parent_id => nil)
+          @entities = Entity.all
           rabl :'entities/index'
         end
 
@@ -63,7 +63,9 @@ module Applyance
           protected! app.to_entity_admins(@_entity)
 
           @entity = Entity.new
-          @entity.set(:parent_id => @_entity.id)
+          @entity.set(
+            :parent_id => @_entity.id,
+            :domain_id => @_entity.domain_id)
           @entity.set_fields(params, ['name', 'stripe_customer_id'], :missing => :skip)
           @entity.save
           @entity.attach(params['logo'], :logo)
