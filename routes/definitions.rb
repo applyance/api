@@ -6,7 +6,8 @@ module Applyance
 
         # List all public definitions
         app.get '/definitions', :provides => [:json] do
-          @definitions = Definition.exclude(:id => app.db[:definitions_entities].select(:definition_id)).by_first_created
+          @definitions = Definition.exclude(
+            :id => app.db[:definitions_entities].select(:definition_id)).by_first_created
           rabl :'definitions/index'
         end
 
@@ -21,8 +22,11 @@ module Applyance
 
         # List definitions for domain
         app.get '/domains/:id/definitions', :provides => [:json] do
-          @domain = Domain.first(:id => params['id'])
-          @definitions = @domain.definitions_dataset.by_first_created
+          entity_definitions = app.db[:definitions_entities].map(:definition_id)
+          domain_query = app.db[:definitions_domains].where(Sequel.~(:domain_id => params['id']))
+          domain_definitions = domain_query.map(:definition_id)
+          to_exclude = entity_definitions + domain_definitions
+          @definitions = Definition.exclude(:id => to_exclude).by_first_created
           rabl :'definitions/index'
         end
 
@@ -37,7 +41,7 @@ module Applyance
           end
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @entity.add_definition(@definition)
@@ -54,7 +58,7 @@ module Applyance
           @domain = Domain.first(:id => params['id'])
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @domain.add_definition(@definition)
@@ -69,7 +73,7 @@ module Applyance
           protected!
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           status 201
@@ -89,6 +93,7 @@ module Applyance
           protected! if @definition.domain
           protected! app.to_entity_admins(@definition.entity) if @definition.entity
 
+          # Update or remove the domain, if applicable
           if params['domain_id']
             if @definition.domain
               @definition.domain.remove_definition(@definition)
@@ -99,7 +104,7 @@ module Applyance
             end
           end
 
-          @definition.update_fields(params, ['name', 'label', 'description', 'type', 'helper'], :missing => :skip)
+          @definition.update_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
 
           rabl :'definitions/show'
         end
