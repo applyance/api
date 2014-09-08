@@ -17,8 +17,9 @@ namespace :travis do
 
   desc "Decrypt the configuration."
   task :decrypt_config do
-    branch = %x[git rev-parse --abbrev-ref HEAD].strip
-    environment = (branch == "master") ? "production" : "development"
+    is_pull_request = (ENV['TRAVIS_PULL_REQUEST'] == 'true')
+    branch = ENV['TRAVIS_BRANCH']
+    environment = ((branch == "master") && !is_pull_request) ? "production" : "development"
 
     puts "Decrypting configuration for [#{branch}, #{environment}]."
 
@@ -27,8 +28,9 @@ namespace :travis do
 
   desc "Deploy based on branch."
   task :deploy do
-    branch = %x[git rev-parse --abbrev-ref HEAD].strip
-    environment = (branch == "master") ? "production" : "development"
+    is_pull_request = (ENV['TRAVIS_PULL_REQUEST'] == 'true')
+    branch = ENV['TRAVIS_BRANCH']
+    environment = ((branch == "master") && !is_pull_request) ? "production" : "development"
 
     puts "Deploying for [#{branch}, #{environment}]."
 
