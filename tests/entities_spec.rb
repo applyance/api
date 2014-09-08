@@ -37,7 +37,7 @@ describe Applyance::Entity do
 
   shared_examples_for "multiple entities" do
     it "returns the information for entity index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'logo', 'parent', 'domain_id', 'location', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'logo', 'parent', 'domain', 'location', 'created_at', 'updated_at')
     end
   end
 
@@ -58,6 +58,7 @@ describe Applyance::Entity do
       it_behaves_like "a single entity"
       it "returns the right value" do
         expect(json['name']).to eq('The Iron Yard')
+        expect(json['slug']).to eq('theironyard')
         expect(json['location']['address']['address_1']).to eq('5990 Willow Ridge Road')
       end
     end

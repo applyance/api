@@ -36,7 +36,7 @@ module Applyance
           if params[:email].nil?
             raise BadRequestError.new({ :detail => "Email required." })
           end
-          @account = Account.first(:email => params[:email])
+          @account = Account.first(Sequel.ilike(:email, params['email']))
           status = @account.nil? ? 404 : 200
           status
         end
@@ -61,7 +61,7 @@ module Applyance
 
         # Reset password
         app.post '/accounts/passwords/reset', :provides => [:json] do
-          @account = Account.first(:email => params['email'])
+          @account = Account.first(Sequel.ilike(:email, params['email']))
           unless @account
             raise BadRequestError({ detail: "An account with that email does not exist." })
           end

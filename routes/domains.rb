@@ -21,7 +21,13 @@ module Applyance
 
         # Get domain by Id
         app.get '/domains/:id', :provides => [:json] do
-          @domain = Domain.first(:id => params['id'])
+          key = (params['id'] =~ /^\d+$/) ? :id : :slug
+          @domain = Domain.first(key => params['id'])
+
+          if @domain.nil?
+            raise BadRequestError.new({ detail: "Domain not found." })
+          end
+
           rabl :'domains/show'
         end
 

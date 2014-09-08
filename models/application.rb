@@ -30,7 +30,7 @@ module Applyance
       application.save
 
       # Create account and profile
-      account_exists = !!Account.first(:email => params['applicant']['email'])
+      account_exists = !!Account.first(Sequel.ilike(:email, params['applicant']['email']))
       temp_password = application.friendly_token
       account = application.create_applicant_account(params, temp_password)
       profile = application.create_applicant_profile(params, account, temp_password, !account_exists)

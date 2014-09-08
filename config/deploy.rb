@@ -32,7 +32,9 @@ namespace :travis do
 
 	desc 'Determine the revision that will be deployed'
 	task :set_current_revision do
-		set :current_revision, "12345"
+		run_locally do
+			set :current_revision, capture(:git, "rev-parse --short #{fetch(:branch)}")
+		end
 	end
 
 end
@@ -94,6 +96,9 @@ namespace :deploy do
 
 	desc 'Use Travis'
 	task :use_travis do
+		run_locally do
+			set :branch, capture(:git, "rev-parse --abbrev-ref HEAD")
+		end
 		set :scm, :travis
 	end
 

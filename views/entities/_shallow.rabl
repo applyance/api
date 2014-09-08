@@ -1,4 +1,8 @@
-attributes :id, :name, :slug, :domain_id, :created_at, :updated_at
+attributes :id, :name, :slug, :created_at, :updated_at
+
+child :domain => :domain do
+  extends 'domains/_shallow'
+end
 
 child :logo => :logo do
   extends 'attachments/_shallow'
