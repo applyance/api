@@ -20,6 +20,8 @@ namespace :travis do
     branch = %x[git rev-parse --abbrev-ref HEAD].strip
     environment = (branch == "master") ? "production" : "development"
 
+    puts "Decrypting configuration for [#{branch}, #{environment}]."
+
     sh "openssl aes-256-cbc -k \"$chicken_sandwiches\" -in config/config.#{environment}.yml.enc -out config/config.yml -d"
   end
 
@@ -27,6 +29,8 @@ namespace :travis do
   task :deploy do
     branch = %x[git rev-parse --abbrev-ref HEAD].strip
     environment = (branch == "master") ? "production" : "development"
+
+    puts "Deploying for [#{branch}, #{environment}]."
 
     sh "bundle exec cap #{environment} deploy"
   end
