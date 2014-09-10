@@ -70,7 +70,7 @@ module Applyance
       # Protection to profile reviewers
       def to_profile_reviewers(profile)
         lambda do |account|
-          Citizen.where(:account_id => profile.account_id).any? { |c| to_entity_reviewers(c.entity).(account) }
+          Citizen.where(:account_id => profile.account_id).any? { |c| to_citizen_reviewers(c).(account) }
         end
       end
 
