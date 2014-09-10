@@ -23,10 +23,16 @@ module Applyance
         self.save
       end
 
+      # Return a friendly token (used for temporary passwords and the like)
       def friendly_token(length = 8)
         Array.new(length){[*'0'..'9', *'a'..'z', *'A'..'Z'].sample}.join
       end
 
     end
   end
+end
+
+Applyance::Lib::Tokens.module_eval do
+  module_function(:friendly_token)
+  public :friendly_token
 end

@@ -19,6 +19,12 @@ module Applyance
             raise BadRequestError.new({ :detail => "Must be a valid entity." })
           end
 
+          temp_password = nil
+          unless params['password']
+            temp_password = Applyance::Lib::Tokens.friendly_token
+            params['password'] = temp_password
+          end
+
           account = Account.make("reviewer", params)
           reviewer = Reviewer.first(:entity_id => @entity.id, :account_id => account.id)
 
@@ -32,7 +38,7 @@ module Applyance
             :scope => "admin"
           )
 
-          @reviewer.send_welcome_email
+          @reviewer.send_welcome_email(temp_password)
           @reviewer.subscribe_to_mailchimp
 
           status 201

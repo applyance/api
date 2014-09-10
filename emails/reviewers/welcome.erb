@@ -1,3 +1,13 @@
 <p>
-  Welcome to Applyance. We're on an ambitious mission to replace grueling applications with a delightful experience. We hope you greatly enjoy what you see and use. If you have any feedback, please let us know.
+  Welcome to Applyance. We're on a mission to replace long, grueling applications with a delightful experience. We hope you enjoy what you use.
+</p>
+<% if temp_password %>
+<p>
+  You can use the following password to login to your reviewer dashboard in the future: <strong><%= temp_password %></strong>
+</p>
+<% end %>
+<p style="text-align: center;margin: 36px 0;">
+  <a href="<%= Applyance::Server.settings.client_url %>/accounts/verify?code=<%= verify_digest %>" style="color: white;display: inline-block;background-color: #f2bc36;border-radius: 3px;padding: 12px 36px;font-size: 17px;letter-spacing: 0;font-weight: bold;text-decoration: none;">
+    Verify Account and Access Your Reviewer Dashboard
+  </a>
 </p>

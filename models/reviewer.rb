@@ -45,11 +45,12 @@ module Applyance
     end
 
     # Welcome the new reviewer by way of email
-    def send_welcome_email
+    def send_welcome_email(temp_password = nil)
       template = {
         :template => File.join('reviewers', 'welcome'),
         :locals => {
-          :verify_digest => self.account.verify_digest
+          :verify_digest => self.account.verify_digest,
+          :temp_password => temp_password
         }
       }
       message = {
