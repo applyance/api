@@ -12,13 +12,6 @@ module Applyance
     many_to_many :entities, :class => :'Applyance::Entity'
     many_to_many :citizens, :class => :'Applyance::Citizen'
 
-    def after_create
-      super
-
-      # Create submission activity for citizens
-      CitizenActivity.make_for_application_submission(self)
-    end
-
     # Create the application from given request parameters
     def self.make(params)
 
@@ -44,6 +37,7 @@ module Applyance
       application.spots.each { |s| citizens << s.entity.make_citizen_from_account(account) }
       application.entities.each { |e| citizens << e.make_citizen_from_account(account) }
       citizens.uniq { |c| c.id }.each { |c| application.add_citizen(c) }
+      CitizenActivity.make_for_application_submission(application)
 
       # Add fields
       params['fields'].each { |f| application.add_field_from_datum(f) }
