@@ -166,8 +166,9 @@ module Applyance
         end
       end
 
-      datum.detail = field[:datum][:detail]
+      datum.detail = field[:datum][:detail] if field[:datum][:detail]
       datum.save
+      datum.attach(field[:datum][:attachments], :attachments) if field[:datum][:attachments]
 
       field_obj = Field.create(:datum_id => datum.id)
       self.add_field(field_obj)

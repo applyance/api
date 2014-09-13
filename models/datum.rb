@@ -10,9 +10,5 @@ module Applyance
     one_to_many :fields, :class => :'Applyance::Field'
     many_to_many :attachments, :class => :'Applyance::Attachment', :join_table => :attachments_datums
 
-    def validate
-      super
-      validates_presence :detail
-    end
   end
 end

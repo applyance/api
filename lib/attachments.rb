@@ -7,8 +7,8 @@ module Applyance
 
         if params.is_a?(Array)
           # Clear old attachments
-          self.send("#{property.to_s}_dataset").delete
           self.send("remove_all_#{property.to_s}")
+          self.send("#{property.to_s}_dataset").destroy
 
           params.each { |attachment| attach_single(attachment, "add_#{property.to_s.singularize}") }
         else

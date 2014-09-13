@@ -85,9 +85,12 @@ describe Applyance::Application do
             {
               datum: {
                 definition_id: definition_obj.id,
-                detail: {
-                  value: "Answer 2..."
-                }
+                attachments: [
+                  {
+                    name: "avatar.png",
+                    token: "4cb812b99f34fa3de0889a5ccd2c295d"
+                  }
+                ]
               }
             },
             {
