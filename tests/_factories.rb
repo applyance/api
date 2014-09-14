@@ -47,6 +47,7 @@ FactoryGirl.define do
   factory :entity, class: Applyance::Entity do
     name "The Iron Yard"
     domain
+    parent nil
 
     after(:create) do |entity|
       entity.add_reviewer(create(:reviewer, :entity => entity))

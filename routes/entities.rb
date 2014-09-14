@@ -4,12 +4,29 @@ module Applyance
 
       def self.registered(app)
 
-        # List top-level entities
-        # Only Chiefs can do this B)
+        # List top-level entities (for chiefs only)
+        # If a slug is provided, filter entities by slug
         app.get '/entities', :provides => [:json] do
-          protected!
-          @entities = Entity.all
-          rabl :'entities/index'
+
+          if params[:slug]
+            @entity = nil
+            parts = params[:slug].split('/')
+            if parts.length > 1
+              parent = Entity.first(:slug => parts[0], :parent_id => nil)
+              @entity = Entity.first(:slug => parts[1], :parent_id => parent.id)
+            else
+              @entity = Entity.first(:slug => parts[0], :parent_id => nil)
+            end
+            if @entity.nil?
+              error 404
+            end
+            rabl :'entities/show'
+          else
+            protected!
+            @entities = Entity.all
+            rabl :'entities/index'
+          end
+
         end
 
         # List entities of an entity
@@ -75,13 +92,9 @@ module Applyance
           rabl :'entities/show'
         end
 
-        # Get entity by Id
+        # Get entity by id
         app.get '/entities/:id', :provides => [:json] do
-          if params[:id].to_s == params[:id].to_i.to_s
-            @entity = Entity.first(:id => params[:id])
-          else
-            @entity = Entity.first(:slug => params[:id])
-          end
+          @entity = Entity.first(:id => params[:id])
           if @entity.nil?
             error 404
           end

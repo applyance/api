@@ -3,8 +3,7 @@ module Applyance
 
     include Applyance::Lib::Attachments
     include Applyance::Lib::Locations
-
-    plugin :sluggable, :source => :name
+    extend Applyance::Lib::Strings
 
     one_to_one :customer, :class => :'Applyance::EntityCustomer'
 
@@ -30,7 +29,11 @@ module Applyance
     def validate
       super
       validates_presence :name
-      validates_unique :slug
+    end
+
+    def before_validation
+      super
+      self.make_slug
     end
 
     def after_create
@@ -47,6 +50,20 @@ module Applyance
           :scope => reviewer.scope
         )
       end
+    end
+
+    # Create the slug
+    def make_slug
+      self._slug = self.class.to_slug(self.name, '')
+
+      # Get the count of the slugs
+      object_count = self.class
+        .where(:'_slug' => self._slug)
+        .where(:parent_id => self.parent_id)
+        .exclude(:id => self.id)
+        .count
+
+      self.slug = (object_count == 0) ? self._slug : "#{self._slug}-#{object_count + 1}"
     end
 
     # Get the root entity

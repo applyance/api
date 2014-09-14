@@ -67,11 +67,13 @@ describe Applyance::Entity do
   # Create entities
   describe "POST #entities/entities" do
     context "not logged in" do
-      let(:entity) { create(:entity) }
+      let(:n_entity) { create(:entity, :name => "Nashville") }
+      let(:iy_entity) { create(:entity, :name => "The Iron Yard") }
+      let!(:n2_entity) { create(:entity, :name => "Nashville", :parent => iy_entity) }
       before(:each) do
-        header "Authorization", "ApplyanceLogin auth=#{entity.reviewers.first.account.api_key}"
+        header "Authorization", "ApplyanceLogin auth=#{iy_entity.reviewers.first.account.api_key}"
         new_entity = {
-          name: "The Iron Yard 2",
+          name: "Nashville",
           location: {
             coordinate: {
               lat: 36.0506082,
@@ -79,17 +81,19 @@ describe Applyance::Entity do
             }
           }
         }
-        post "/entities/#{entity.id}/entities", Oj.dump(new_entity), { "CONTENT_TYPE" => "application/json" }
+        post "/entities/#{iy_entity.id}/entities", Oj.dump(new_entity), { "CONTENT_TYPE" => "application/json" }
       end
 
       it_behaves_like "a created object"
       it_behaves_like "a single entity"
       it "returns the right value" do
-        expect(json['name']).to eq('The Iron Yard 2')
+        expect(n2_entity.slug).to eq('nashville')
+        expect(json['name']).to eq('Nashville')
+        expect(json['slug']).to eq('nashville-2')
         expect(json['location']['coordinate']['lat']).to eq(36.0506082)
 
-        saved_entity = Applyance::Entity.first(:name => "The Iron Yard 2")
-        expect(saved_entity.reviewers.first.account_id).to eq(entity.reviewers.first.account_id)
+        saved_entity = Applyance::Entity.first(:id => json['id'])
+        expect(saved_entity.reviewers.first.account_id).to eq(iy_entity.reviewers.first.account_id)
       end
     end
   end
