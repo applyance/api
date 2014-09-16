@@ -6,7 +6,6 @@ before_script:
 - psql -c 'create database applyancetest;' -U postgres
 - bundle exec rake -f db/migrate.rake db:migrate[test]
 - bundle exec rake -f db/seed.rake db:seed[test]
-- bundle exec rake -f db/seed.rake db:seed_definitions[test]
 script:
 - bundle exec rspec tests
 after_success:
