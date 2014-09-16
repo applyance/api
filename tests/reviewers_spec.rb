@@ -55,6 +55,9 @@ describe Applyance::Reviewer do
       it_behaves_like "a single reviewer"
       it "returns the right value" do
         expect(json['account']['name']).to eq('Stephen Joseph Watkins')
+        expect(json['account']['first_name']).to eq('Stephen Joseph')
+        expect(json['account']['last_name']).to eq('Watkins')
+        expect(json['account']['initials']).to eq('SW')
         expect(json['account']['email']).to eq('stjowa@gmail.com')
       end
     end

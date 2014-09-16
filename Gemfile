@@ -18,6 +18,7 @@ gem 'sidekiq'
 gem 'geocoder'
 gem 'stripe'
 gem 'mailchimp-api', require: 'mailchimp'
+gem 'full-name-splitter'
 
 # External libraries
 gem 'mandrill-api'

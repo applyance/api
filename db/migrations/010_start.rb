@@ -53,6 +53,7 @@ Sequel.migration do
       TrueClass :is_sensitive, :default=>false
       DateTime :created_at
       DateTime :updated_at
+      TrueClass :is_core, :default=>false
 
       index [:slug], :unique=>true
     end
@@ -62,6 +63,8 @@ Sequel.migration do
       String :name, :text=>true, :null=>false
       DateTime :created_at
       DateTime :updated_at
+      String :slug, :text=>true
+      String :_slug, :text=>true
 
       index [:name], :name=>:domains_name_key, :unique=>true
     end
@@ -81,6 +84,10 @@ Sequel.migration do
       String :name, :text=>true, :null=>false
 
       index [:name], :name=>:roles_name_key, :unique=>true
+    end
+
+    create_table(:schema_info) do
+      Integer :version, :default=>0, :null=>false
     end
 
     create_table(:accounts, :ignore_index_errors=>true) do
@@ -145,7 +152,7 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
 
-      index [:slug], :name=>:entities_slug_key, :unique=>true
+      index [:slug, :parent_id], :name=>:entities_slug_parent_key, :unique=>true
     end
 
     create_table(:profiles, :ignore_index_errors=>true) do
@@ -174,7 +181,7 @@ Sequel.migration do
     create_table(:datums) do
       primary_key :id
       foreign_key :definition_id, :definitions, :key=>[:id], :on_delete=>:cascade
-      String :detail, :text=>true, :null=>false
+      String :detail, :text=>true
       DateTime :created_at
       DateTime :updated_at
       foreign_key :profile_id, :profiles, :key=>[:id], :on_delete=>:cascade

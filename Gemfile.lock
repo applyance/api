@@ -37,6 +37,7 @@ GEM
     factory_girl (4.4.0)
       activesupport (>= 3.0.0)
     ffi (1.9.3)
+    full-name-splitter (0.1.2)
     geocoder (1.2.1)
     hitimes (1.2.2)
     i18n (0.6.11)
@@ -141,6 +142,7 @@ DEPENDENCIES
   capistrano-rvm
   capistrano-thin
   factory_girl
+  full-name-splitter
   geocoder
   mailchimp-api
   mandrill-api

@@ -19,6 +19,16 @@ module Applyance
       validates_min_length 2, :name
     end
 
+    def after_validation
+      super
+      if self.column_changed?(:name)
+        split_name = FullNameSplitter.split(self.name)
+        self.first_name = split_name[0]
+        self.last_name = split_name[1]
+        self.initials = split_name.compact.map { |n| n.slice(0, 1).capitalize }.join
+      end
+    end
+
     # Check if this account has the named role
     def has_role?(name)
       self.roles_dataset.where(:name => name).count > 0
@@ -34,6 +44,10 @@ module Applyance
 
       if params['password'].nil?
         raise BadRequestError.new({ detail: "Password required." })
+      end
+
+      if params['name'].nil?
+        raise BadRequestError.new({ detail: "Name required." })
       end
 
       account = self.new

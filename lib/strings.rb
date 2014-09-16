@@ -2,6 +2,7 @@ module Applyance
   module Lib
     module Strings
 
+      # Returns a slug
       def to_slug(str, delim = '-')
         value = str.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n, '').to_s
         value.gsub!(/[']+/, '')

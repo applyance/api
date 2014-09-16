@@ -23,6 +23,7 @@ require_relative 'segments'
 require_relative 'ratings'
 require_relative 'notes'
 require_relative 'threads'
+require_relative 'webhooks'
 
 module Applyance
   module Routing
@@ -54,6 +55,7 @@ module Applyance
         app.register Applyance::Routing::Ratings
         app.register Applyance::Routing::Notes
         app.register Applyance::Routing::Threads
+        app.register Applyance::Routing::Webhooks
       end
     end
   end
