@@ -25,7 +25,11 @@ module Applyance
         split_name = FullNameSplitter.split(self.name)
         self.first_name = split_name[0]
         self.last_name = split_name[1]
-        self.initials = split_name.compact.map { |n| n.slice(0, 1).capitalize }.join
+        self.initials = split_name
+          .compact
+          .select { |n| n.slice(0, 1) =~ /\A\p{Alnum}+\z/ }
+          .map { |n| n.slice(0, 1).capitalize }
+          .join
       end
     end
 
