@@ -86,10 +86,6 @@ Sequel.migration do
       index [:name], :name=>:roles_name_key, :unique=>true
     end
 
-    create_table(:schema_info) do
-      Integer :version, :default=>0, :null=>false
-    end
-
     create_table(:accounts, :ignore_index_errors=>true) do
       primary_key :id
       String :name, :text=>true, :null=>false
