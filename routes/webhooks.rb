@@ -5,7 +5,10 @@ module Applyance
       def self.registered(app)
 
         app.post '/webhooks/stripe', :provides => [:json] do
+          Stripe.api_key = Applyance::Server.settings.stripe_secret_key
+          
           event_json = JSON.parse(request.body.read)
+          event = Stripe::Event.retrieve(event_json["id"])
 
           puts "Handling webhook from Stripe with type, [#{event_json["type"]}]"
           puts "  ==  "
