@@ -26,9 +26,9 @@ Sequel.migration do
   end
   down do
     alter_table(:accounts) do
-      drop_column :first_name, String
-      drop_column :last_name, String
-      drop_column :initials, String
+      drop_column :first_name
+      drop_column :last_name
+      drop_column :initials
     end
   end
 end

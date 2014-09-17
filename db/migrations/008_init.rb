@@ -148,7 +148,7 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
 
-      index [:slug, :parent_id], :name=>:entities_slug_parent_key, :unique=>true
+      index [:slug], :name=>:entities_slug_key, :unique=>true
     end
 
     create_table(:profiles, :ignore_index_errors=>true) do
@@ -177,7 +177,7 @@ Sequel.migration do
     create_table(:datums) do
       primary_key :id
       foreign_key :definition_id, :definitions, :key=>[:id], :on_delete=>:cascade
-      String :detail, :text=>true
+      String :detail, :text=>true, :null=>false
       DateTime :created_at
       DateTime :updated_at
       foreign_key :profile_id, :profiles, :key=>[:id], :on_delete=>:cascade
@@ -332,13 +332,14 @@ Sequel.migration do
 
     create_table(:citizens, :ignore_index_errors=>true) do
       primary_key :id
-      foreign_key :account_id, :accounts, :key=>[:id], :on_delete=>:cascade
       DateTime :created_at
       DateTime :updated_at
       foreign_key :stage_id, :stages, :key=>[:id], :on_delete=>:set_null
+      foreign_key :account_id, :accounts, :key=>[:id], :on_delete=>:cascade
       foreign_key :entity_id, :entities, :key=>[:id], :on_delete=>:cascade
       DateTime :last_activity_at
 
+      index [:account_id], :name=>:citizens_account_id_key, :unique=>true
       index [:entity_id, :account_id], :unique=>true
     end
 

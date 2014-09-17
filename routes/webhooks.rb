@@ -6,18 +6,21 @@ module Applyance
 
         app.post '/webhooks/stripe', :provides => [:json] do
           Stripe.api_key = Applyance::Server.settings.stripe_secret_key
-          
+
           event_json = JSON.parse(request.body.read)
           event = Stripe::Event.retrieve(event_json["id"])
 
-          puts "Handling webhook from Stripe with type, [#{event_json["type"]}]"
+          puts "Handling webhook from Stripe with type, [#{event.type}]"
           puts "  ==  "
-          puts event_json.inspect
+          puts event.inspect
           puts "  ==  "
 
-          case event_json["type"]
+          case event.type
           when "customer.subscription.updated"
             puts "  Handling a subscription update from Stripe."
+            event.data.object
+          when "invoice.created"
+            puts "  Handling an invoice creation from Stripe."
 
           else
             puts "  Unknown event type from Stripe."
