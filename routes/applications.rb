@@ -17,6 +17,7 @@ module Applyance
         app.get '/spots/:id/applications', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
           protected! app.to_entity_reviewers(@spot.entity)
+          paywall! @spot.entity, 'applicantList'
 
           @applications = @spot.applications_dataset
           rabl :'applications/index'
@@ -26,6 +27,7 @@ module Applyance
         app.get '/entities/:id/applications', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_reviewers(@entity)
+          paywall! @entity, 'applicantList'
 
           @applications = @entity.applications
           @entity.entities.each { |e| @applications.concat(e.applications) }

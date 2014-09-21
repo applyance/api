@@ -1,0 +1,11 @@
+<p>
+  This is a receipt for your Applyance subscription. This is only a receipt, no payment is due. If you have any questions please contact us anytime.
+</p>
+<p>
+  Invoice ID: <strong><%= invoice.stripe_invoice_id %></strong>
+  Period: <strong><%= invoice.period_start.to_s %></strong> to <strong><%= invoice.period_end.to_s %></strong>
+  Amount: <strong>$<%= "%.2f" % (invoice.amount_due.to_i / 100.0) %></strong>
+</p>
+<p>
+  Thank you for your business!
+</p>

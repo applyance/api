@@ -1,0 +1,34 @@
+{
+  "id": "sub_4o6MtmIDnASfgy",
+  "plan": {
+    "interval": "month",
+    "name": "Monthly",
+    "created": 1404363125,
+    "amount": 20000,
+    "currency": "usd",
+    "id": "cpum8g",
+    "object": "plan",
+    "livemode": false,
+    "interval_count": 1,
+    "trial_period_days": null,
+    "metadata": {
+    },
+    "statement_description": null
+  },
+  "object": "subscription",
+  "start": 1411143755,
+  "status": "trialing",
+  "customer": "cus_4o6IiZIDSOf9pO",
+  "cancel_at_period_end": false,
+  "current_period_start": 1411143755,
+  "current_period_end": 1413735755,
+  "ended_at": null,
+  "trial_start": null,
+  "trial_end": null,
+  "canceled_at": null,
+  "quantity": 1,
+  "application_fee_percent": null,
+  "discount": null,
+  "metadata": {
+  }
+}

@@ -36,6 +36,14 @@ module Applyance
         account
       end
 
+      #
+      # Establish a paywall for the specified entity and feature.
+      #
+      def paywall!(entity, feature)
+        return if current_account && current_account.has_role?("chief")
+        error 401 unless entity.customer.plan.features.collect(&:name).include?(feature)
+      end
+
       private
 
         def _current_account

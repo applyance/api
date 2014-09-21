@@ -20,6 +20,7 @@ module Applyance
             raise BadRequestError.new({ detail: "Entity doesn't exist." })
           end
           protected! app.to_entity_reviewers(@entity)
+          paywall! @entity, 'applicantList'
 
           @citizens = @entity.get_citizens
           rabl :'citizens/index'
@@ -33,6 +34,7 @@ module Applyance
             raise BadRequestError.new({ detail: "Spot doesn't exist." })
           end
           protected! app.to_entity_reviewers(@spot.entity)
+          paywall! @spot.entity, 'applicantList'
 
           @citizens = @spot.get_citizens
           rabl :'citizens/index'

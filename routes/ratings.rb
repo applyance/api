@@ -9,6 +9,7 @@ module Applyance
         app.get '/citizens/:id/ratings', :provides => [:json] do
           @citizen = Citizen.first(:id => params[:id])
           @account = protected! app.to_entity_reviewers(@citizen.entity)
+          paywall! @citizen.entity, 'applicantManagement'
 
           @ratings = @citizen.ratings
           rabl :'ratings/index'
@@ -24,6 +25,7 @@ module Applyance
 
           @account = protected! app.to_entity_reviewers(@citizen.entity)
           protected! app.to_account(@account)
+          paywall! @citizen.entity, 'applicantManagement'
 
           @rating = Rating.new
           @rating.set(:account_id => @account.id, :citizen_id => @citizen.id)

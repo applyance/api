@@ -1,0 +1,2 @@
+collection @entity_customer_invoices
+extends "entity_customer_invoices/_shallow"

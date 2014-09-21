@@ -25,6 +25,7 @@ module Applyance
         app.post '/spots/:id/blueprints', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
           protected! app.to_entity_reviewers(@spot.entity)
+          paywall! @spot.entity, 'questions'
 
           @blueprint = Blueprint.new
           @blueprint.set_fields(params, ['definition_id', 'position', 'is_required'], :missing => :skip)
@@ -40,6 +41,7 @@ module Applyance
         app.post '/entities/:id/blueprints', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
+          paywall! @entity, 'questions'
 
           if params['blueprints']
             @blueprints = []
@@ -80,6 +82,9 @@ module Applyance
 
           protected! app.to_entity_admins(@blueprint.spot.entity) if @blueprint.spot
           protected! app.to_entity_admins(@blueprint.entity) if @blueprint.entity
+
+          paywall! @blueprint.spot.entity, 'questions' if @blueprint.spot
+          paywall! @blueprint.entity, 'questions' if @blueprint.entity
 
           @blueprint.update_fields(params, ['position', 'is_required'], :missing => :skip)
           rabl :'blueprints/show'

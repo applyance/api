@@ -8,6 +8,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
+    addressable (2.3.6)
     aws-sdk (1.48.1)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
@@ -30,6 +31,8 @@ GEM
       timers (~> 3.0.0)
     colorize (0.7.3)
     connection_pool (2.0.0)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
     daemons (1.1.9)
     diff-lcs (1.2.5)
     eventmachine (1.0.3)
@@ -52,13 +55,14 @@ GEM
     mandrill-api (1.0.52)
       excon (>= 0.16.0, < 1.0)
       json (>= 1.7.7, < 2.0)
-    mime-types (1.25.1)
+    mime-types (2.3)
     mini_portile (0.6.0)
     minitest (5.4.0)
     multi_json (1.10.1)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
+    netrc (0.7.7)
     nokogiri (1.6.2.1)
       mini_portile (= 0.6.0)
     oj (2.9.9)
@@ -81,8 +85,9 @@ GEM
       redis (~> 3.0, >= 3.0.4)
     rerun (0.10.0)
       listen (~> 2.7, >= 2.7.3)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     rspec (3.0.0)
       rspec-core (~> 3.0.0)
       rspec-expectations (~> 3.0.0)
@@ -95,6 +100,7 @@ GEM
     rspec-mocks (3.0.2)
       rspec-support (~> 3.0.0)
     rspec-support (3.0.2)
+    safe_yaml (1.0.3)
     sequel (4.12.0)
     sidekiq (3.2.1)
       celluloid (>= 0.15.2)
@@ -117,8 +123,9 @@ GEM
       colorize
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stripe (1.8.8)
-      multi_json (>= 1.0.4, < 2)
+    stripe (1.15.0)
+      json (~> 1.8.1)
+      mime-types (>= 1.25, < 3.0)
       rest-client (~> 1.4)
     thin (1.6.2)
       daemons (>= 1.0.9)
@@ -130,6 +137,9 @@ GEM
       hitimes
     tzinfo (1.2.1)
       thread_safe (~> 0.1)
+    webmock (1.18.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
 
 PLATFORMS
   ruby
@@ -159,3 +169,4 @@ DEPENDENCIES
   sinatra-contrib
   stripe
   thin
+  webmock

@@ -91,6 +91,64 @@ module Applyance
 
     end
 
+    # Notification of trial ending
+    def send_trial_will_end_email
+      template = {
+        :template => File.join('reviewers', 'trial_will_end'),
+        :locals => { :reviewer => self }
+      }
+      message = {
+        :subject => "Your Applyance Trial is Expiring",
+        :to => [ { :email => self.account.email, :name => self.account.name } ],
+        :merge_vars => [{
+          "rcpt" => self.account.email,
+          "vars" => [{ "content" => self.account.name, "name" => "name" }]
+        }]
+      }
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+    end
+
+    # Notification of subscription canceled
+    # Most likely due to payment failure
+    def send_subscription_canceled_email(entity_customer)
+      template = {
+        :template => File.join('reviewers', 'subscription_canceled'),
+        :locals => {
+          :reviewer => self,
+          :entity_customer => entity_customer
+        }
+      }
+      message = {
+        :subject => "Applyance Subscription Expired",
+        :to => [ { :email => self.account.email, :name => self.account.name } ],
+        :merge_vars => [{
+          "rcpt" => self.account.email,
+          "vars" => [{ "content" => self.account.name, "name" => "name" }]
+        }]
+      }
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+    end
+
+    # Notification of payment failure
+    def send_payment_receipt_email(invoice)
+      template = {
+        :template => File.join('reviewers', 'payment_receipt'),
+        :locals => {
+          :reviewer => self,
+          :invoice => invoice
+        }
+      }
+      message = {
+        :subject => "Applyance Payment Receipt",
+        :to => [ { :email => self.account.email, :name => self.account.name } ],
+        :merge_vars => [{
+          "rcpt" => self.account.email,
+          "vars" => [{ "content" => self.account.name, "name" => "name" }]
+        }]
+      }
+      Applyance::Lib::Emails::Sender::send_template(template, message)
+    end
+
     # Subscribe this user to mailchimp
     def subscribe_to_mailchimp
 

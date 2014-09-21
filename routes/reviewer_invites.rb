@@ -8,6 +8,7 @@ module Applyance
         app.get '/entities/:id/reviewers/invites', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_reviewers(@entity)
+          paywall! @entity, 'team'
 
           @reviewer_invites = @entity.reviewer_invites
           rabl :'reviewer_invites/index'
@@ -17,6 +18,7 @@ module Applyance
         app.post '/entities/:id/reviewers/invites', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_reviewers(@entity)
+          paywall! @entity, 'team'
 
           @reviewer_invite = ReviewerInvite.make(@entity, params)
           @reviewer_invite.send_claim_email

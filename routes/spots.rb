@@ -16,6 +16,7 @@ module Applyance
         app.post '/entities/:id/spots', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
+          paywall! @entity, 'spots'
 
           @spot = Spot.new
           @spot.set(:entity_id => @entity.id)
@@ -37,6 +38,7 @@ module Applyance
         app.put '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
           protected! app.to_entity_admins(@spot.entity)
+          paywall! @spot.entity, 'spots'
 
           @spot.update_fields(params, ['name', 'detail', 'status'], :missing => :skip)
           rabl :'spots/show'
@@ -47,6 +49,7 @@ module Applyance
         app.delete '/spots/:id', :provides => [:json] do
           @spot = Spot.first(:id => params['id'])
           protected! app.to_entity_admins(@spot.entity)
+          paywall! @spot.entity, 'spots'
 
           @spot.remove_all_blueprints
           @spot.remove_all_applications

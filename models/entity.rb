@@ -39,16 +39,31 @@ module Applyance
     def after_create
       super
 
+      # Initialize the customer, if root
+      if self.is_root?
+        EntityCustomer.init(self)
+      else
+        self.root_entity.customer.update_quantity
+      end
+
       # After creation of a new entity, grab all the parent reviewers
       # and assign them to this entity
-      return if self.parent.nil?
+      if self.parent
+        self.parent.reviewers.each do |reviewer|
+          Reviewer.create(
+            :entity_id => self.id,
+            :account_id => reviewer.account_id,
+            :scope => reviewer.scope
+          )
+        end
+      end
 
-      self.parent.reviewers.each do |reviewer|
-        Reviewer.create(
-          :entity_id => self.id,
-          :account_id => reviewer.account_id,
-          :scope => reviewer.scope
-        )
+    end
+
+    def after_destroy
+      super
+      unless self.is_root?
+        self.root_entity.customer.update_quantity
       end
     end
 
@@ -89,12 +104,34 @@ module Applyance
       end
     end
 
+    # Return the total entity count
+    def total_child_count
+      count = 0
+      self.apply_to_children { |e| count += 1 }
+      count
+    end
+
     # Attach citizen to the root entity object
     def make_citizen_from_account(account)
       Citizen.find_or_create(
         :account_id => account.id,
         :entity_id => self.root_entity.id
       )
+    end
+
+    # Return the admin reviewers
+    def get_admins
+      self._get_reviewers("admin")
+    end
+
+    # Return the reviewer reviewers
+    def get_reviewers
+      self._get_reviewers
+    end
+
+    # Return the reviewers with the specified scope
+    def _get_reviewers(scope = "limited")
+      self.reviewers_dataset.where(:scope => scope)
     end
 
     # Retrieve citizens based on where they applied

@@ -5,7 +5,7 @@ child :definition => :definition do
 end
 
 child :spot => :spot do
-  extends 'spots/_shallow'
+  extends 'spots/_deep'
 end
 
 child :entity => :entity do

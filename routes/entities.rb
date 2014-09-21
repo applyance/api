@@ -23,7 +23,7 @@ module Applyance
             rabl :'entities/show'
           else
             protected!
-            @entities = Entity.all
+            @entities = Entity.reverse_order(:created_at).all
             rabl :'entities/index'
           end
 
@@ -78,6 +78,7 @@ module Applyance
         app.post '/entities/:id/entities', :provides => [:json] do
           @_entity = Entity.first(:id => params[:id])
           protected! app.to_entity_admins(@_entity)
+          paywall! @_entity, 'locations'
 
           @entity = Entity.new
           @entity.set(

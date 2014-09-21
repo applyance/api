@@ -35,6 +35,7 @@ module Applyance
         app.post '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
+          paywall! @entity, 'questions'
 
           unless @entity.definitions.count < 5
             raise BadRequestError.new({ detail: "Entities can only have 5 definitions." })
@@ -92,6 +93,8 @@ module Applyance
 
           protected! if @definition.domain
           protected! app.to_entity_admins(@definition.entity) if @definition.entity
+
+          paywall! @definition.entity, 'questions' if @definition.entity
 
           # Update or remove the domain, if applicable
           if params['domain_id']

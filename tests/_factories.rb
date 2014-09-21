@@ -63,6 +63,17 @@ FactoryGirl.define do
     factory :entity_with_definition, traits: [:with_definition]
   end
 
+  factory :entity_customer, class: Applyance::EntityCustomer do
+    plan { Applyance::EntityCustomerPlan.first(:stripe_id => "premium") }
+    stripe_id "cus_4o6MD3FICxC7T2"
+    subscription_status "trialing"
+    active_until { DateTime.now + 30 }
+  end
+
+  factory :entity_customer_invoice, class: Applyance::EntityCustomerInvoice do
+    association :customer, factory: :entity_customer
+  end
+
   factory :citizen, class: Applyance::Citizen do
     association :account, factory: :citizen_account
     entity

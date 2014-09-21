@@ -9,6 +9,8 @@ module Applyance
         app.get '/entities/:id/labels', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
           protected! app.to_entity_reviewers(@entity)
+          paywall! @entity, 'labels'
+
           @labels = @entity.labels
           rabl :'labels/index'
         end
@@ -18,6 +20,8 @@ module Applyance
         app.get '/citizens/:id/labels', :provides => [:json] do
           @citizen = Citizen.first(:id => params[:id])
           protected! app.to_entity_reviewers(@citizen.entity)
+          paywall! @citizen.entity, 'labels'
+
           @labels = @citizen.labels
           rabl :'labels/index'
         end
@@ -27,6 +31,7 @@ module Applyance
         app.post '/entities/:id/labels', :provides => [:json] do
           @entity = Entity.first(:id => params[:id])
           protected! app.to_entity_admins(@entity)
+          paywall! @entity, 'labels'
 
           @label = Label.new
           @label.set(:entity_id => @entity.id)
@@ -41,6 +46,7 @@ module Applyance
         app.get '/labels/:id', :provides => [:json] do
           @label = Label.first(:id => params['id'])
           protected! app.to_entity_reviewers(@label.entity)
+          paywall! @label.entity, 'labels'
 
           rabl :'labels/show'
         end
@@ -50,6 +56,7 @@ module Applyance
         app.put '/labels/:id', :provides => [:json] do
           @label = Label.first(:id => params['id'])
           protected! app.to_entity_admins(@label.entity)
+          paywall! @label.entity, 'labels'
 
           @label.update_fields(params, ['name', 'color'], :missing => :skip)
           rabl :'labels/show'
@@ -60,6 +67,7 @@ module Applyance
         app.delete '/labels/:id', :provides => [:json] do
           @label = Label.first(:id => params['id'])
           protected! app.to_entity_admins(@label.entity)
+          paywall! @label.entity, 'labels'
 
           @label.destroy
 
