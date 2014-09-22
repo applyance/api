@@ -128,6 +128,9 @@ module Applyance
             if invoice.amount_due > 0
               entity_invoice = EntityCustomerInvoice.first(:stripe_invoice_id => invoice.id)
               entity_invoice.customer.entity.get_admins.each { |r| r.send_payment_receipt_email(entity_invoice) }
+              puts "    Receipt email sent."
+            else
+              puts "    Not sending receipt email because the amount was $0."
             end
 
           when "invoice.payment_failed"
