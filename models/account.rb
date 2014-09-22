@@ -71,11 +71,13 @@ module Applyance
 
       # Check for an existing account
       if account.nil?
+        puts "Account not found with the email [#{params['email']}] specified."
         raise BadRequestError.new({ :detail => "Account not found with the email specified." })
       end
 
       # Check password
       unless BCrypt::Password.new(account.password_hash) == params['password']
+        puts "Incorrect password for [#{params['email']}]."
         raise BadRequestError.new({ :detail => "Incorrect password." })
       end
 
