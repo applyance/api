@@ -16,10 +16,7 @@ module Applyance
             event = Stripe::Event.retrieve(event_json["id"])
           end
 
-          puts "Handling webhook from Stripe with type, [#{event.type}]"
-          puts "  ==  "
-          puts event.inspect
-          puts "  ==  "
+          puts "Handling webhook from Stripe [#{event.type}, #{event.id}]."
 
           case event.type
           when "customer.card.updated"
