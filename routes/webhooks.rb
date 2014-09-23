@@ -85,9 +85,14 @@ module Applyance
 
             puts "  Knocking plan down to free on Stripe."
             stripe_customer = Stripe::Customer.retrieve(customer_id)
-            stripe_customer.subscriptions.create(
+            subscription = stripe_customer.subscriptions.create(
               :plan => free_plan.stripe_id,
               :quantity => quantity)
+
+            puts "  Updating the customer."
+            entity_customer.set(:plan_id => free_plan.id)
+            entity_customer.set_subscription_from_stripe(subscription)
+            entity_customer.save
 
           when "invoice.created"
             invoice = event.data.object

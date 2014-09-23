@@ -306,7 +306,7 @@ describe Applyance::Routing::Webhooks do
       plan_saved = customer_saved.plan
 
       expect(last_response.status).to eq(200)
-      expect(customer_saved.subscription_status).to eq("active")
+      expect(customer_saved.subscription_status).to eq("trialing")
       expect(plan_saved.stripe_id).to eq("free")
     end
   end

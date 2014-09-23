@@ -20,6 +20,10 @@ module Applyance
         json_response(200, 'subscription.json')
       end
 
+      post '/v1/customers/:customer_id/subscriptions' do
+        json_response(200, 'subscription.json')
+      end
+
       private
         def json_response(response_code, file_name)
           content_type :json
