@@ -1,4 +1,4 @@
-attributes :id, :name, :stripe_id, :created_at, :updated_at
+attributes :id, :name, :stripe_id
 
 child :features => :features do
   extends 'entity_customer_features/_shallow'

@@ -66,23 +66,6 @@ module Applyance
             entity_customer.set_subscription_from_stripe(subscription)
             entity_customer.save
 
-            # If a subscription has been updated and the status is unpaid or canceled,
-            # then let's knock the plan down to the free plan
-
-            if ["unpaid", "canceled"].include?(subscription.status)
-              puts "  Unpaid or canceled subscription."
-              puts "  Switch from the current plan to the free plan."
-
-              entity_customer.entity.get_admins.each { |r| r.send_subscription_canceled_email(entity_customer) }
-
-              unless Applyance::Server.test?
-                stripe_customer = Stripe::Customer.retrieve(customer_id)
-                stripe_subscription = stripe_customer.subscriptions.retrieve(subscription.id)
-                stripe_subscription.plan = "free"
-                stripe_subscription.save
-              end
-            end
-
           when "customer.subscription.deleted"
             subscription = event.data.object
             customer_id = subscription.customer
@@ -93,9 +76,18 @@ module Applyance
 
             free_plan = EntityCustomerPlan.first(:stripe_id => "free")
             entity_customer = EntityCustomer.first(:stripe_subscription_id => subscription.id)
-            entity_customer.update(
-              :subscription_status => "active",
-              :plan_id => free_plan.id)
+
+            puts "  Sending email."
+            entity_customer.entity.get_admins.each { |r| r.send_subscription_canceled_email(entity_customer) }
+
+            location_count = entity_customer.entity.root_entity.total_child_count
+            quantity = [location_count, 1].max
+
+            puts "  Knocking plan down to free on Stripe."
+            stripe_customer = Stripe::Customer.retrieve(customer_id)
+            stripe_customer.subscriptions.create(
+              :plan => free_plan.stripe_id,
+              :quantity => quantity)
 
           when "invoice.created"
             invoice = event.data.object
