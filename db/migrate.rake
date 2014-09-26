@@ -11,6 +11,24 @@ task :environment, [:env] => 'bundler:setup' do |cmd, args|
 end
 
 namespace :db do
+  desc "Get current version"
+  task :version, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
+    require 'sequel/extensions/migration'
+    version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
+    puts version
+  end
+
+  desc "Dump Current Schema"
+  task :dump_schema, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
+    sh "sequel -d postgres://localhost/#{Applyance::Server.settings.database_name} > db/schema.rb"
+  end
+
   desc "Load Schema"
   task :load_schema, :env do |cmd, args|
     env = args[:env] || "development"
@@ -31,6 +49,12 @@ namespace :db do
       :target => nil,
       :current => nil
     )
+
+    # If in development, dump the schema afterwards
+    Rake::Task["db:dump_schema"].invoke(env) if Applyance::Server.development?
+
+    version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
+    puts "Migrated to version #{version}."
   end
 
   desc "Rollback the database"
@@ -45,6 +69,12 @@ namespace :db do
       :target => version - 1,
       :current => nil
     )
+
+    # If in development, dump the schema afterwards
+    Rake::Task["db:dump_schema"].invoke(env) if Applyance::Server.development?
+
+    version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
+    puts "Rolled back to version #{version}."
   end
 
   desc "Nuke the database (drop all tables)"

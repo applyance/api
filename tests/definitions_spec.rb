@@ -30,13 +30,13 @@ describe Applyance::Definition do
 
   shared_examples_for "a single definition" do
     it "returns the information for definition show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'entity', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'is_core', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'entity', 'label', 'description', 'type', 'helper', 'placeholder', 'is_sensitive', 'is_contextual', 'is_core', 'is_default', 'default_position', 'default_is_required', 'created_at', 'updated_at')
     end
   end
 
   shared_examples_for "multiple definitions" do
     it "returns the information for definition index" do
-      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'label', 'description', 'type', 'helper', 'is_sensitive', 'is_contextual', 'is_core', 'created_at', 'updated_at')
+      expect(json.first.keys).to contain_exactly('id', 'name', 'slug', 'domain', 'label', 'description', 'type', 'helper', 'placeholder', 'is_sensitive', 'is_contextual', 'is_core', 'is_default', 'default_position', 'default_is_required', 'created_at', 'updated_at')
     end
   end
 

@@ -42,7 +42,7 @@ module Applyance
           end
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'is_default', 'default_is_required', 'default_position', 'placeholder', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @entity.add_definition(@definition)
@@ -59,7 +59,7 @@ module Applyance
           @domain = Domain.first(:id => params['id'])
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'is_default', 'default_is_required', 'default_position', 'placeholder', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           @domain.add_definition(@definition)
@@ -74,7 +74,7 @@ module Applyance
           protected!
 
           @definition = Definition.new
-          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
+          @definition.set_fields(params, ['name', 'label', 'description', 'is_core', 'is_default', 'default_is_required', 'default_position', 'placeholder', 'type', 'helper'], :missing => :skip)
           @definition.save
 
           status 201
@@ -107,7 +107,7 @@ module Applyance
             end
           end
 
-          @definition.update_fields(params, ['name', 'label', 'description', 'is_core', 'type', 'helper'], :missing => :skip)
+          @definition.update_fields(params, ['name', 'label', 'description', 'is_core', 'is_default', 'default_is_required', 'default_position', 'placeholder', 'type', 'helper'], :missing => :skip)
 
           rabl :'definitions/show'
         end
