@@ -7,7 +7,7 @@ module Applyance
         # List all public definitions
         app.get '/definitions', :provides => [:json] do
           @definitions = Definition.exclude(
-            :id => app.db[:definitions_entities].select(:definition_id)).by_first_created
+            :id => app.db[:definitions_entities].select(:definition_id)).by_default_position
           rabl :'definitions/index'
         end
 
@@ -16,7 +16,7 @@ module Applyance
         app.get '/entities/:id/definitions', :provides => [:json] do
           @entity = Entity.first(:id => params['id'])
           protected! app.to_entity_admins(@entity)
-          @definitions = @entity.definitions_dataset.by_first_created
+          @definitions = @entity.definitions_dataset.by_default_position
           rabl :'definitions/index'
         end
 
@@ -26,7 +26,7 @@ module Applyance
           domain_query = app.db[:definitions_domains].where(Sequel.~(:domain_id => params['id']))
           domain_definitions = domain_query.map(:definition_id)
           to_exclude = entity_definitions + domain_definitions
-          @definitions = Definition.exclude(:id => to_exclude).by_first_created
+          @definitions = Definition.exclude(:id => to_exclude).by_default_position
           rabl :'definitions/index'
         end
 

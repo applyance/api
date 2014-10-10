@@ -185,8 +185,6 @@ Sequel.migration do
     create_table(:profiles, :ignore_index_errors=>true) do
       primary_key :id
       foreign_key :account_id, :accounts, :key=>[:id], :on_delete=>:cascade
-      foreign_key :location_id, :locations, :key=>[:id], :on_delete=>:set_null
-      String :phone_number, :text=>true
       DateTime :created_at
       DateTime :updated_at
       

@@ -184,5 +184,14 @@ module Applyance
       true
     end
 
+    class DatumMappings
+      def self.name(datum)
+
+      end
+      def self.email(datum)
+
+      end
+    end
+
   end
 end

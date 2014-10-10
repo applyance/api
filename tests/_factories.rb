@@ -82,7 +82,6 @@ FactoryGirl.define do
 
   factory :profile, class: Applyance::Profile do
     association :account, factory: :citizen_account
-    phone_number "555-555-5555"
   end
 
   factory :reviewer, class: Applyance::Reviewer do

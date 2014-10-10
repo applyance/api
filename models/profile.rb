@@ -3,9 +3,7 @@ module Applyance
 
     include Applyance::Lib::Locations
 
-    many_to_one :location, :class => :'Applyance::Location'
     many_to_one :account, :class => :'Applyance::Account'
-
     one_to_many :datums, :class => :'Applyance::Datum'
 
     # Welcome the new reviewer by way of email

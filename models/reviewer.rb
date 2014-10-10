@@ -80,7 +80,7 @@ module Applyance
         }
       }
       message = {
-        :subject => "New Application",
+        :subject => "New Application from #{citizen.account.name}",
         :to => [ { :email => self.account.email, :name => self.account.name } ],
         :merge_vars => [{
           "rcpt" => self.account.email,

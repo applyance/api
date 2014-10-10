@@ -37,6 +37,7 @@ module Applyance
 
     # Config
     set :root, File.dirname(__FILE__)
+    set :protection, :except => [:json_csrf]
     enable :logging
 
     configure :development do

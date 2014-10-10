@@ -23,10 +23,8 @@ module Applyance
       application.save
 
       # Create account and profile
-      account_exists = !!Account.first(Sequel.ilike(:email, params['applicant']['email']))
-      temp_password = application.friendly_token
-      account = application.create_applicant_account(params, temp_password)
-      profile = application.create_applicant_profile(params, account, temp_password, !account_exists)
+      account = application.create_applicant_account(params)
+      profile = Profile.find_or_create(:account_id => account.id)
 
       # Assign spots and entities
       application.link_spots_from_params(params)
@@ -59,41 +57,38 @@ module Applyance
       if params['spot_ids'].nil? && params['entity_ids'].nil?
         raise BadRequestError.new({ :detail => "Applications need to be assigned entities or spots." })
       end
-      if params['applicant'].nil?
-        raise BadRequestError.new({ :detail => "Applicant is required." })
+      if params['account'].nil? && params['account_id'].nil?
+        raise BadRequestError.new({ :detail => "Account is required." })
       end
     end
 
     # Creates the applicant account
-    def create_applicant_account(params, temp_password)
-      account = Account.make("citizen", {
-        'name' => params['applicant']['name'],
-        'email' => params['applicant']['email'],
-        'password' => temp_password
-      })
+    def create_applicant_account(params)
+      params['account_id'] ? create_existing_account(params) : create_new_account(params)
+    end
+
+    # If the user passed in an account_id, ensure the existing account
+    # is correct
+    def create_existing_account(params)
+      account = Account.first(:id => params['account_id'])
+      if account.nil?
+        raise BadRequestError.new({ :detail => "Account specified doesn't exist." })
+      end
+      unless account.has_role?("citizen")
+        account.add_role(Role.first(:name => "citizen"))
+      end
       account
     end
 
-    # Creates the applicant profile
-    def create_applicant_profile(params, account, temp_password, send_email = true)
-      profile = Profile.find_or_create(:account_id => account.id)
-
-      if params['applicant']['phone_number']
-        profile.update(:phone_number => params['applicant']['phone_number'])
-      end
-
-      # Create profile location
-      unless params['applicant']['location'].nil?
-        location = Location.make(params['applicant']['location'])
-        profile.update(:location_id => location.id) if location
-      end
-
-      # Send the profile if an account is new
-      if send_email
-        profile.send_welcome_email(temp_password)
-      end
-
-      profile
+    # If the user passed in an account name and email, make the
+    # new account (or just use the one that exists)
+    def create_new_account(params)
+      account = Account.make("citizen", {
+        'name' => params['account']['name'],
+        'email' => params['account']['email'],
+        'password' => self.friendly_token
+      })
+      account
     end
 
     # Link the spot IDs in params to the application
@@ -149,6 +144,7 @@ module Applyance
 
         # If not contextual, see if a datum exists for this definition already
         profile = Profile.first(:account_id => self.citizens.first.account_id)
+
         if definition.is_contextual
           datum = Datum.new
           datum.profile = profile

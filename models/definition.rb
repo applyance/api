@@ -17,6 +17,9 @@ module Applyance
       def by_latest_created
         reverse_order(:created_at)
       end
+      def by_default_position
+        order(:default_position)
+      end
     end
 
     def before_validation
