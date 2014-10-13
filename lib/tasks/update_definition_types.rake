@@ -37,4 +37,57 @@ namespace :db do
       end
     end
   end
+
+  desc "Assign blueprints"
+  task :clean_blueprints, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
+    puts "Repositioning blueprints."
+
+    Applyance::Blueprint.all.each do |blueprint|
+      blueprint.update(
+        :is_required => blueprint.definition.default_is_required,
+        :position => blueprint.definition.default_position
+      )
+    end
+
+    puts "Assigning blueprint cores."
+
+    core_definitions = Applyance::Definition.where(:is_core => true)
+    entities = Applyance::Entity.where(:parent_id => nil)
+    entities.each do |entity|
+      core_definitions.each do |definition|
+        blueprints_exist = entity.blueprints_dataset.where(:definition_id => definition.id).count
+        unless blueprints_exist > 0
+          blueprint = Applyance::Blueprint.create(
+            :definition_id => definition.id,
+            :position => definition.default_position,
+            :is_required => definition.default_is_required
+          )
+          entity.add_blueprint(blueprint)
+          puts "Added blueprint [#{definition.label}] for entity [#{entity.id} - #{entity.name}]"
+        else
+          puts "Skipped blueprint [#{definition.label}] for entity [#{entity.id} - #{entity.name}]"
+        end
+      end
+    end
+  end
+
+  desc "Clean up datums"
+  task :clean_datums, :env do |cmd, args|
+    env = args[:env] || "development"
+    Rake::Task['environment'].invoke(env)
+
+    puts "Cleaning datums."
+
+    datums = Applyance::Datum.all
+    datums.each do |datum|
+      datum.definition = Applyance::Definition.first(:type => "longtext")
+      datum.detail = { :entries => [{ :value => datum.detail['value'] }] }
+      datum.save
+      puts "Saved datum."
+    end
+  end
+
 end
