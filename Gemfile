@@ -19,6 +19,7 @@ gem 'geocoder'
 gem 'stripe'
 gem 'mailchimp-api', require: 'mailchimp'
 gem 'full-name-splitter'
+gem 'prawn'
 
 # External libraries
 gem 'mandrill-api'

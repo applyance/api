@@ -5,5 +5,6 @@ require_relative 'strings'
 require_relative 'urls'
 require_relative 'locations'
 require_relative 'emails'
+require_relative 'application_pdf'
 
 require_relative 'sequel/_init'

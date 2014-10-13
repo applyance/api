@@ -3,6 +3,7 @@ module Applyance
 
     include Applyance::Lib::Tokens
     include Applyance::Lib::Strings
+    include Applyance::Lib::ApplicationPdf
 
     one_to_many :notes, :class => :'Applyance::Note'
     one_to_many :fields, :class => :'Applyance::Field'
@@ -86,6 +87,7 @@ module Applyance
       account = Account.make("citizen", {
         'name' => params['account']['name'],
         'email' => params['account']['email'],
+        'phone_number' => params['account']['phone_number'],
         'password' => self.friendly_token
       })
       account

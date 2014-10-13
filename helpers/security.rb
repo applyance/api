@@ -41,14 +41,14 @@ module Applyance
       #
       def paywall!(entity, feature)
         return if current_account && current_account.has_role?("chief")
-        error 401 unless entity.customer.plan.features.collect(&:name).include?(feature)
+        error 401 unless entity.root_entity.customer.plan.features.collect(&:name).include?(feature)
       end
 
       private
 
         def _current_account
-          return nil unless request.env['HTTP_AUTHORIZATION']
-          api_key = request.env['HTTP_AUTHORIZATION'].split('auth=')[1]
+          return nil unless request.env['HTTP_AUTHORIZATION'] || params['api_key']
+          api_key = params['api_key'] ? params['api_key'] : request.env['HTTP_AUTHORIZATION'].split('auth=')[1]
           Account.first(:api_key => api_key)
         end
 

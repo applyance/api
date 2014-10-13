@@ -1,4 +1,4 @@
-attributes :id, :name, :first_name, :last_name, :initials, :email, :is_verified, :created_at, :updated_at
+attributes :id, :name, :first_name, :last_name, :initials, :email, :phone_number, :is_verified, :created_at, :updated_at
 
 child :avatar => :avatar do
   extends "attachments/_shallow"

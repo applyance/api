@@ -124,6 +124,9 @@ Sequel.migration do
       String :first_name, :text=>true
       String :last_name, :text=>true
       String :initials, :text=>true
+      String :phone_number, :text=>true
+      TrueClass :is_phone_verified, :default=>false
+      String :phone_verify_digest, :text=>true
       
       index [:api_key], :unique=>true
       index [:email], :unique=>true

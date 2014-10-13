@@ -42,6 +42,7 @@ module Applyance
     def self.make(role, params)
       account = self.first(Sequel.ilike(:email, params['email']))
       if account
+        account.update(:phone_number => params['phone_number']) if params['phone_number']
         account.add_role(Role.first(:name => role)) unless account.has_role?(role)
         return account
       end
@@ -55,9 +56,10 @@ module Applyance
       end
 
       account = self.new
-      account.set_fields(params, ['name', 'email'], :missing => :skip)
+      account.set_fields(params, ['name', 'email', 'phone_number'], :missing => :skip)
       account.set_token(:api_key)
       account.set_token(:verify_digest)
+      account.set_pin(:phone_verify_digest)
       account.set(:password_hash => BCrypt::Password.create(params['password']))
       account.save
 
@@ -119,7 +121,7 @@ module Applyance
 
     # Update account stuff
     def handle_update(params)
-      self.update_fields(params, ['name'], :missing => :skip)
+      self.update_fields(params, ['name', 'phone_number'], :missing => :skip)
       self.attach(params['avatar'], :avatar)
       self.change_password(params) unless params['new_password'].nil?
       self.change_email(params) unless params['email'].nil?

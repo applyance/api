@@ -45,6 +45,23 @@ module Applyance
           rabl :'applications/show'
         end
 
+        # Export an application as a PDF
+        app.get '/applications/:id.pdf' do
+          @application = Application.first(:id => params['id'])
+          if @application.nil?
+            raise BadRequestError.new({ detail: "Application doesn't exist." })
+          end
+          protected! app.to_application_reviewers_or_self(@application)
+
+          account = @application.citizens.first.account
+
+          response.headers['Content-Type'] = 'application/pdf'
+          response.headers['Content-Disposition'] = "attachment; filename=\"#{account.name}.pdf\""
+          response.headers['Cache-Control'] = 'no-cache'
+
+          @application.render_pdf
+        end
+
         # Get application by Id
         # Must be a reviewer or application owner
         app.get '/applications/:id', :provides => [:json] do

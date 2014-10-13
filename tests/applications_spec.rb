@@ -60,12 +60,10 @@ describe Applyance::Application do
       before(:each) do
 
         application_request = {
-          applicant: {
+          account: {
             name: "Stephen Watkins",
             email: "stjowa@gmail.com",
-            location: {
-              address: "Testing this"
-            }
+            phone_number: "(205) 527-0510"
           },
           spot_ids: [blueprint.spot.id],
           fields: [
@@ -113,8 +111,8 @@ describe Applyance::Application do
       it_behaves_like "a created object"
       it_behaves_like "a single application"
       it "returns the right value" do
-        expect(Applyance::Profile.first(:account_id => json['citizens'].first['account']['id']).location).to eq(nil)
         expect(json['citizens'].first['account']['name']).to eq("Stephen Watkins")
+        expect(json['citizens'].first['account']['phone_number']).to eq("(205) 527-0510")
         expect(json['citizens'].length).to eq(1)
       end
     end

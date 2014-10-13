@@ -36,7 +36,7 @@ describe Applyance::Account do
 
   shared_examples_for "a single account" do
     it "returns the information for account show" do
-      expect(json.keys).to contain_exactly('id', 'name', 'first_name', 'last_name', 'initials', 'email', 'avatar', 'is_verified', 'roles', 'created_at', 'updated_at')
+      expect(json.keys).to contain_exactly('id', 'name', 'first_name', 'last_name', 'initials', 'email', 'phone_number', 'avatar', 'is_verified', 'roles', 'created_at', 'updated_at')
     end
   end
 
