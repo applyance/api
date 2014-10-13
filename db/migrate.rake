@@ -50,9 +50,6 @@ namespace :db do
       :current => nil
     )
 
-    # If in development, dump the schema afterwards
-    Rake::Task["db:dump_schema"].invoke(env) if Applyance::Server.development?
-
     version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
     puts "Migrated to version #{version}."
   end
@@ -69,9 +66,6 @@ namespace :db do
       :target => version - 1,
       :current => nil
     )
-
-    # If in development, dump the schema afterwards
-    Rake::Task["db:dump_schema"].invoke(env) if Applyance::Server.development?
 
     version = (row = Applyance::Server.db[:schema_info].first) ? row[:version] : nil
     puts "Rolled back to version #{version}."
