@@ -55,16 +55,13 @@ module Applyance
             formatted_text [ { :text => field.datum.definition.label, :styles => [:bold] } ]
             move_down 0.125.in
 
-            if ['hourlyavailability', 'education', 'workexperience', 'address', 'legal', 'yesno', 'multiplechoice', 'reference', 'name'].include?(field.datum.definition.type)
+            if field.datum.is_legacy
+              application.draw_entries(self, field)
+            elsif ['hourlyavailability', 'education', 'workexperience', 'address', 'legal', 'yesno', 'multiplechoice', 'reference', 'name'].include?(field.datum.definition.type)
               application.send("draw_field_#{field.datum.definition.type}", self, field)
             else
               if field.datum.detail['entries']
-                field.datum.detail['entries'].each_with_index do |entry, index|
-                  text " " if index > 0
-                  entry.each do |k, prop|
-                    text prop.to_s
-                  end
-                end
+                application.draw_entries(self, field)
               else
                 text field.datum.detail['value'].to_s
               end
@@ -77,6 +74,16 @@ module Applyance
 
         pdf.render
 
+      end
+
+      def draw_entries(pdf, field)
+        return unless field.datum.detail['entries']
+        field.datum.detail['entries'].each_with_index do |entry, index|
+          pdf.text " " if index > 0
+          entry.each do |k, prop|
+            pdf.text prop.to_s
+          end
+        end
       end
 
       def draw_field_hourlyavailability(pdf, field)
