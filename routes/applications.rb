@@ -4,6 +4,14 @@ module Applyance
 
       def self.registered(app)
 
+        # List all applications
+        # Only chiefs can do this
+        app.get '/applications', :provides => [:json] do
+          protected!
+          @applications = Application.reverse_order(:created_at).all
+          rabl :'applications/index'
+        end
+
         # List applications for a citizen
         app.get '/citizens/:id/applications', :provides => [:json] do
           @citizen = Citizen.first(:id => params['id'])

@@ -47,6 +47,11 @@ module Applyance
           @datum = Datum.first(:id => params['id'])
           protected! app.to_account_id(@datum.profile.account_id)
 
+          if params['definition_id']
+            protected!
+            @datum.update(:definition_id => params['definition_id'])
+          end
+
           @datum.update_fields(params, ['detail'], :missing => :skip)
           @datum.attach(params['attachments'], :attachments)
           rabl :'datums/show'

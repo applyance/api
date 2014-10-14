@@ -83,9 +83,13 @@ namespace :db do
 
     datums = Applyance::Datum.all
     datums.each do |datum|
-      datum.definition = Applyance::Definition.first(:type => "longtext")
-      datum.detail = { :entries => [{ :value => datum.detail['value'] }] }
-      datum.save
+      unless datum.definition.type == 'fileupload'
+        unless datum.detail['entries']
+          datum.definition = Applyance::Definition.first(:type => "longtext")
+          datum.detail = { :entries => [{ :value => datum.detail['value'] }] }
+          datum.save
+        end
+      end
       puts "Saved datum."
     end
   end
